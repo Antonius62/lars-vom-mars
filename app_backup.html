@@ -1,0 +1,1098 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lars vom Mars</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            background-image: url('mars_background.png');
+            background-size: cover;
+            background-position: center;
+            color: white;
+            font-family: Arial, sans-serif;
+            position: relative;
+        }
+
+        h1 {
+            font-size: 2.5em;
+            text-shadow: 2px 2px 4px black;
+            text-align: center;
+            margin-top: 40px;
+            color: rgba(255,255,255,0.5);
+            padding: 20px;
+            line-height: 1.4;
+        }
+
+        .login-button {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: rgba(255,192,203,0.6) !important;
+            width: 100px !important;
+            height: 100px !important;
+            font-size: 16px !important;  
+            z-index: 1000;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: white;
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.5);
+            z-index: 1000;
+            max-width: 80%;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+
+        .modal-background {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 999;
+        }
+
+        .button {
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            border: none;
+            cursor: pointer;
+            font-size: 20px;
+            transition: transform 0.2s;
+            color: black;
+            font-weight: bold;
+            z-index: 1000;
+        }
+
+        .button:hover {
+            transform: scale(1.1);
+        }
+
+        .button.audiobook {
+            background: rgba(255,255,0,0.6);  
+        }
+
+        .button.video {
+            background: rgba(173,216,230,0.6);
+        }
+
+        .button.music {
+            background: rgba(255,160,160,0.6);
+        }
+
+        .button.sounds {
+            background: rgba(144,238,144,0.6);
+        }
+
+        .buttons {
+            display: flex;
+            gap: 40px;
+            margin: 20px;
+            margin-bottom: 50px;
+            position: fixed;
+            bottom: 20px;
+            z-index: 1000;
+        }
+
+        .lyrics-container {
+            padding: 30px;
+            border-radius: 15px;
+            margin: 20px;
+            width: 80%;
+            min-height: 300px;
+            max-height: 500px;
+            overflow-y: auto;
+            text-align: center;
+            font-size: 1.8em;
+            font-family: "Comic Sans MS", "Comic Sans", cursive;
+            position: fixed;
+            bottom: 250px;
+            color: #ffffff;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+            opacity: 0;
+            transition: opacity 1s ease-in-out;
+        }
+
+        .lyrics-container.visible {
+            opacity: 1;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .lyrics-line {
+            animation: fadeIn 2s ease-out forwards;
+            opacity: 0;
+        }
+
+        /* Bibliotheks-Styles */
+        .library-modal {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 90%;
+            max-width: 1200px;
+            max-height: 90vh;
+            background: transparent;
+            border-radius: 20px;
+            padding: 20px;
+            z-index: 1000;
+            overflow-y: auto;
+        }
+
+        .library-modal h2 {
+            color: #fff;
+            text-align: center;
+            margin-bottom: 20px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+        }
+
+        .close-button {
+            position: absolute;
+            right: 20px;
+            top: 20px;
+            background: transparent;
+            border: none;
+            color: #fff;
+            font-size: 24px;
+            cursor: pointer;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+        }
+
+        .library-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            gap: 15px;
+            padding: 20px;
+        }
+
+        .library-item {
+            background: rgba(255, 255, 0, 0.1);
+            border-radius: 50%;
+            padding: 15px;
+            text-align: center;
+            cursor: pointer;
+            transition: transform 0.3s ease;
+            position: relative;
+            aspect-ratio: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            width: 150px;
+            height: 150px;
+            margin: 0 auto;
+        }
+
+        .library-item:hover {
+            transform: translateY(-5px);
+            background: rgba(255, 255, 0, 0.2);
+        }
+
+        .library-item img {
+            width: 60%;
+            height: auto;
+            border-radius: 50%;
+            margin-bottom: 10px;
+        }
+
+        .library-item h3 {
+            color: #fff;
+            margin: 5px 0;
+            font-size: 1.2em;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+        }
+
+        .download-status {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: rgba(0, 0, 0, 0.7);
+            color: white;
+            padding: 5px 10px;
+            border-radius: 15px;
+            font-size: 0.8em;
+            cursor: pointer;
+        }
+
+        .download-status.downloading {
+            background: #FFC107;
+        }
+
+        .download-status.completed {
+            background: #4CAF50;
+        }
+
+        .download-progress {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 0%;
+            height: 4px;
+            background: #4CAF50;
+            transition: width 0.3s ease;
+            border-radius: 0 0 15px 15px;
+        }
+
+        .offline-badge {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            background: #4CAF50;
+            color: white;
+            padding: 5px 10px;
+            border-radius: 15px;
+            font-size: 0.8em;
+        }
+
+        /* Download-Dialog Styles */
+        .download-dialog {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(255, 255, 0, 0.1);
+            padding: 15px;
+            border-radius: 15px;
+            text-align: center;
+            z-index: 2;
+            backdrop-filter: blur(5px);
+        }
+
+        .download-dialog h4 {
+            color: #fff;
+            margin: 0 0 10px 0;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+        }
+
+        .download-dialog p {
+            color: #fff;
+            margin: 0 0 15px 0;
+            font-size: 0.9em;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+        }
+
+        .download-dialog button {
+            background: rgba(255, 255, 0, 0.3);
+            color: #fff;
+            border: none;
+            padding: 8px 15px;
+            margin: 0 5px;
+            border-radius: 15px;
+            cursor: pointer;
+            transition: background 0.3s ease;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+        }
+
+        .download-dialog button:hover {
+            background: rgba(255, 255, 0, 0.5);
+        }
+
+        .download-status {
+            color: #fff;
+            font-size: 0.9em;
+            margin-top: 5px;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+        }
+
+        .download-progress {
+            width: 80%;
+            height: 4px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 2px;
+            margin: 5px auto;
+            overflow: hidden;
+        }
+
+        .download-progress .progress {
+            width: 0%;
+            height: 100%;
+            background: rgba(255, 255, 0, 0.5);
+            border-radius: 2px;
+            transition: width 0.3s ease;
+        }
+
+        /* Player Controls Styles */
+        .player-controls {
+            background: transparent;
+            padding: 5px;
+            margin-top: 5px;
+            text-align: center;
+            display: none;
+        }
+
+        /* Zeige Controls nur wenn heruntergeladen */
+        .library-item[data-downloaded="true"] .player-controls {
+            display: block;
+        }
+
+        /* Verstecke Download-Status wenn heruntergeladen */
+        .library-item[data-downloaded="true"] .download-status {
+            display: none;
+        }
+
+        .library-item[data-downloaded="true"] .download-progress {
+            display: none;
+        }
+
+        .player-controls button {
+            background: rgba(255, 255, 0, 0.3);
+            color: #333;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 15px;
+            cursor: pointer;
+            margin: 0;
+            font-size: 0.9em;
+            transition: background 0.3s ease;
+        }
+
+        .player-controls button:hover {
+            background: rgba(255, 255, 0, 0.5);
+        }
+
+        .progress-bar {
+            width: 80%;
+            height: 4px;
+            background: rgba(255, 255, 0, 0.2);
+            border-radius: 2px;
+            margin: 5px auto;
+            cursor: pointer;
+        }
+
+        .progress-bar .progress {
+            width: 0%;
+            height: 100%;
+            background: rgba(255, 255, 0, 0.5);
+            border-radius: 2px;
+            transition: width 0.1s linear;
+        }
+
+        .time {
+            font-size: 0.8em;
+            margin: 3px 0;
+            color: #fff;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+        }
+    </style>
+</head>
+<body>
+    <h1>Lars vom Mars</h1>
+
+    <button class="button login-button" onclick="showModal('loginModal')">Eltern<br>Login</button>
+    
+    <div class="modal-background" id="modalBackground"></div>
+    
+    <div class="modal" id="loginModal">
+        <h2>Eltern Login</h2>
+        <p>Dieser Bereich wird vorbereitet...</p>
+        <button onclick="closeModal('loginModal')">Schließen</button>
+    </div>
+
+    <div class="lyrics-container"></div>
+
+    <div class="buttons">
+        <button class="button audiobook" onclick="handleButtonClick('audiobook')">Hörbuch</button>
+        <button class="button video" onclick="handleButtonClick('video')">Video</button>
+        <button class="button music" onclick="handleButtonClick('music')">Musik</button>
+        <button class="button sounds" onclick="handleButtonClick('sounds')">Action</button>
+    </div>
+
+    <!-- Hörbuch-Bibliothek -->
+    <div class="library-modal" id="audiobookModal">
+        <button class="close-button" onclick="closeModal('audiobookModal')">×</button>
+        <h2>Hörbuch-Bibliothek</h2>
+        <div class="library-grid">
+            <div class="library-item" onclick="handleAudiobook('kapitel1')" data-media-id="kapitel1">
+                <img src="images/chapter1.jpg" alt="1">
+                <div class="download-status">Herunterladen</div>
+                <div class="download-progress"></div>
+                <h3>1</h3>
+                <div class="download-dialog" style="display: none;">
+                    <h4>Kapitel herunterladen?</h4>
+                    <p>Möchtest du dieses Kapitel für die Offline-Nutzung herunterladen?</p>
+                    <button class="download-button" onclick="event.stopPropagation(); startDownload('kapitel1', 'audiobook')">Ja</button>
+                    <button class="cancel-button" onclick="event.stopPropagation(); hideDownloadDialog('kapitel1')">Nein</button>
+                </div>
+                <div class="player-controls">
+                    <div class="progress-bar">
+                        <div class="progress"></div>
+                    </div>
+                    <div class="time">
+                        <span class="current">0:00</span> / <span class="duration">0:00</span>
+                    </div>
+                    <button onclick="event.stopPropagation(); togglePlay('kapitel1', 'audio')" class="play-pause">Play</button>
+                </div>
+            </div>
+            <!-- Wiederhole für Kapitel 2-10 mit angepassten IDs -->
+            <div class="library-item" onclick="handleAudiobook('kapitel2')" data-media-id="kapitel2">
+                <img src="images/chapter2.jpg" alt="2">
+                <div class="download-status">Herunterladen</div>
+                <div class="download-progress"></div>
+                <h3>2</h3>
+                <div class="download-dialog" style="display: none;">
+                    <h4>Kapitel herunterladen?</h4>
+                    <p>Möchtest du dieses Kapitel für die Offline-Nutzung herunterladen?</p>
+                    <button class="download-button" onclick="event.stopPropagation(); startDownload('kapitel2', 'audiobook')">Ja</button>
+                    <button class="cancel-button" onclick="event.stopPropagation(); hideDownloadDialog('kapitel2')">Nein</button>
+                </div>
+                <div class="player-controls">
+                    <div class="progress-bar">
+                        <div class="progress"></div>
+                    </div>
+                    <div class="time">
+                        <span class="current">0:00</span> / <span class="duration">0:00</span>
+                    </div>
+                    <button onclick="event.stopPropagation(); togglePlay('kapitel2', 'audio')" class="play-pause">Play</button>
+                </div>
+            </div>
+            <div class="library-item" onclick="handleAudiobook('kapitel3')" data-media-id="kapitel3">
+                <img src="images/chapter3.jpg" alt="3">
+                <h3>3</h3>
+            </div>
+            <div class="library-item" onclick="handleAudiobook('kapitel4')" data-media-id="kapitel4">
+                <img src="images/chapter4.jpg" alt="4">
+                <h3>4</h3>
+            </div>
+            <div class="library-item" onclick="handleAudiobook('kapitel5')" data-media-id="kapitel5">
+                <img src="images/chapter5.jpg" alt="5">
+                <h3>5</h3>
+            </div>
+            <div class="library-item" onclick="handleAudiobook('kapitel6')" data-media-id="kapitel6">
+                <img src="images/chapter6.jpg" alt="6">
+                <h3>6</h3>
+            </div>
+            <div class="library-item" onclick="handleAudiobook('kapitel7')" data-media-id="kapitel7">
+                <img src="images/chapter7.jpg" alt="7">
+                <h3>7</h3>
+            </div>
+            <div class="library-item" onclick="handleAudiobook('kapitel8')" data-media-id="kapitel8">
+                <img src="images/chapter8.jpg" alt="8">
+                <h3>8</h3>
+            </div>
+            <div class="library-item" onclick="handleAudiobook('kapitel9')" data-media-id="kapitel9">
+                <img src="images/chapter9.jpg" alt="9">
+                <h3>9</h3>
+            </div>
+            <div class="library-item" onclick="handleAudiobook('kapitel10')" data-media-id="kapitel10">
+                <img src="images/chapter10.jpg" alt="10">
+                <h3>10</h3>
+            </div>
+        </div>
+    </div>
+
+    <!-- Video-Bibliothek -->
+    <div class="library-modal" id="videoModal">
+        <button class="close-button" onclick="closeModal('videoModal')">×</button>
+        <h2>Video-Bibliothek</h2>
+        <div class="library-grid">
+            <div class="library-item" onclick="handleVideo('video1')" data-media-id="video1">
+                <img src="images/video1.jpg" alt="Video 1">
+                <div class="download-status">Herunterladen</div>
+                <div class="download-progress"></div>
+                <h3>Lars vom Mars: Die Animation</h3>
+                <div class="download-dialog" style="display: none;">
+                    <h4>Video herunterladen?</h4>
+                    <p>Möchtest du dieses Video für die Offline-Nutzung herunterladen?</p>
+                    <button class="download-button" onclick="event.stopPropagation(); startDownload('video1', 'video')">Ja, herunterladen</button>
+                    <button class="cancel-button" onclick="event.stopPropagation(); hideDownloadDialog('video1')">Abbrechen</button>
+                </div>
+                <div class="player-controls">
+                    <div class="progress-bar">
+                        <div class="progress"></div>
+                    </div>
+                    <div class="time">
+                        <span class="current">0:00</span> / <span class="duration">0:00</span>
+                    </div>
+                    <button onclick="event.stopPropagation(); togglePlay('video1', 'video')" class="play-pause">Play</button>
+                    <button onclick="event.stopPropagation(); stopPlay('video1', 'video')">Stop</button>
+                </div>
+            </div>
+            <div class="library-item" onclick="handleVideo('video2')" data-media-id="video2">
+                <img src="images/video2.jpg" alt="Video 2">
+                <div class="download-status">Herunterladen</div>
+                <div class="download-progress"></div>
+                <h3>Lars vom Mars: Das Musikvideo</h3>
+                <div class="download-dialog" style="display: none;">
+                    <h4>Video herunterladen?</h4>
+                    <p>Möchtest du dieses Video für die Offline-Nutzung herunterladen?</p>
+                    <button class="download-button" onclick="event.stopPropagation(); startDownload('video2', 'video')">Ja, herunterladen</button>
+                    <button class="cancel-button" onclick="event.stopPropagation(); hideDownloadDialog('video2')">Abbrechen</button>
+                </div>
+                <div class="player-controls">
+                    <div class="progress-bar">
+                        <div class="progress"></div>
+                    </div>
+                    <div class="time">
+                        <span class="current">0:00</span> / <span class="duration">0:00</span>
+                    </div>
+                    <button onclick="event.stopPropagation(); togglePlay('video2', 'video')" class="play-pause">Play</button>
+                    <button onclick="event.stopPropagation(); stopPlay('video2', 'video')">Stop</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Audio-Variablen initialisieren
+        let audioPlayer = null;
+        let isPlaying = false;
+
+        // Button-Klick-Handler
+        function handleButtonClick(type) {
+            if (type === 'music') {
+                toggleMusic();
+            } else if (type === 'sounds') {
+                playQuackSound();
+            } else if (type === 'audiobook') {
+                showModal('audiobookModal');
+            } else if (type === 'video') {
+                showModal('videoModal');
+            }
+        }
+
+        function toggleMusic() {
+            if (!audioPlayer) {
+                audioPlayer = new Audio('lars_vom_mars_song.wav');
+            }
+            
+            if (isPlaying) {
+                audioPlayer.pause();
+                audioPlayer.currentTime = 0;
+                isPlaying = false;
+                document.querySelector('.lyrics-container').textContent = '';
+                document.querySelector('.lyrics-container').classList.remove('visible');
+                if (window.timeouts) {
+                    window.timeouts.forEach(timeout => clearTimeout(timeout));
+                }
+            } else {
+                audioPlayer.play().catch(error => {
+                    console.error('Fehler beim Abspielen:', error);
+                });
+                isPlaying = true;
+                window.timeouts = [];
+
+                const container = document.querySelector('.lyrics-container');
+                container.innerHTML = '';
+                container.classList.add('visible');
+
+                // Verse 1 (nach 10 Sekunden)
+                window.timeouts.push(setTimeout(() => {
+                    const lines = [
+                        "In stummen Nächten singt Lars, der Frosch allein.",
+                        "Er schwingt auf seinen Träumen, sehnt sich nach daheim,",
+                        "In ferner Stille, hallt leise sein Gesang,",
+                        "Ein Lied von Wüsten, die einst nach Heimat klang."
+                    ];
+                    
+                    container.innerHTML = '';
+                    lines.forEach((line, index) => {
+                        const div = document.createElement('div');
+                        div.textContent = line;
+                        div.className = 'lyrics-line';
+                        div.style.animationDelay = `${index * 4.0}s`;
+                        container.appendChild(div);
+                    });
+                }, 10000));
+
+                // Chorus 1 (nach 36 Sekunden)
+                window.timeouts.push(setTimeout(() => {
+                    const lines = [
+                        "Lars vom Mars, Lars vom Mars,",
+                        "sein Herz so groß, sein Blick so klar.",
+                        "Er singt vom roten Staub der Ewigkeit,",
+                        "träumt von Heimat, doch die bleibt so weit."
+                    ];
+                    
+                    container.innerHTML = '';
+                    lines.forEach((line, index) => {
+                        const div = document.createElement('div');
+                        div.textContent = line;
+                        div.className = 'lyrics-line';
+                        div.style.animationDelay = `${index * 4.0}s`;
+                        container.appendChild(div);
+                    });
+                }, 36000));
+
+                // Verse 2 (nach 56 Sekunden)
+                window.timeouts.push(setTimeout(() => {
+                    const lines = [
+                        "Sein Lied fliegt durch die Stürme aus feurigem Sand,",
+                        "verloren in den Dünen, in einem fremden Land.",
+                        "Die Krater sind wie Narben, gezeichnet vom All,",
+                        "und Lars fragt den Himmel: Wann endet mein Fall?"
+                    ];
+                    
+                    container.innerHTML = '';
+                    lines.forEach((line, index) => {
+                        const div = document.createElement('div');
+                        div.textContent = line;
+                        div.className = 'lyrics-line';
+                        div.style.animationDelay = `${index * 4.0}s`;
+                        container.appendChild(div);
+                    });
+                }, 56000));
+
+                // Chorus 2 (nach 84 Sekunden)
+                window.timeouts.push(setTimeout(() => {
+                    const lines = [
+                        "Lars vom Mars, Lars vom Mars,",
+                        "sein Herz so groß, sein Blick so klar.",
+                        "Er singt vom roten Staub der Ewigkeit,",
+                        "träumt von Heimat, doch die bleibt so weit."
+                    ];
+                    
+                    container.innerHTML = '';
+                    lines.forEach((line, index) => {
+                        const div = document.createElement('div');
+                        div.textContent = line;
+                        div.className = 'lyrics-line';
+                        div.style.animationDelay = `${index * 4.0}s`;
+                        container.appendChild(div);
+                    });
+                }, 84000));
+
+                // Bridge (nach 102 Sekunden)
+                window.timeouts.push(setTimeout(() => {
+                    const lines = [
+                        "Vielleicht hört ihn der Wind, der vom Olymp weht,",
+                        "vielleicht singt er für Sterne, die niemand je versteht.",
+                        "Vielleicht trägt ihn der Traum durch die Unendlichkeit,",
+                        "bis jemand ruft: Lars, es ist soweit!"
+                    ];
+                    
+                    container.innerHTML = '';
+                    lines.forEach((line, index) => {
+                        const div = document.createElement('div');
+                        div.textContent = line;
+                        div.className = 'lyrics-line';
+                        div.style.animationDelay = `${index * 4.0}s`;
+                        container.appendChild(div);
+                    });
+                }, 102000));
+
+                // Chorus Outro (nach 132 Sekunden)
+                window.timeouts.push(setTimeout(() => {
+                    const lines = [
+                        "Lars vom Mars, Lars vom Mars,",
+                        "sein Herz so groß, sein Blick so klar.",
+                        "Er singt vom roten Staub der Ewigkeit,",
+                        "träumt von Heimat, doch die bleibt so weit."
+                    ];
+                    
+                    container.innerHTML = '';
+                    lines.forEach((line, index) => {
+                        const div = document.createElement('div');
+                        div.textContent = line;
+                        div.className = 'lyrics-line';
+                        div.style.animationDelay = `${index * 4.0}s`;
+                        container.appendChild(div);
+                    });
+                }, 132000));
+            }
+        }
+
+        function playQuackSound() {
+            const quackSound = new Audio('quack_sound.mp3');
+            quackSound.play().catch(error => {
+                console.error('Fehler beim Abspielen:', error);
+            });
+        }
+
+        function showModal(modalId) {
+            const modal = document.getElementById(modalId);
+            modal.style.display = 'block';
+            document.getElementById('modalBackground').style.display = 'block';
+        }
+
+        function closeModal(modalId) {
+            const modal = document.getElementById(modalId);
+            modal.style.display = 'none';
+            document.getElementById('modalBackground').style.display = 'none';
+        }
+
+        // Download-System
+        const downloadedMedia = {
+            audiobooks: {},
+            videos: {}
+        };
+
+        // IndexedDB für Offline-Speicherung einrichten
+        let db;
+        const request = indexedDB.open('LarsVomMarsDB', 1);
+
+        request.onerror = (event) => {
+            console.error('Datenbank-Fehler:', event.target.error);
+        };
+
+        request.onupgradeneeded = (event) => {
+            db = event.target.result;
+            if (!db.objectStoreNames.contains('media')) {
+                db.createObjectStore('media', { keyPath: 'id' });
+            }
+        };
+
+        request.onsuccess = (event) => {
+            db = event.target.result;
+            loadOfflineMedia();
+        };
+
+        function loadOfflineMedia() {
+            const transaction = db.transaction(['media'], 'readonly');
+            const store = transaction.objectStore('media');
+            const request = store.getAll();
+
+            request.onsuccess = () => {
+                const media = request.result;
+                media.forEach(item => {
+                    if (item.type === 'audiobook') {
+                        downloadedMedia.audiobooks[item.id] = item;
+                    } else {
+                        downloadedMedia.videos[item.id] = item;
+                    }
+                    const mediaItem = document.querySelector(`[data-media-id="${item.id}"]`);
+                    if (mediaItem) {
+                        mediaItem.setAttribute('data-downloaded', 'true');
+                        const controls = mediaItem.querySelector('.player-controls');
+                        if (controls) {
+                            controls.style.display = 'block';
+                        }
+                    }
+                    updateMediaStatus(item.id, true);
+                });
+            };
+        }
+
+        function downloadMedia(mediaId, type) {
+            const statusElement = document.querySelector(`[data-media-id="${mediaId}"] .download-status`);
+            const progressBar = document.querySelector(`[data-media-id="${mediaId}"] .download-progress`);
+            
+            if (!statusElement || !progressBar) return;
+
+            statusElement.textContent = 'Wird heruntergeladen...';
+            statusElement.classList.add('downloading');
+
+            // Lade die Lars_Hörbuch.mp4 als Test
+            fetch('Lars_Hörbuch.mp4')
+                .then(response => response.blob())
+                .then(blob => {
+                    // Simuliere Download-Progress
+                    let progress = 0;
+                    const interval = setInterval(() => {
+                        progress += 5;
+                        progressBar.style.width = `${progress}%`;
+
+                        if (progress >= 100) {
+                            clearInterval(interval);
+                            completeDownload(mediaId, type, blob);
+                        }
+                    }, 200);
+                })
+                .catch(error => {
+                    console.error('Download-Fehler:', error);
+                    statusElement.textContent = 'Fehler beim Download';
+                    statusElement.style.background = '#ff0000';
+                });
+        }
+
+        function completeDownload(mediaId, type, blob) {
+            const mediaData = {
+                id: mediaId,
+                type: type,
+                timestamp: Date.now(),
+                data: blob
+            };
+
+            // Speichere in IndexedDB
+            const transaction = db.transaction(['media'], 'readwrite');
+            const store = transaction.objectStore('media');
+            store.put(mediaData);
+
+            // Update UI
+            if (type === 'audiobook') {
+                downloadedMedia.audiobooks[mediaId] = mediaData;
+            } else {
+                downloadedMedia.videos[mediaId] = mediaData;
+            }
+
+            const item = document.querySelector(`[data-media-id="${mediaId}"]`);
+            if (item) {
+                item.setAttribute('data-downloaded', 'true');
+                const controls = item.querySelector('.player-controls');
+                if (controls) {
+                    controls.style.display = 'block';
+                }
+            }
+            updateMediaStatus(mediaId, true);
+        }
+
+        function updateMediaStatus(mediaId, isDownloaded) {
+            const statusElement = document.querySelector(`[data-media-id="${mediaId}"] .download-status`);
+            if (!statusElement) return;
+
+            if (isDownloaded) {
+                statusElement.textContent = 'Offline verfügbar';
+                statusElement.classList.remove('downloading');
+                statusElement.classList.add('completed');
+            } else {
+                statusElement.textContent = 'Herunterladen';
+                statusElement.classList.remove('downloading', 'completed');
+            }
+        }
+
+        // Bibliotheks-Funktionen
+        function handleAudiobook(chapterId) {
+            const isDownloaded = downloadedMedia.audiobooks[chapterId];
+            if (!isDownloaded) {
+                showDownloadDialog(chapterId);
+            }
+            // Kein automatisches Abspielen mehr
+        }
+
+        function handleVideo(videoId) {
+            const isDownloaded = downloadedMedia.videos[videoId];
+            if (!isDownloaded) {
+                showDownloadDialog(videoId);
+            }
+            // Kein automatisches Abspielen mehr
+        }
+
+        function playMedia(mediaId, type) {
+            const mediaData = type === 'audiobook' ? 
+                downloadedMedia.audiobooks[mediaId] : 
+                downloadedMedia.videos[mediaId];
+
+            if (!mediaData) return;
+
+            const mediaUrl = mediaData.url || 'Lars_Hörbuch.mp4';
+            const controls = document.querySelector(`[data-media-id="${mediaId}"] .player-controls`);
+            controls.style.display = 'block';
+
+            if (type === 'audiobook') {
+                if (!audioPlayer) {
+                    audioPlayer = new Audio(mediaUrl);
+                } else {
+                    audioPlayer.src = mediaUrl;
+                }
+                
+                audioPlayer.play().catch(error => {
+                    console.error('Fehler beim Abspielen:', error);
+                });
+            } else {
+                const videoModal = document.getElementById('videoModal');
+                const videoPlayer = document.createElement('video');
+                videoPlayer.src = mediaUrl;
+                videoPlayer.style.width = '100%';
+                videoPlayer.style.maxWidth = '800px';
+                videoPlayer.style.marginTop = '20px';
+                
+                const oldVideo = videoModal.querySelector('video');
+                if (oldVideo) {
+                    oldVideo.remove();
+                }
+                
+                videoModal.appendChild(videoPlayer);
+                videoPlayer.play().catch(error => {
+                    console.error('Fehler beim Abspielen:', error);
+                });
+            }
+        }
+
+        function showDownloadDialog(mediaId) {
+            const item = document.querySelector(`[data-media-id="${mediaId}"]`);
+            if (!item) return;
+            
+            const dialog = item.querySelector('.download-dialog');
+            if (dialog) {
+                dialog.style.display = 'block';
+            }
+        }
+
+        function hideDownloadDialog(mediaId) {
+            const item = document.querySelector(`[data-media-id="${mediaId}"]`);
+            if (!item) return;
+            
+            const dialog = item.querySelector('.download-dialog');
+            if (dialog) {
+                dialog.style.display = 'none';
+            }
+        }
+
+        function startDownload(mediaId, type) {
+            hideDownloadDialog(mediaId);
+            
+            const statusElement = document.querySelector(`[data-media-id="${mediaId}"] .download-status`);
+            const progressBar = document.querySelector(`[data-media-id="${mediaId}"] .download-progress`);
+            
+            if (!statusElement || !progressBar) return;
+
+            statusElement.textContent = 'Wird heruntergeladen...';
+            statusElement.classList.add('downloading');
+
+            // Erstelle einen Download-Link
+            const link = document.createElement('a');
+            link.href = 'Lars_Hörbuch.mp4';
+            link.download = `Lars_${mediaId}.mp4`;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+
+            // Simuliere Download-Progress
+            let progress = 0;
+            const interval = setInterval(() => {
+                progress += 5;
+                progressBar.style.width = `${progress}%`;
+
+                if (progress >= 100) {
+                    clearInterval(interval);
+                    completeDownload(mediaId, type);
+                }
+            }, 200);
+        }
+
+        // Modifiziertes Player-System
+        const mediaPlayers = {
+            audio: {},
+            video: {}
+        };
+
+        function updateProgress(mediaId, type) {
+            const player = mediaPlayers[type][mediaId];
+            if (!player) return;
+
+            const item = document.querySelector(`[data-media-id="${mediaId}"]`);
+            const controls = item.querySelector('.player-controls');
+            const progressBar = controls.querySelector('.progress');
+            const currentTime = controls.querySelector('.current');
+            const duration = controls.querySelector('.duration');
+            
+            if (player.duration) {
+                const progress = (player.currentTime / player.duration) * 100;
+                progressBar.style.width = `${progress}%`;
+                currentTime.textContent = formatTime(player.currentTime);
+                duration.textContent = formatTime(player.duration);
+            }
+        }
+
+        function togglePlay(mediaId, type) {
+            const player = mediaPlayers[type][mediaId];
+            const item = document.querySelector(`[data-media-id="${mediaId}"]`);
+            const playPauseBtn = item.querySelector('.play-pause');
+
+            if (!player) {
+                // Erstelle neuen Player
+                const mediaData = type === 'audio' ? 
+                    downloadedMedia.audiobooks[mediaId] : 
+                    downloadedMedia.videos[mediaId];
+
+                if (!mediaData) return;
+
+                const mediaUrl = mediaData.url || 'Lars_Hörbuch.mp4';
+                mediaPlayers[type][mediaId] = new Audio(mediaUrl);
+                mediaPlayers[type][mediaId].addEventListener('timeupdate', () => updateProgress(mediaId, type));
+            }
+
+            if (mediaPlayers[type][mediaId].paused) {
+                mediaPlayers[type][mediaId].play();
+                playPauseBtn.textContent = 'Pause';
+                playPauseBtn.classList.add('pause');
+            } else {
+                mediaPlayers[type][mediaId].pause();
+                playPauseBtn.textContent = 'Play';
+                playPauseBtn.classList.remove('pause');
+            }
+        }
+
+        function stopPlay(mediaId, type) {
+            const player = mediaPlayers[type][mediaId];
+            if (!player) return;
+
+            const item = document.querySelector(`[data-media-id="${mediaId}"]`);
+            const playPauseBtn = item.querySelector('.play-pause');
+
+            player.pause();
+            player.currentTime = 0;
+            playPauseBtn.textContent = 'Play';
+            playPauseBtn.classList.remove('pause');
+        }
+
+        function completeDownload(mediaId, type) {
+            const mediaData = {
+                id: mediaId,
+                type: type,
+                timestamp: Date.now(),
+                url: 'Lars_Hörbuch.mp4'  // Später: tatsächliche URL
+            };
+
+            // Speichere in IndexedDB
+            const transaction = db.transaction(['media'], 'readwrite');
+            const store = transaction.objectStore('media');
+            store.put(mediaData);
+
+            // Update UI
+            if (type === 'audiobook') {
+                downloadedMedia.audiobooks[mediaId] = mediaData;
+            } else {
+                downloadedMedia.videos[mediaId] = mediaData;
+            }
+
+            const item = document.querySelector(`[data-media-id="${mediaId}"]`);
+            item.setAttribute('data-downloaded', 'true');
+            const controls = item.querySelector('.player-controls');
+            if (controls) {
+                controls.style.display = 'block';
+            }
+            updateMediaStatus(mediaId, true);
+        }
+
+        function formatTime(seconds) {
+            const minutes = Math.floor(seconds / 60);
+            seconds = Math.floor(seconds % 60);
+            return `${minutes}:${seconds.toString().padStart(2, '0')}`;
+        }
+
+        // Event-Listener für Modal-Schließen
+        function closeModal(modalId) {
+            document.getElementById(modalId).style.display = 'none';
+            document.getElementById('modalBackground').style.display = 'none';
+            
+            // Stoppe Medien beim Schließen
+            if (modalId === 'audiobookModal' && audioPlayer) {
+                stopPlay('audio');
+                document.getElementById('audioControls').style.display = 'none';
+            } else if (modalId === 'videoModal' && videoPlayer) {
+                stopPlay('video');
+                document.getElementById('videoControls').style.display = 'none';
+            }
+        }
+
+        // Event-Listener für Klick außerhalb der Modals
+        document.getElementById('modalBackground').onclick = function() {
+            closeModal('audiobookModal');
+            closeModal('videoModal');
+            closeModal('loginModal');
+        };
+    </script>
+</body>
+</html>
