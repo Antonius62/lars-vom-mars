@@ -170,18 +170,14 @@
         /* Lyrics Container */
         .lyrics-container {
             position: fixed;
-            bottom: 180px;
+            top: 50%;
             left: 50%;
-            transform: translateX(-50%);
-            width: 90%;
-            max-width: 800px;
-            height: auto;
-            min-height: 120px;
-            padding: 20px;
+            transform: translate(-50%, -50%);
             text-align: center;
-            background: transparent;
-            z-index: 999;
+            font-size: 24px;
+            color: #4682B4; /* Mittelblau */
             display: none;
+            background: transparent;
         }
 
         .lyrics-line {
@@ -211,7 +207,7 @@
 
         @media (max-width: 768px) {
             .lyrics-container {
-                bottom: 150px;
+                top: 40%;
                 padding: 15px;
                 min-height: 100px;
             }
@@ -264,7 +260,7 @@
                     const div = document.createElement('div');
                     div.textContent = line;
                     lyricsContainer.appendChild(div);
-                }, startTime + (index * 2000))); // 2 Sekunden Verzögerung zwischen den Zeilen
+                }, startTime + (index * 4000))); // 4 Sekunden Verzögerung zwischen den Zeilen
             });
         }
 
