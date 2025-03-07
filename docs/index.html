@@ -167,7 +167,7 @@
         /* Lyrics Container */
         .lyrics-container {
             position: fixed;
-            bottom: 150px;  
+            bottom: 150px;
             left: 50%;
             transform: translateX(-50%);
             width: 80%;
@@ -202,24 +202,38 @@
         .lyrics-line {
             opacity: 0;
             animation: fadeInUp 1s ease-out forwards;
-            margin: 10px 0;
-            padding: 5px 20px;
-            border-radius: 10px;
-            background: rgba(0,0,0,0.3);
+            margin: 8px 0;
+            padding: 5px;
+            line-height: 1.3;
+            font-family: "Comic Sans MS", "Comic Sans", cursive;
+            font-size: 1.2em;
+            color: #ffffff;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.7);
         }
 
         /* Verzögerung für jede Zeile */
         .lyrics-line:nth-child(1) { animation-delay: 0.5s; }
-        .lyrics-line:nth-child(2) { animation-delay: 1.5s; }
-        .lyrics-line:nth-child(3) { animation-delay: 2.5s; }
-        .lyrics-line:nth-child(4) { animation-delay: 3.5s; }
-        .lyrics-line:nth-child(5) { animation-delay: 4.5s; }
+        .lyrics-line:nth-child(2) { animation-delay: 1.0s; }
+        .lyrics-line:nth-child(3) { animation-delay: 1.5s; }
+        .lyrics-line:nth-child(4) { animation-delay: 2.0s; }
+        .lyrics-line:nth-child(5) { animation-delay: 2.5s; }
+        .lyrics-line:nth-child(6) { animation-delay: 3.0s; }
+        .lyrics-line:nth-child(7) { animation-delay: 3.5s; }
+        .lyrics-line:nth-child(8) { animation-delay: 4.0s; }
+        .lyrics-line:nth-child(9) { animation-delay: 4.5s; }
+        .lyrics-line:nth-child(10) { animation-delay: 5.0s; }
+        .lyrics-line:nth-child(11) { animation-delay: 5.5s; }
+        .lyrics-line:nth-child(12) { animation-delay: 6.0s; }
 
         @media (max-width: 768px) {
             .lyrics-container {
                 font-size: 1.4em;
                 bottom: 120px;
                 padding: 20px;
+            }
+            .lyrics-line {
+                font-size: 1em;
+                margin: 6px 0;
             }
         }
     </style>
@@ -259,11 +273,18 @@
         const lyricsContainer = document.querySelector('.lyrics-container');
         
         const lyrics = [
-            "Lars vom Mars, unser Freund aus dem All",
-            "Kommt zu uns auf die Erde, besucht uns überall",
-            "Mit seinem Raumschiff fliegt er durch Zeit und Raum",
-            "Erlebt Abenteuer, es ist wie ein Traum",
-            "Lars vom Mars, Lars vom Mars, komm und flieg mit uns!"
+            "Kommt zu uns auf die",
+            "Erde, besucht uns überall",
+            "Lars vom Mars, unser",
+            "Freund aus dem All",
+            "Mit seinem Raumschiff",
+            "fliegt er durch Zeit und",
+            "Raum",
+            "Erlebt Abenteuer,",
+            "es ist wie ein Traum",
+            "Lars vom Mars,",
+            "Lars vom Mars,",
+            "komm und flieg mit uns!"
         ];
 
         function toggleMusic() {
