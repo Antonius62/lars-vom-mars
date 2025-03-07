@@ -173,38 +173,37 @@
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
+            width: 90%;
+            max-width: 800px;
+            height: 200px;
             text-align: center;
             font-size: 24px;
-            color: #4682B4; /* Mittelblau */
+            color: #4682B4;
             display: none;
             background: transparent;
+            overflow: hidden;
+        }
+
+        .lyrics-block {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
         }
 
         .lyrics-line {
             opacity: 0;
-            animation: fadeInUp 1s ease-out forwards;
-            margin: 4px 0;
-            padding: 2px;
-            line-height: 1.2;
-            font-family: 'Montserrat', sans-serif;
-            font-size: 1.1em;
-            font-weight: 400;
-            color: #ffffff;
-            text-shadow: 1px 1px 2px rgba(0,0,0,0.7);
+            animation: fadeIn 0.5s forwards;
+            margin: 5px 0;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
         }
 
         /* Animation für Liedtext-Zeilen */
-        @keyframes fadeInUp {
-            from {
-                opacity: 0;
-                transform: translateY(10px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
         @media (max-width: 768px) {
             .lyrics-container {
                 top: 40%;
@@ -253,92 +252,98 @@
         const lyricsContainer = document.querySelector('.lyrics-container');
         window.timeouts = [];
 
-        function displayLinesWithDelay(lines, startTime) {
-            lyricsContainer.innerHTML = ''; // Container leeren
-            lines.forEach((line, index) => {
-                window.timeouts.push(setTimeout(() => {
-                    const div = document.createElement('div');
-                    div.textContent = line;
-                    lyricsContainer.appendChild(div);
-                }, startTime + (index * 4000))); // 4 Sekunden Verzögerung zwischen den Zeilen
-            });
+        function displayBlock(lines, startTime, nextBlockTime) {
+            window.timeouts.push(setTimeout(() => {
+                const block = document.createElement('div');
+                block.className = 'lyrics-block';
+                lyricsContainer.innerHTML = ''; // Vorherigen Block löschen
+                lyricsContainer.appendChild(block);
+
+                lines.forEach((line, index) => {
+                    window.timeouts.push(setTimeout(() => {
+                        const div = document.createElement('div');
+                        div.className = 'lyrics-line';
+                        div.textContent = line;
+                        block.appendChild(div);
+                    }, index * 4000)); // 4 Sekunden zwischen den Zeilen
+                });
+            }, startTime));
         }
 
         function showLyrics() {
             lyricsContainer.style.display = 'block';
             
-            // Verse 1 (nach 10 Sekunden)
+            // Verse 1 (10 Sekunden)
             const verse1 = [
                 "In stummen Nächten singt Lars, der Frosch allein,",
                 "Er schwingt auf seinen Träumen, sehnt sich nach daheim,",
                 "In ferner Stille, hallt leise sein Gesang,",
                 "Ein Lied von Wüsten, die einst nach Heimat klang."
             ];
-            displayLinesWithDelay(verse1, 10000);
+            displayBlock(verse1, 10000);
 
-            // Chorus 1 (nach 36 Sekunden)
+            // Chorus 1 (36 Sekunden)
             const chorus1 = [
                 "Lars vom Mars, Lars vom Mars,",
                 "sein Herz so groß, sein Blick so klar.",
                 "Er singt vom roten Staub der Ewigkeit,",
                 "träumt von Heimat, doch die bleibt so weit."
             ];
-            displayLinesWithDelay(chorus1, 36000);
+            displayBlock(chorus1, 36000);
 
-            // Verse 2 (nach 56 Sekunden)
+            // Verse 2 (56 Sekunden)
             const verse2 = [
                 "Sein Lied fliegt durch die Stürme aus feurigem Sand,",
                 "verloren in den Dünen, in einem fremden Land.",
                 "Die Krater sind wie Narben, gezeichnet vom All,",
                 "und Lars fragt den Himmel: Wann endet mein Fall?"
             ];
-            displayLinesWithDelay(verse2, 56000);
+            displayBlock(verse2, 56000);
 
-            // Chorus 2 (nach 84 Sekunden)
+            // Chorus 2 (84 Sekunden)
             const chorus2 = [
                 "Lars vom Mars, Lars vom Mars,",
                 "sein Herz so groß, sein Blick so klar.",
                 "Er singt vom roten Staub der Ewigkeit,",
                 "träumt von Heimat, doch die bleibt so weit."
             ];
-            displayLinesWithDelay(chorus2, 84000);
+            displayBlock(chorus2, 84000);
 
-            // Bridge (nach 102 Sekunden)
+            // Bridge (102 Sekunden)
             const bridge = [
                 "Vielleicht hört ihn der Wind, der vom Olymp weht,",
                 "vielleicht singt er für Sterne, die niemand je versteht,",
                 "Vielleicht trägt ihn der Traum durch die Unendlichkeit,",
                 "bis jemand ruft: Lars, es ist soweit!"
             ];
-            displayLinesWithDelay(bridge, 102000);
+            displayBlock(bridge, 102000);
 
-            // Chorus Outro (nach 132 Sekunden)
+            // Chorus Outro (132 Sekunden)
             const chorusOutro = [
                 "Lars vom Mars, Lars vom Mars,",
                 "sein Herz so groß, sein Blick so klar.",
                 "Er singt vom roten Staub der Ewigkeit,",
                 "träumt von Heimat, doch die bleibt so weit."
             ];
-            displayLinesWithDelay(chorusOutro, 132000);
+            displayBlock(chorusOutro, 132000);
         }
 
         function hideLyrics() {
             lyricsContainer.style.display = 'none';
-            lyricsContainer.innerHTML = ''; // Text löschen
-            // Clear all timeouts when hiding lyrics
+            lyricsContainer.innerHTML = '';
             window.timeouts.forEach(timeout => clearTimeout(timeout));
             window.timeouts = [];
         }
 
         function toggleMusic() {
             if (!musicPlaying) {
-                song.currentTime = 0; // Zurück zum Start
+                song.currentTime = 0;
                 song.play();
                 musicPlaying = true;
                 showLyrics();
             } else {
                 song.pause();
-                song.currentTime = 0; // Zurück zum Start
+                song.currentTime = 0;
                 musicPlaying = false;
                 hideLyrics();
             }
