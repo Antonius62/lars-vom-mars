@@ -170,15 +170,15 @@
         /* Lyrics Container */
         .lyrics-container {
             position: fixed;
-            top: 50%;
+            bottom: 180px;
             left: 50%;
-            transform: translate(-50%, -50%);
+            transform: translateX(-50%);
             width: 90%;
             max-width: 800px;
-            height: 200px;
+            height: 180px;
             text-align: center;
-            font-size: 24px;
-            color: #4682B4;
+            font-size: 20px;
+            color: #000000;
             display: none;
             background: transparent;
             overflow: hidden;
@@ -190,12 +190,13 @@
             align-items: center;
             justify-content: center;
             height: 100%;
+            line-height: 1.4;
         }
 
         .lyrics-line {
             opacity: 0;
             animation: fadeIn 0.5s forwards;
-            margin: 5px 0;
+            margin: 3px 0;
         }
 
         @keyframes fadeIn {
@@ -203,16 +204,10 @@
             to { opacity: 1; }
         }
 
-        /* Animation für Liedtext-Zeilen */
         @media (max-width: 768px) {
             .lyrics-container {
-                top: 40%;
-                padding: 15px;
-                min-height: 100px;
-            }
-            .lyrics-line {
-                font-size: 0.9em;
-                margin: 3px 0;
+                bottom: 150px;
+                font-size: 18px;
             }
         }
     </style>
