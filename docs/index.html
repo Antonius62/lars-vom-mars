@@ -4,12 +4,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Lars vom Mars</title>
-    <link rel="manifest" href="manifest.json">
+    <link rel="manifest" href="./manifest.json">
     <meta name="theme-color" content="#000000">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black">
     <meta name="apple-mobile-web-app-title" content="Lars vom Mars">
-    <link rel="apple-touch-icon" href="icons/icon-192x192.png">
+    <link rel="apple-touch-icon" href="./Lars_App_Icon.png">
     <style>
         body {
             margin: 0;
@@ -18,12 +18,14 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            background-image: url('mars_background.png');
+            background-image: url('./mars_background.png');
             background-size: cover;
             background-position: center;
+            background-attachment: fixed;
             color: white;
             font-family: Arial, sans-serif;
             position: relative;
+            overflow-x: hidden;
         }
 
         h1 {
@@ -242,28 +244,6 @@
             color: #fff;
             margin: 5px 0;
             font-size: 1.8em;
-            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
-        }
-
-        .download-status, .download-progress {
-            display: none;
-        }
-
-        .library-item[data-downloaded="true"] .download-dialog {
-            display: none;
-        }
-
-        .library-item img {
-            width: 60%;
-            height: auto;
-            border-radius: 50%;
-            margin-bottom: 10px;
-        }
-
-        .library-item h3 {
-            color: #fff;
-            margin: 5px 0;
-            font-size: 1.2em;
             text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
         }
 
@@ -546,6 +526,32 @@
 
         .player-controls button:hover {
             background: rgba(255, 255, 0, 0.5);
+        }
+
+        @media (max-width: 768px) {
+            .buttons {
+                flex-wrap: wrap;
+                justify-content: center;
+                gap: 20px;
+                padding: 10px;
+                bottom: 10px;
+            }
+
+            .button {
+                width: 120px;
+                height: 120px;
+                font-size: 16px;
+            }
+
+            .library-modal {
+                padding: 20px;
+                width: 90%;
+            }
+
+            .library-grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 15px;
+            }
         }
     </style>
 </head>
@@ -1739,7 +1745,7 @@
         // Service Worker Registration
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
-                navigator.serviceWorker.register('/sw.js')
+                navigator.serviceWorker.register('./sw.js')
                     .then(registration => {
                         console.log('ServiceWorker registered:', registration);
                     })
