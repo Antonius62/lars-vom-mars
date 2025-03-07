@@ -255,63 +255,58 @@
         let musicPlaying = false;
         const song = new Audio('./lars_vom_mars_song.wav');
         const lyricsContainer = document.querySelector('.lyrics-container');
-
-        // Verse 1 (nach 10 Sekunden)
-        window.timeouts.push(setTimeout(() => {
-            document.querySelector('.lyrics-container').textContent =
-                "In stummen Nächten singt Lars, der Frosch allein,\n" +
-                "Er schwingt auf seinen Träumen, sehnt sich nach daheim,\n" +
-                "In ferner Stille, hallt leise sein Gesang,\n" +
-                "Ein Lied von Wüsten, die einst nach Heimat klang.";
-        }, 10000));
-
-        // Chorus 1 (nach 36 Sekunden)
-        window.timeouts.push(setTimeout(() => {
-            document.querySelector('.lyrics-container').textContent =
-                "Lars vom Mars, Lars vom Mars,\n" +
-                "sein Herz so groß, sein Blick so klar.\n" +
-                "Er singt vom roten Staub der Ewigkeit,\n" +
-                "träumt von Heimat, doch die bleibt so weit.";
-        }, 36000));
-
-        // Verse 2 (nach 56 Sekunden)
-        window.timeouts.push(setTimeout(() => {
-            document.querySelector('.lyrics-container').textContent =
-                "Sein Lied fliegt durch die Stürme aus feurigem Sand,\n" +
-                "verloren in den Dünen, in einem fremden Land.\n" +
-                "Die Krater sind wie Narben, gezeichnet vom All,\n" +
-                "und Lars fragt den Himmel: Wann endet mein Fall?";
-        }, 56000));
-
-        // Chorus 2 (nach 84 Sekunden)
-        window.timeouts.push(setTimeout(() => {
-            document.querySelector('.lyrics-container').textContent =
-                "Lars vom Mars, Lars vom Mars,\n" +
-                "sein Herz so groß, sein Blick so klar.\n" +
-                "Er singt vom roten Staub der Ewigkeit,\n" +
-                "träumt von Heimat, doch die bleibt so weit.";
-        }, 84000));
-
-        // Bridge (nach 102 Sekunden)
-        window.timeouts.push(setTimeout(() => {
-            document.querySelector('.lyrics-container').textContent =
-                "Vielleicht hört ihn der Wind, der vom Olymp weht,\n" +
-                "vielleicht singt er für Sterne, die niemand je versteht,\n" +
-                "Vielleicht trägt ihn der Traum durch die Unendlichkeit,\n" +
-                "bis jemand ruft: Lars, es ist soweit!";
-        }, 102000));
-
-        // Chorus Outro (nach 132 Sekunden)
-        window.timeouts.push(setTimeout(() => {
-            document.querySelector('.lyrics-container').textContent =
-                "Lars vom Mars, Lars vom Mars,\n" +
-                "sein Herz so groß, sein Blick so klar.\n" +
-                "Er singt vom roten Staub der Ewigkeit,\n" +
-                "träumt von Heimat, doch die bleibt so weit.";
-        }, 132000));
+        window.timeouts = []; // Hier initialisieren wir das Array
 
         function showLyrics() {
             lyricsContainer.style.display = 'block';
+            // Timeouts erstellen
+            window.timeouts.push(setTimeout(() => {
+                lyricsContainer.textContent =
+                    "In stummen Nächten singt Lars, der Frosch allein,\n" +
+                    "Er schwingt auf seinen Träumen, sehnt sich nach daheim,\n" +
+                    "In ferner Stille, hallt leise sein Gesang,\n" +
+                    "Ein Lied von Wüsten, die einst nach Heimat klang.";
+            }, 10000));
+
+            window.timeouts.push(setTimeout(() => {
+                lyricsContainer.textContent =
+                    "Lars vom Mars, Lars vom Mars,\n" +
+                    "sein Herz so groß, sein Blick so klar.\n" +
+                    "Er singt vom roten Staub der Ewigkeit,\n" +
+                    "träumt von Heimat, doch die bleibt so weit.";
+            }, 36000));
+
+            window.timeouts.push(setTimeout(() => {
+                lyricsContainer.textContent =
+                    "Sein Lied fliegt durch die Stürme aus feurigem Sand,\n" +
+                    "verloren in den Dünen, in einem fremden Land.\n" +
+                    "Die Krater sind wie Narben, gezeichnet vom All,\n" +
+                    "und Lars fragt den Himmel: Wann endet mein Fall?";
+            }, 56000));
+
+            window.timeouts.push(setTimeout(() => {
+                lyricsContainer.textContent =
+                    "Lars vom Mars, Lars vom Mars,\n" +
+                    "sein Herz so groß, sein Blick so klar.\n" +
+                    "Er singt vom roten Staub der Ewigkeit,\n" +
+                    "träumt von Heimat, doch die bleibt so weit.";
+            }, 84000));
+
+            window.timeouts.push(setTimeout(() => {
+                lyricsContainer.textContent =
+                    "Vielleicht hört ihn der Wind, der vom Olymp weht,\n" +
+                    "vielleicht singt er für Sterne, die niemand je versteht,\n" +
+                    "Vielleicht trägt ihn der Traum durch die Unendlichkeit,\n" +
+                    "bis jemand ruft: Lars, es ist soweit!";
+            }, 102000));
+
+            window.timeouts.push(setTimeout(() => {
+                lyricsContainer.textContent =
+                    "Lars vom Mars, Lars vom Mars,\n" +
+                    "sein Herz so groß, sein Blick so klar.\n" +
+                    "Er singt vom roten Staub der Ewigkeit,\n" +
+                    "träumt von Heimat, doch die bleibt so weit.";
+            }, 132000));
         }
 
         function hideLyrics() {
