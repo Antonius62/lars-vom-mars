@@ -170,18 +170,16 @@
         /* Lyrics Container */
         .lyrics-container {
             position: fixed;
-            bottom: 180px;  
+            bottom: 180px;
             left: 50%;
             transform: translateX(-50%);
             width: 90%;
             max-width: 800px;
-            height: auto;  
-            min-height: 120px;  
+            height: auto;
+            min-height: 120px;
             padding: 20px;
             text-align: center;
-            background: rgba(0,0,0,0.1);  
-            backdrop-filter: blur(5px);
-            border-radius: 15px;
+            background: transparent;
             z-index: 999;
             display: none;
         }
@@ -265,8 +263,8 @@
         const lyricsContainer = document.querySelector('.lyrics-container');
         
         const lyrics = [
-            "Lars vom Mars, unser Freund aus dem All",
             "Kommt zu uns auf die Erde, besucht uns überall",
+            "Lars vom Mars, unser Freund aus dem All",
             "Mit seinem Raumschiff fliegt er durch Zeit und Raum",
             "Erlebt Abenteuer, es ist wie ein Traum"
         ];
@@ -302,10 +300,22 @@
             }
         }
 
-        // Quack Sound für Action-Button
+        // Quack Sound System
+        let quackPlaying = false;
+        let quackSound = null;
+
         function playQuackSound() {
-            const audio = new Audio('./quack_sound.mp3');
-            audio.play();
+            if (!quackPlaying) {
+                quackSound = new Audio('./quack_sound.mp3');
+                quackSound.play();
+                quackPlaying = true;
+            } else {
+                if (quackSound) {
+                    quackSound.pause();
+                    quackSound.currentTime = 0;
+                }
+                quackPlaying = false;
+            }
         }
 
         // Bibliotheks-System
