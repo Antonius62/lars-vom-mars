@@ -256,29 +256,75 @@
         const song = new Audio('./lars_vom_mars_song.wav');
         const lyricsContainer = document.querySelector('.lyrics-container');
         
-        const lyrics = [
-            "Lars vom Mars, unser Freund aus dem All",
-            "Kommt zu uns auf die Erde, besucht uns überall",
-            "Mit seinem Raumschiff fliegt er durch Zeit und Raum",
-            "Erlebt Abenteuer, es ist wie ein Traum"
+        // Verse 1 (nach 10 Sekunden)
+        const verse1 = [
+            "In stummen Nächten sing",
+            "Er schwingt auf seinen"
+        ];
+
+        // Chorus 1 (nach 36 Sekunden)
+        const chorus1 = [
+            "Lars vom Mars, Lars vom Mars,",
+            "sein Herz so groß, sein Blick so klar.",
+            "Er singt vom roten Staub der Ewigkeit,",
+            "träumt von Heimat, doch die bleibt so weit."
+        ];
+
+        // Verse 2 (nach 56 Sekunden)
+        const verse2 = [
+            "Sein Lied fliegt durch die Stürme aus feurigem Sand,",
+            "verloren in den Dünen, in einem fremden Land.",
+            "Die Krater sind wie Narben, gezeichnet vom All,",
+            "und Lars fragt den Himmel: Wann endet mein Fall?"
+        ];
+
+        // Chorus 2 (nach 84 Sekunden)
+        const chorus2 = [
+            "Lars vom Mars, Lars vom Mars,",
+            "sein Herz so groß, sein Blick so klar.",
+            "Er singt vom roten Staub der Ewigkeit,",
+            "träumt von Heimat, doch die bleibt so weit."
+        ];
+
+        // Bridge (nach 102 Sekunden)
+        const bridge = [
+            "Vielleicht hört ihn der Wind, der vom Olymp weht,",
+            "vielleicht singt er für Sterne, die niemand je ver",
+            "Vielleicht trägt ihn der Traum durch die Unendlich",
+            "bis jemand ruft: Lars, es ist soweit!"
+        ];
+
+        // Chorus Outro (nach 132 Sekunden)
+        const chorusOutro = [
+            "Lars vom Mars, Lars vom Mars,",
+            "sein Herz so groß, sein Blick so klar.",
+            "Er singt vom roten Staub der Ewigkeit,",
+            "träumt von Heimat, doch die bleibt so weit."
         ];
 
         function showLyrics() {
             lyricsContainer.innerHTML = '';
-            // Zeilen nacheinander hinzufügen
-            let currentIndex = 0;
-            const addLine = () => {
-                if (currentIndex < lyrics.length) {
-                    const div = document.createElement('div');
-                    div.className = 'lyrics-line';
-                    div.textContent = lyrics[currentIndex];
-                    lyricsContainer.appendChild(div);
-                    currentIndex++;
-                    setTimeout(addLine, 2000); // 2 Sekunden Verzögerung zwischen den Zeilen
-                }
-            };
+            
+            // Zeitverzögerungen für jeden Teil
+            setTimeout(() => displayLines(verse1), 10000);      // 10 Sekunden
+            setTimeout(() => displayLines(chorus1), 36000);     // 36 Sekunden
+            setTimeout(() => displayLines(verse2), 56000);      // 56 Sekunden
+            setTimeout(() => displayLines(chorus2), 84000);     // 84 Sekunden
+            setTimeout(() => displayLines(bridge), 102000);     // 102 Sekunden
+            setTimeout(() => displayLines(chorusOutro), 132000);// 132 Sekunden
+            
             lyricsContainer.style.display = 'block';
-            addLine();
+        }
+
+        function displayLines(lines) {
+            lyricsContainer.innerHTML = '';
+            lines.forEach((line, index) => {
+                const div = document.createElement('div');
+                div.className = 'lyrics-line';
+                div.textContent = line;
+                div.style.animationDelay = `${index * 4.0}s`;
+                lyricsContainer.appendChild(div);
+            });
         }
 
         function hideLyrics() {
