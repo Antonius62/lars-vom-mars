@@ -104,7 +104,7 @@
             }
         }
 
-        /* Library Modal */
+        /* Library Modals */
         .library-modal {
             display: none;
             position: fixed;
@@ -124,19 +124,20 @@
             display: grid;
             grid-template-columns: repeat(2, 1fr);
             grid-template-rows: repeat(2, 1fr);
-            gap: 20px;
+            gap: 40px;
             padding: 20px;
         }
 
         .library-item {
+            position: relative;
             aspect-ratio: 1;
             border-radius: 50%;
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
+            padding: 20px;
             cursor: pointer;
-            position: relative;
             transition: all 0.3s ease;
             animation: float 3s ease-in-out infinite;
         }
@@ -149,46 +150,70 @@
             background: rgba(173, 216, 230, 0.3);
         }
 
-        .library-item.downloaded {
-            border: 3px solid #4CAF50;
-            box-shadow: 0 0 15px rgba(76, 175, 80, 0.5);
-        }
-
         .library-item-title {
             color: white;
             text-align: center;
-            font-size: 16px;
-            margin-bottom: 10px;
+            font-size: 18px;
+            margin-bottom: 15px;
             text-shadow: 1px 1px 2px rgba(0,0,0,0.8);
         }
 
         .library-item-controls {
             display: flex;
-            flex-direction: column;
-            align-items: center;
             gap: 10px;
+            margin-top: 10px;
         }
 
-        .play-button, .download-button {
-            width: 40px;
-            height: 40px;
+        .play-button {
+            width: 50px;
+            height: 50px;
             border-radius: 50%;
             border: none;
+            background: rgba(255, 255, 255, 0.9);
+            color: #333;
+            font-size: 24px;
             cursor: pointer;
             display: flex;
             align-items: center;
             justify-content: center;
-            background: rgba(255, 255, 255, 0.9);
             transition: transform 0.2s;
         }
 
-        .play-button:hover, .download-button:hover {
+        .play-button:hover {
             transform: scale(1.1);
+        }
+
+        .play-button.playing {
+            background: rgba(255, 0, 0, 0.9);
+            color: white;
         }
 
         @keyframes float {
             0%, 100% { transform: translateY(0); }
             50% { transform: translateY(-10px); }
+        }
+
+        /* Upload Button */
+        .upload-button {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.9);
+            border: none;
+            cursor: pointer;
+            font-size: 20px;
+            color: #333;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: transform 0.2s;
+        }
+
+        .upload-button:hover {
+            transform: scale(1.1);
         }
 
         /* Player Controls */
@@ -484,15 +509,15 @@
     <!-- Upload Modal -->
     <div class="upload-modal" id="uploadModal">
         <button class="close-button" onclick="closeUploadModal()">&times;</button>
-        <h3>Medien hinzufügen</h3>
+        <h3>Medium hinzufügen</h3>
         <div class="upload-form">
             <div>
                 <label for="mediaTitle">Titel:</label>
                 <input type="text" id="mediaTitle" required>
             </div>
             <div>
-                <label for="mediaFile">Datei (MP3, WAV, MP4):</label>
-                <input type="file" id="mediaFile" accept=".mp3,.wav,.mp4" required>
+                <label for="mediaFile">Datei:</label>
+                <input type="file" id="mediaFile" required>
             </div>
             <div>
                 <label for="mediaCover">Cover (optional):</label>
@@ -505,15 +530,19 @@
         </div>
     </div>
 
+    <!-- Audiobook Modal -->
     <div id="audiobookModal" class="library-modal">
+        <button class="upload-button" onclick="openUploadModal('audio')">+</button>
         <div class="library-grid">
-            <!-- Audiobook chapters will be dynamically added here -->
+            <!-- Audiobook items will be added here -->
         </div>
     </div>
 
+    <!-- Video Modal -->
     <div id="videoModal" class="library-modal">
+        <button class="upload-button" onclick="openUploadModal('video')">+</button>
         <div class="library-grid">
-            <!-- Video chapters will be dynamically added here -->
+            <!-- Video items will be added here -->
         </div>
     </div>
 
@@ -649,6 +678,30 @@
         }
 
         // Bibliotheks-System
+        let currentMediaType = null;
+        let currentAudio = null;
+        let currentVideo = null;
+
+        function openUploadModal(type) {
+            currentMediaType = type;
+            const fileInput = document.getElementById('mediaFile');
+            fileInput.accept = type === 'audio' ? '.mp3,.wav' : '.mp4';
+            document.getElementById('uploadModal').style.display = 'block';
+        }
+
+        function closeUploadModal() {
+            document.getElementById('uploadModal').style.display = 'none';
+            resetUploadForm();
+        }
+
+        function resetUploadForm() {
+            document.getElementById('mediaTitle').value = '';
+            document.getElementById('mediaFile').value = '';
+            document.getElementById('mediaCover').value = '';
+            document.querySelector('.upload-progress').style.display = 'none';
+            document.querySelector('.upload-progress-bar').style.width = '0%';
+        }
+
         function updateLibrary(type) {
             const mediaList = JSON.parse(localStorage.getItem('mediaList') || '[]');
             const container = document.querySelector(`#${type}Modal .library-grid`);
@@ -656,11 +709,11 @@
 
             const filteredMedia = mediaList.filter(media => 
                 type === 'audiobook' ? media.type === 'audio' : media.type === 'video'
-            ).slice(0, 4); // Maximal 4 Einträge
+            );
 
             filteredMedia.forEach(media => {
                 const item = document.createElement('div');
-                item.className = `library-item ${media.type} downloaded`;
+                item.className = `library-item ${media.type === 'audio' ? 'audio' : 'video'}`;
                 
                 const title = document.createElement('div');
                 title.className = 'library-item-title';
@@ -672,9 +725,20 @@
                 const playButton = document.createElement('button');
                 playButton.className = 'play-button';
                 playButton.innerHTML = '▶';
-                playButton.onclick = (e) => {
-                    e.stopPropagation();
-                    playMedia(media);
+                
+                let isPlaying = false;
+                playButton.onclick = () => {
+                    if (!isPlaying) {
+                        stopAllMedia();
+                        playMedia(media);
+                        playButton.innerHTML = '⏸';
+                        playButton.classList.add('playing');
+                    } else {
+                        stopAllMedia();
+                        playButton.innerHTML = '▶';
+                        playButton.classList.remove('playing');
+                    }
+                    isPlaying = !isPlaying;
                 };
                 
                 controls.appendChild(playButton);
@@ -691,21 +755,33 @@
             });
         }
 
-        function playMedia(media) {
-            // Stop any currently playing media
+        function stopAllMedia() {
             if (currentAudio) {
                 currentAudio.pause();
                 currentAudio = null;
             }
             if (currentVideo) {
                 currentVideo.pause();
+                currentVideo.remove();
                 currentVideo = null;
             }
+            
+            // Reset all play buttons
+            document.querySelectorAll('.play-button').forEach(button => {
+                button.innerHTML = '▶';
+                button.classList.remove('playing');
+            });
+        }
 
+        function playMedia(media) {
             if (media.type === 'audio') {
                 const audio = new Audio(media.data);
                 audio.play();
                 currentAudio = audio;
+                
+                audio.onended = () => {
+                    stopAllMedia();
+                };
             } else {
                 const video = document.createElement('video');
                 video.src = media.data;
@@ -721,32 +797,93 @@
                 video.play();
                 currentVideo = video;
 
+                video.onended = () => {
+                    stopAllMedia();
+                };
+
                 // Click outside to close video
                 video.onclick = (e) => e.stopPropagation();
                 document.onclick = (e) => {
                     if (e.target !== video) {
-                        video.remove();
-                        currentVideo = null;
+                        stopAllMedia();
                         document.onclick = null;
                     }
                 };
             }
         }
 
-        let currentAudio = null;
-        let currentVideo = null;
+        function handleUpload() {
+            const title = document.getElementById('mediaTitle').value;
+            const file = document.getElementById('mediaFile').files[0];
+            const cover = document.getElementById('mediaCover').files[0];
 
-        function handleButtonClick(type) {
-            const modal = document.getElementById(type + 'Modal');
-            if (modal.style.display === 'block') {
-                modal.style.display = 'none';
-            } else {
-                // Hide other modals
-                document.querySelectorAll('.library-modal').forEach(m => m.style.display = 'none');
-                modal.style.display = 'block';
-                updateLibrary(type);
+            if (!title || !file) {
+                alert('Bitte Titel und Datei auswählen');
+                return;
             }
+
+            const fileExtension = '.' + file.name.split('.').pop().toLowerCase();
+            const isAudio = currentMediaType === 'audio';
+            const validTypes = isAudio ? ['.mp3', '.wav'] : ['.mp4'];
+
+            if (!validTypes.includes(fileExtension)) {
+                alert(`Nur ${validTypes.join(', ')} Dateien sind erlaubt`);
+                return;
+            }
+
+            const progressContainer = document.querySelector('.upload-progress');
+            const progressBar = document.querySelector('.upload-progress-bar');
+            progressContainer.style.display = 'block';
+            progressBar.style.width = '0%';
+
+            const reader = new FileReader();
+            reader.onprogress = (e) => {
+                if (e.lengthComputable) {
+                    const progress = (e.loaded / e.total) * 100;
+                    progressBar.style.width = progress + '%';
+                }
+            };
+
+            reader.onload = function(e) {
+                const mediaData = {
+                    title: title,
+                    type: currentMediaType,
+                    data: e.target.result,
+                    timestamp: Date.now()
+                };
+
+                if (cover) {
+                    const coverReader = new FileReader();
+                    coverReader.onload = function(e) {
+                        mediaData.cover = e.target.result;
+                        storeMedia(mediaData);
+                    };
+                    coverReader.readAsDataURL(cover);
+                } else {
+                    storeMedia(mediaData);
+                }
+            };
+
+            reader.readAsDataURL(file);
         }
+
+        function storeMedia(mediaData) {
+            let mediaList = JSON.parse(localStorage.getItem('mediaList') || '[]');
+            mediaList.push(mediaData);
+            localStorage.setItem('mediaList', JSON.stringify(mediaList));
+            
+            closeUploadModal();
+            updateLibrary(mediaData.type === 'audio' ? 'audiobook' : 'video');
+        }
+
+        // Event Listeners
+        document.querySelector('.nav-button.audiobook').addEventListener('click', () => {
+            updateLibrary('audiobook');
+        });
+
+        document.querySelector('.nav-button.video').addEventListener('click', () => {
+            updateLibrary('video');
+        });
 
         // Admin System
         const adminModal = document.querySelector('.admin-modal');
@@ -815,86 +952,6 @@
             } else {
                 alert('Passwort muss 6 Buchstaben und 2 Zahlen enthalten');
             }
-        }
-
-        // Upload System
-        const uploadModal = document.querySelector('.upload-modal');
-        const progressBar = document.querySelector('.upload-progress-bar');
-        const progressContainer = document.querySelector('.upload-progress');
-
-        function closeUploadModal() {
-            uploadModal.style.display = 'none';
-            progressContainer.style.display = 'none';
-            progressBar.style.width = '0%';
-        }
-
-        function handleUpload() {
-            const title = document.getElementById('mediaTitle').value;
-            const file = document.getElementById('mediaFile').files[0];
-            const cover = document.getElementById('mediaCover').files[0];
-
-            if (!title || !file) {
-                alert('Bitte Titel und Datei auswählen');
-                return;
-            }
-
-            // Validate file type
-            const validTypes = ['.mp3', '.wav', '.mp4'];
-            const fileExtension = '.' + file.name.split('.').pop().toLowerCase();
-            if (!validTypes.includes(fileExtension)) {
-                alert('Nur MP3, WAV und MP4 Dateien sind erlaubt');
-                return;
-            }
-
-            // Show progress bar
-            progressContainer.style.display = 'block';
-            progressBar.style.width = '0%';
-
-            // Read and store file
-            const reader = new FileReader();
-            reader.onprogress = (e) => {
-                if (e.lengthComputable) {
-                    const progress = (e.loaded / e.total) * 100;
-                    progressBar.style.width = progress + '%';
-                }
-            };
-
-            reader.onload = function(e) {
-                const mediaData = {
-                    title: title,
-                    type: fileExtension === '.mp4' ? 'video' : 'audio',
-                    data: e.target.result,
-                    timestamp: Date.now()
-                };
-
-                if (cover) {
-                    const coverReader = new FileReader();
-                    coverReader.onload = function(e) {
-                        mediaData.cover = e.target.result;
-                        storeMedia(mediaData);
-                    };
-                    coverReader.readAsDataURL(cover);
-                } else {
-                    storeMedia(mediaData);
-                }
-            };
-
-            reader.readAsDataURL(file);
-        }
-
-        function storeMedia(mediaData) {
-            // Get existing media list or create new one
-            let mediaList = JSON.parse(localStorage.getItem('mediaList') || '[]');
-            mediaList.push(mediaData);
-            localStorage.setItem('mediaList', JSON.stringify(mediaList));
-            
-            alert('Medium erfolgreich hinzugefügt!');
-            closeUploadModal();
-            
-            // Clear form
-            document.getElementById('mediaTitle').value = '';
-            document.getElementById('mediaFile').value = '';
-            document.getElementById('mediaCover').value = '';
         }
 
         // Birthday System
