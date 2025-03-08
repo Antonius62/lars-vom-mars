@@ -57,7 +57,7 @@
             font-weight: 600;
         }
 
-        /* Navigation */
+        /* Main Navigation Buttons */
         .nav-container {
             position: fixed;
             bottom: 20px;
@@ -71,48 +71,47 @@
         }
 
         .nav-button {
-            width: 90px;
-            height: 90px;
-            border-radius: 50%;
-            border: none;
+            width: 90px !important;
+            height: 90px !important;
+            border-radius: 50% !important;
+            border: none !important;
             cursor: pointer;
-            font-size: 16px;
+            font-size: 16px !important;
             font-weight: bold;
-            color: black;
-            transition: transform 0.2s;
-            display: flex;
-            align-items: center;
-            justify-content: center;
+            color: black !important;
+            transition: transform 0.2s !important;
+            display: flex !important;
+            align-items: center !important;
+            justify-content: center !important;
             text-align: center;
+            padding: 0 !important;
+            margin: 0 !important;
+            box-shadow: none !important;
+            background-size: cover !important;
         }
 
         .nav-button:hover {
-            transform: scale(1.1);
+            transform: scale(1.1) !important;
         }
 
         .nav-button.audiobook { 
-            background: rgba(255,255,0,0.6);
-            aspect-ratio: 1;
+            background: rgba(255,255,0,0.6) !important;
         }
         .nav-button.video { 
-            background: rgba(173,216,230,0.6);
-            aspect-ratio: 1;
+            background: rgba(173,216,230,0.6) !important;
         }
         .nav-button.music { 
-            background: rgba(255,160,160,0.6);
-            aspect-ratio: 1;
+            background: rgba(255,160,160,0.6) !important;
         }
         .nav-button.action { 
-            background: rgba(144,238,144,0.6);
-            aspect-ratio: 1;
+            background: rgba(144,238,144,0.6) !important;
         }
 
-        /* Mobile Optimization */
         @media (max-width: 480px) {
             .nav-button {
-                width: 70px;
-                height: 70px;
-                font-size: 14px;
+                width: 70px !important;
+                height: 70px !important;
+                font-size: 14px !important;
             }
             .nav-container {
                 gap: 15px;
@@ -120,7 +119,7 @@
             }
         }
 
-        /* Library Modals */
+        /* Library Styles - completely separate */
         .library-modal {
             display: none;
             position: fixed;
