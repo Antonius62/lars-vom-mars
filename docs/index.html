@@ -143,160 +143,135 @@
 
         .library-grid {
             display: grid;
-            grid-template-columns: repeat(5, 1fr);
+            grid-template-columns: repeat(2, 1fr);
             grid-template-rows: repeat(2, 1fr);
-            gap: 30px;
+            gap: 20px;
             padding: 20px;
+            max-width: 800px;
+            margin: 0 auto;
             height: calc(100% - 100px);
-            overflow-y: auto;
-            align-items: center;
-            justify-items: center;
         }
 
         .library-item {
-            width: 180px;
-            height: 180px;
-            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            padding: 20px;
             display: flex;
             flex-direction: column;
             align-items: center;
-            justify-content: center;
-            cursor: pointer;
+            justify-content: space-between;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
             transition: all 0.3s ease;
             position: relative;
-            animation: float 3s ease-in-out infinite;
-            backdrop-filter: blur(5px);
+            min-height: 200px;
         }
 
         .library-item.audio {
-            background: rgba(255, 255, 0, 0.3);
-            box-shadow: 0 0 30px rgba(255, 255, 0, 0.3);
-            border: 4px solid rgba(255, 255, 0, 0.6);
+            border: 2px solid rgba(255, 255, 0, 0.4);
         }
 
         .library-item.video {
-            background: rgba(173, 216, 230, 0.3);
-            box-shadow: 0 0 30px rgba(173, 216, 230, 0.3);
-            border: 4px solid rgba(173, 216, 230, 0.6);
+            border: 2px solid rgba(173, 216, 230, 0.4);
         }
 
         .library-item:hover {
-            transform: scale(1.1) translateY(-10px);
-            box-shadow: 0 0 40px rgba(255, 255, 255, 0.4);
+            transform: translateY(-5px);
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.2);
         }
 
         .library-item-number {
             position: absolute;
-            top: 20px;
+            top: 15px;
+            left: 15px;
             color: white;
-            font-size: 48px;
+            font-size: 24px;
             font-weight: bold;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.8);
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
         }
 
         .library-item-title {
             color: white;
+            font-size: 18px;
             text-align: center;
-            font-size: 20px;
-            margin-top: 60px;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.8);
-            max-width: 80%;
+            margin: 15px 0;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
+        }
+
+        .controls-container {
+            display: flex;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .download-button, .play-button {
+            width: 40px;
+            height: 40px;
+            border-radius: 8px;
+            border: none;
+            background: rgba(255, 255, 255, 0.9);
+            color: #333;
+            font-size: 18px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s ease;
+        }
+
+        .download-button:hover, .play-button:hover {
+            transform: scale(1.1);
+        }
+
+        .download-button {
+            background: #4CAF50;
+            color: white;
         }
 
         .play-button {
-            width: 60px;
-            height: 60px;
-            border-radius: 50%;
-            border: none;
-            background: rgba(255, 255, 255, 0.9);
-            color: #333;
-            font-size: 30px;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: all 0.3s ease;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
-            margin-top: 15px;
+            background: #2196F3;
+            color: white;
         }
 
-        .play-button:hover {
-            transform: scale(1.1);
-            box-shadow: 0 0 20px rgba(255, 255, 255, 0.5);
+        .play-button.playing {
+            background: #f44336;
         }
 
-        @keyframes float {
-            0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-15px); }
+        .download-progress {
+            width: 100%;
+            height: 4px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 2px;
+            margin-top: 10px;
+            overflow: hidden;
+        }
+
+        .progress-bar {
+            width: 0%;
+            height: 100%;
+            background: #4CAF50;
+            transition: width 0.3s ease;
+        }
+
+        .library-item.downloaded {
+            border-color: #4CAF50;
+        }
+
+        .library-item.downloaded .download-button {
+            display: none;
         }
 
         @media (max-width: 480px) {
-            .nav-button {
-                width: 80px;
-                height: 80px;
-                font-size: 16px;
-            }
-
             .library-grid {
-                grid-template-columns: repeat(2, 1fr);
-                grid-template-rows: repeat(5, 1fr);
-                gap: 20px;
+                grid-template-columns: 1fr;
+                grid-template-rows: repeat(4, 1fr);
+                gap: 15px;
+                padding: 15px;
             }
 
             .library-item {
-                width: 150px;
-                height: 150px;
+                min-height: 150px;
             }
-
-            .library-item-number {
-                font-size: 36px;
-            }
-
-            .library-item-title {
-                font-size: 16px;
-            }
-
-            .play-button {
-                width: 50px;
-                height: 50px;
-                font-size: 24px;
-            }
-        }
-
-        /* Mobile Optimization */
-        @media (max-width: 480px) {
-            .nav-button {
-                width: 70px;
-                height: 70px;
-                font-size: 14px;
-            }
-            .nav-container {
-                gap: 15px;
-                bottom: 10px;
-            }
-        }
-
-        /* Upload Button */
-        .upload-button {
-            position: absolute;
-            top: 20px;
-            right: 20px;
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            background: rgba(255, 255, 255, 0.9);
-            border: none;
-            cursor: pointer;
-            font-size: 20px;
-            color: #333;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: transform 0.2s;
-        }
-
-        .upload-button:hover {
-            transform: scale(1.1);
         }
 
         /* Player Controls */
@@ -617,10 +592,9 @@
     <div id="audiobookModal" class="library-modal">
         <div class="library-content">
             <div class="library-header">Hörbücher</div>
-            <button class="upload-button" onclick="openUploadModal('audio')">+</button>
             <button class="close-button" onclick="toggleLibrary('audiobook')">&times;</button>
             <div class="library-grid">
-                <!-- Platzhalter werden dynamisch generiert -->
+                <!-- 4 Download-Felder für Hörbücher -->
             </div>
         </div>
     </div>
@@ -629,10 +603,9 @@
     <div id="videoModal" class="library-modal">
         <div class="library-content">
             <div class="library-header">Videos</div>
-            <button class="upload-button" onclick="openUploadModal('video')">+</button>
             <button class="close-button" onclick="toggleLibrary('video')">&times;</button>
             <div class="library-grid">
-                <!-- Platzhalter werden dynamisch generiert -->
+                <!-- 4 Download-Felder für Videos -->
             </div>
         </div>
     </div>
@@ -1209,7 +1182,7 @@
             const grid = document.querySelector(`#${modalId} .library-grid`);
             grid.innerHTML = '';
 
-            for (let i = 1; i <= 10; i++) {
+            for (let i = 1; i <= 4; i++) {
                 const item = document.createElement('div');
                 item.className = `library-item ${type}`;
                 
@@ -1221,43 +1194,66 @@
                 title.className = 'library-item-title';
                 title.textContent = `${prefix} ${i}`;
                 
+                const controls = document.createElement('div');
+                controls.className = 'controls-container';
+                
                 const downloadButton = document.createElement('button');
                 downloadButton.className = 'download-button';
                 downloadButton.innerHTML = '↓';
                 downloadButton.onclick = () => downloadMedia(type, i);
                 
-                const downloadProgress = document.createElement('div');
-                downloadProgress.className = 'download-progress';
-                
-                const controls = document.createElement('div');
-                controls.className = 'library-item-controls';
-                
                 const playButton = document.createElement('button');
                 playButton.className = 'play-button';
                 playButton.innerHTML = '▶';
+                playButton.onclick = () => togglePlay(type, i);
                 
                 const progress = document.createElement('div');
-                progress.className = 'media-progress';
+                progress.className = 'download-progress';
                 const progressBar = document.createElement('div');
-                progressBar.className = 'media-progress-bar';
+                progressBar.className = 'progress-bar';
                 progress.appendChild(progressBar);
                 
-                const time = document.createElement('div');
-                time.className = 'media-time';
-                time.textContent = '0:00 / 0:00';
-                
+                controls.appendChild(downloadButton);
                 controls.appendChild(playButton);
-                controls.appendChild(progress);
-                controls.appendChild(time);
                 
                 item.appendChild(number);
                 item.appendChild(title);
-                item.appendChild(downloadButton);
-                item.appendChild(downloadProgress);
                 item.appendChild(controls);
+                item.appendChild(progress);
                 
                 grid.appendChild(item);
             }
+        }
+
+        function togglePlay(type, id) {
+            const button = document.querySelector(`#${type}Modal .library-item:nth-child(${id}) .play-button`);
+            if (button.classList.contains('playing')) {
+                button.classList.remove('playing');
+                button.innerHTML = '▶';
+                // Hier später: Audio/Video stoppen
+            } else {
+                button.classList.add('playing');
+                button.innerHTML = '⏹';
+                // Hier später: Audio/Video abspielen
+            }
+        }
+
+        function downloadMedia(type, id) {
+            const item = document.querySelector(`#${type}Modal .library-item:nth-child(${id})`);
+            const progressBar = item.querySelector('.progress-bar');
+            
+            // Simuliere Download-Fortschritt
+            let progress = 0;
+            const interval = setInterval(() => {
+                progress += 5;
+                progressBar.style.width = `${progress}%`;
+                
+                if (progress >= 100) {
+                    clearInterval(interval);
+                    item.classList.add('downloaded');
+                    // Hier später: Tatsächlichen Download implementieren
+                }
+            }, 100);
         }
 
         // IndexedDB initialisieren
@@ -1295,30 +1291,6 @@
                     }
                 });
             };
-        }
-
-        function downloadMedia(type, id) {
-            const item = document.querySelector(`#${type}Modal .library-item:nth-child(${id})`);
-            const downloadButton = item.querySelector('.download-button');
-            
-            item.classList.add('downloading');
-            
-            // Simuliere Download (später durch echten Download ersetzen)
-            setTimeout(() => {
-                item.classList.remove('downloading');
-                item.classList.add('downloaded');
-                downloadButton.style.display = 'none';
-
-                // Speichere in IndexedDB
-                const transaction = db.transaction(['media'], 'readwrite');
-                const store = transaction.objectStore('media');
-                store.put({
-                    id: id,
-                    type: type,
-                    title: item.querySelector('.library-item-title').textContent,
-                    downloadDate: new Date()
-                });
-            }, 2000);
         }
     </script>
 </body>
