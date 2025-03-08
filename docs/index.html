@@ -108,29 +108,50 @@
         .library-modal {
             display: none;
             position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            width: 95%;
-            max-width: 800px;
-            background: rgba(255, 255, 255, 0.1);
-            backdrop-filter: blur(10px);
-            border-radius: 20px;
-            padding: 30px;
-            z-index: 1001;
+            z-index: 2000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.85);
+            backdrop-filter: blur(8px);
+        }
+
+        .library-modal.show {
+            display: block;
+        }
+
+        .library-content {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+
+        .library-header {
+            color: white;
+            text-align: center;
+            font-size: 32px;
+            margin-bottom: 20px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.8);
         }
 
         .library-grid {
             display: grid;
             grid-template-columns: repeat(5, 1fr);
             grid-template-rows: repeat(2, 1fr);
-            gap: 30px;
+            gap: 40px;
             padding: 20px;
+            height: calc(100% - 100px);
+            overflow-y: auto;
+            align-items: center;
+            justify-items: center;
         }
 
         .library-item {
-            position: relative;
-            aspect-ratio: 1;
+            width: 180px;
+            height: 180px;
             border-radius: 50%;
             display: flex;
             flex-direction: column;
@@ -140,28 +161,37 @@
             cursor: pointer;
             transition: all 0.3s ease;
             animation: float 3s ease-in-out infinite;
-        }
-
-        .library-item-number {
-            position: absolute;
-            top: 15px;
-            color: white;
-            font-size: 24px;
-            font-weight: bold;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.8);
+            backdrop-filter: blur(10px);
+            position: relative;
         }
 
         .library-item.audio {
-            background: rgba(255, 255, 0, 0.3);
+            background: rgba(255, 255, 0, 0.2);
+            border: 3px solid rgba(255, 255, 0, 0.4);
         }
 
         .library-item.video {
-            background: rgba(173, 216, 230, 0.3);
+            background: rgba(173, 216, 230, 0.2);
+            border: 3px solid rgba(173, 216, 230, 0.4);
+        }
+
+        .library-item:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 20px rgba(255, 255, 255, 0.2);
         }
 
         .library-item.downloaded {
             border: 3px solid #4CAF50;
             box-shadow: 0 0 15px rgba(76, 175, 80, 0.5);
+        }
+
+        .library-item-number {
+            position: absolute;
+            top: 20px;
+            color: white;
+            font-size: 32px;
+            font-weight: bold;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.8);
         }
 
         .library-item-title {
@@ -170,6 +200,8 @@
             font-size: 18px;
             margin: 15px 0;
             text-shadow: 1px 1px 2px rgba(0,0,0,0.8);
+            word-wrap: break-word;
+            max-width: 90%;
         }
 
         .library-item-controls {
@@ -177,12 +209,33 @@
             flex-direction: column;
             align-items: center;
             gap: 10px;
+            margin-top: 5px;
         }
 
-        .media-time {
+        .play-button {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            border: none;
+            background: rgba(255, 255, 255, 0.9);
+            color: #333;
+            font-size: 24px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s ease;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        }
+
+        .play-button:hover {
+            transform: scale(1.1);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+        }
+
+        .play-button.playing {
+            background: rgba(255, 0, 0, 0.9);
             color: white;
-            font-size: 14px;
-            text-shadow: 1px 1px 2px rgba(0,0,0,0.8);
         }
 
         .media-progress {
@@ -191,7 +244,6 @@
             background: rgba(255, 255, 255, 0.3);
             border-radius: 2px;
             overflow: hidden;
-            margin: 5px 0;
         }
 
         .media-progress-bar {
@@ -199,6 +251,17 @@
             height: 100%;
             background: white;
             transition: width 0.1s linear;
+        }
+
+        .media-time {
+            color: white;
+            font-size: 14px;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.8);
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-8px); }
         }
 
         /* Upload Button */
@@ -481,8 +544,8 @@
     </header>
 
     <nav class="nav-container">
-        <button class="nav-button audiobook" onclick="handleButtonClick('audiobook')">Hörbuch</button>
-        <button class="nav-button video" onclick="handleButtonClick('video')">Video</button>
+        <button class="nav-button audiobook" onclick="toggleLibrary('audiobook')">Hörbuch</button>
+        <button class="nav-button video" onclick="toggleLibrary('video')">Video</button>
         <button class="nav-button music" onclick="toggleMusic()">Musik</button>
         <button class="nav-button action" onclick="playQuackSound()">Action</button>
     </nav>
@@ -540,17 +603,205 @@
 
     <!-- Audiobook Modal -->
     <div id="audiobookModal" class="library-modal">
-        <button class="upload-button" onclick="openUploadModal('audio')">+</button>
-        <div class="library-grid">
-            <!-- Audiobook items will be added here -->
+        <div class="library-content">
+            <div class="library-header">Hörbücher</div>
+            <button class="upload-button" onclick="openUploadModal('audio')">+</button>
+            <button class="close-button" onclick="toggleLibrary('audiobook')">&times;</button>
+            <div class="library-grid">
+                <!-- 10 Platzhalter für Hörbücher -->
+                <div class="library-item audio">
+                    <div class="library-item-number">1</div>
+                    <div class="library-item-title">Hörbuch 1</div>
+                    <div class="library-item-controls">
+                        <button class="play-button">▶</button>
+                        <div class="media-progress"><div class="media-progress-bar"></div></div>
+                        <div class="media-time">0:00 / 0:00</div>
+                    </div>
+                </div>
+                <div class="library-item audio">
+                    <div class="library-item-number">2</div>
+                    <div class="library-item-title">Hörbuch 2</div>
+                    <div class="library-item-controls">
+                        <button class="play-button">▶</button>
+                        <div class="media-progress"><div class="media-progress-bar"></div></div>
+                        <div class="media-time">0:00 / 0:00</div>
+                    </div>
+                </div>
+                <div class="library-item audio">
+                    <div class="library-item-number">3</div>
+                    <div class="library-item-title">Hörbuch 3</div>
+                    <div class="library-item-controls">
+                        <button class="play-button">▶</button>
+                        <div class="media-progress"><div class="media-progress-bar"></div></div>
+                        <div class="media-time">0:00 / 0:00</div>
+                    </div>
+                </div>
+                <div class="library-item audio">
+                    <div class="library-item-number">4</div>
+                    <div class="library-item-title">Hörbuch 4</div>
+                    <div class="library-item-controls">
+                        <button class="play-button">▶</button>
+                        <div class="media-progress"><div class="media-progress-bar"></div></div>
+                        <div class="media-time">0:00 / 0:00</div>
+                    </div>
+                </div>
+                <div class="library-item audio">
+                    <div class="library-item-number">5</div>
+                    <div class="library-item-title">Hörbuch 5</div>
+                    <div class="library-item-controls">
+                        <button class="play-button">▶</button>
+                        <div class="media-progress"><div class="media-progress-bar"></div></div>
+                        <div class="media-time">0:00 / 0:00</div>
+                    </div>
+                </div>
+                <div class="library-item audio">
+                    <div class="library-item-number">6</div>
+                    <div class="library-item-title">Hörbuch 6</div>
+                    <div class="library-item-controls">
+                        <button class="play-button">▶</button>
+                        <div class="media-progress"><div class="media-progress-bar"></div></div>
+                        <div class="media-time">0:00 / 0:00</div>
+                    </div>
+                </div>
+                <div class="library-item audio">
+                    <div class="library-item-number">7</div>
+                    <div class="library-item-title">Hörbuch 7</div>
+                    <div class="library-item-controls">
+                        <button class="play-button">▶</button>
+                        <div class="media-progress"><div class="media-progress-bar"></div></div>
+                        <div class="media-time">0:00 / 0:00</div>
+                    </div>
+                </div>
+                <div class="library-item audio">
+                    <div class="library-item-number">8</div>
+                    <div class="library-item-title">Hörbuch 8</div>
+                    <div class="library-item-controls">
+                        <button class="play-button">▶</button>
+                        <div class="media-progress"><div class="media-progress-bar"></div></div>
+                        <div class="media-time">0:00 / 0:00</div>
+                    </div>
+                </div>
+                <div class="library-item audio">
+                    <div class="library-item-number">9</div>
+                    <div class="library-item-title">Hörbuch 9</div>
+                    <div class="library-item-controls">
+                        <button class="play-button">▶</button>
+                        <div class="media-progress"><div class="media-progress-bar"></div></div>
+                        <div class="media-time">0:00 / 0:00</div>
+                    </div>
+                </div>
+                <div class="library-item audio">
+                    <div class="library-item-number">10</div>
+                    <div class="library-item-title">Hörbuch 10</div>
+                    <div class="library-item-controls">
+                        <button class="play-button">▶</button>
+                        <div class="media-progress"><div class="media-progress-bar"></div></div>
+                        <div class="media-time">0:00 / 0:00</div>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 
     <!-- Video Modal -->
     <div id="videoModal" class="library-modal">
-        <button class="upload-button" onclick="openUploadModal('video')">+</button>
-        <div class="library-grid">
-            <!-- Video items will be added here -->
+        <div class="library-content">
+            <div class="library-header">Videos</div>
+            <button class="upload-button" onclick="openUploadModal('video')">+</button>
+            <button class="close-button" onclick="toggleLibrary('video')">&times;</button>
+            <div class="library-grid">
+                <!-- 10 Platzhalter für Videos -->
+                <div class="library-item video">
+                    <div class="library-item-number">1</div>
+                    <div class="library-item-title">Video 1</div>
+                    <div class="library-item-controls">
+                        <button class="play-button">▶</button>
+                        <div class="media-progress"><div class="media-progress-bar"></div></div>
+                        <div class="media-time">0:00 / 0:00</div>
+                    </div>
+                </div>
+                <div class="library-item video">
+                    <div class="library-item-number">2</div>
+                    <div class="library-item-title">Video 2</div>
+                    <div class="library-item-controls">
+                        <button class="play-button">▶</button>
+                        <div class="media-progress"><div class="media-progress-bar"></div></div>
+                        <div class="media-time">0:00 / 0:00</div>
+                    </div>
+                </div>
+                <div class="library-item video">
+                    <div class="library-item-number">3</div>
+                    <div class="library-item-title">Video 3</div>
+                    <div class="library-item-controls">
+                        <button class="play-button">▶</button>
+                        <div class="media-progress"><div class="media-progress-bar"></div></div>
+                        <div class="media-time">0:00 / 0:00</div>
+                    </div>
+                </div>
+                <div class="library-item video">
+                    <div class="library-item-number">4</div>
+                    <div class="library-item-title">Video 4</div>
+                    <div class="library-item-controls">
+                        <button class="play-button">▶</button>
+                        <div class="media-progress"><div class="media-progress-bar"></div></div>
+                        <div class="media-time">0:00 / 0:00</div>
+                    </div>
+                </div>
+                <div class="library-item video">
+                    <div class="library-item-number">5</div>
+                    <div class="library-item-title">Video 5</div>
+                    <div class="library-item-controls">
+                        <button class="play-button">▶</button>
+                        <div class="media-progress"><div class="media-progress-bar"></div></div>
+                        <div class="media-time">0:00 / 0:00</div>
+                    </div>
+                </div>
+                <div class="library-item video">
+                    <div class="library-item-number">6</div>
+                    <div class="library-item-title">Video 6</div>
+                    <div class="library-item-controls">
+                        <button class="play-button">▶</button>
+                        <div class="media-progress"><div class="media-progress-bar"></div></div>
+                        <div class="media-time">0:00 / 0:00</div>
+                    </div>
+                </div>
+                <div class="library-item video">
+                    <div class="library-item-number">7</div>
+                    <div class="library-item-title">Video 7</div>
+                    <div class="library-item-controls">
+                        <button class="play-button">▶</button>
+                        <div class="media-progress"><div class="media-progress-bar"></div></div>
+                        <div class="media-time">0:00 / 0:00</div>
+                    </div>
+                </div>
+                <div class="library-item video">
+                    <div class="library-item-number">8</div>
+                    <div class="library-item-title">Video 8</div>
+                    <div class="library-item-controls">
+                        <button class="play-button">▶</button>
+                        <div class="media-progress"><div class="media-progress-bar"></div></div>
+                        <div class="media-time">0:00 / 0:00</div>
+                    </div>
+                </div>
+                <div class="library-item video">
+                    <div class="library-item-number">9</div>
+                    <div class="library-item-title">Video 9</div>
+                    <div class="library-item-controls">
+                        <button class="play-button">▶</button>
+                        <div class="media-progress"><div class="media-progress-bar"></div></div>
+                        <div class="media-time">0:00 / 0:00</div>
+                    </div>
+                </div>
+                <div class="library-item video">
+                    <div class="library-item-number">10</div>
+                    <div class="library-item-title">Video 10</div>
+                    <div class="library-item-controls">
+                        <button class="play-button">▶</button>
+                        <div class="media-progress"><div class="media-progress-bar"></div></div>
+                        <div class="media-time">0:00 / 0:00</div>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -1050,6 +1301,27 @@
                         console.log('ServiceWorker registration failed: ', err);
                     });
             });
+        }
+
+        function toggleLibrary(type) {
+            const audioModal = document.getElementById('audiobookModal');
+            const videoModal = document.getElementById('videoModal');
+            
+            if (type === 'audiobook') {
+                if (audioModal.style.display === 'block') {
+                    audioModal.style.display = 'none';
+                } else {
+                    audioModal.style.display = 'block';
+                    videoModal.style.display = 'none';
+                }
+            } else {
+                if (videoModal.style.display === 'block') {
+                    videoModal.style.display = 'none';
+                } else {
+                    videoModal.style.display = 'block';
+                    audioModal.style.display = 'none';
+                }
+            }
         }
     </script>
 </body>
