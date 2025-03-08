@@ -66,6 +66,7 @@
             display: flex;
             justify-content: center;
             gap: 20px;
+            z-index: 9999; /* Über allem */
         }
 
         .nav-button {
@@ -77,6 +78,7 @@
             font-weight: bold;
             color: black;
             cursor: pointer;
+            background: transparent; /* Wichtig für echte Transparenz */
         }
 
         .nav-button.audiobook { background: rgba(255,255,0,0.6); }
@@ -90,6 +92,16 @@
                 height: 70px;
             }
         }
+
+        /* Bibliothek temporär auskommentiert */
+        /*
+        .library-modal {
+            display: none;
+        }
+        .library-grid {
+            display: none;
+        }
+        */
 
         /* Library Styles - komplett separat */
         .library-modal {
@@ -240,19 +252,20 @@
         <button class="nav-button action" onclick="playQuackSound()">Action</button>
     </nav>
 
+    <!-- Bibliothek temporär auskommentiert -->
+    <!--
     <div id="audiobookModal" class="library-modal">
         <button class="upload-button" onclick="openUploadModal('audio')">+</button>
         <div class="library-grid">
-            <!-- Audiobook items will be added here -->
         </div>
     </div>
 
     <div id="videoModal" class="library-modal">
         <button class="upload-button" onclick="openUploadModal('video')">+</button>
         <div class="library-grid">
-            <!-- Video items will be added here -->
         </div>
     </div>
+    -->
 
     <div class="lyrics-container">
         <!-- Lyrics will be dynamically added here -->
