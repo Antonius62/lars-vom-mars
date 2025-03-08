@@ -112,20 +112,20 @@
             left: 50%;
             transform: translate(-50%, -50%);
             width: 95%;
-            max-width: 1100px;
-            max-height: 90vh;
-            background: transparent;
+            max-width: 800px;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
             border-radius: 20px;
-            padding: 40px;
+            padding: 30px;
             z-index: 1001;
-            overflow-y: auto;
         }
 
         .library-grid {
             display: grid;
-            grid-template-columns: repeat(5, 1fr);
+            grid-template-columns: repeat(2, 1fr);
+            grid-template-rows: repeat(2, 1fr);
             gap: 20px;
-            margin-top: 20px;
+            padding: 20px;
         }
 
         .library-item {
@@ -138,6 +138,57 @@
             cursor: pointer;
             position: relative;
             transition: all 0.3s ease;
+            animation: float 3s ease-in-out infinite;
+        }
+
+        .library-item.audio {
+            background: rgba(255, 255, 0, 0.3);
+        }
+
+        .library-item.video {
+            background: rgba(173, 216, 230, 0.3);
+        }
+
+        .library-item.downloaded {
+            border: 3px solid #4CAF50;
+            box-shadow: 0 0 15px rgba(76, 175, 80, 0.5);
+        }
+
+        .library-item-title {
+            color: white;
+            text-align: center;
+            font-size: 16px;
+            margin-bottom: 10px;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.8);
+        }
+
+        .library-item-controls {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .play-button, .download-button {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            border: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(255, 255, 255, 0.9);
+            transition: transform 0.2s;
+        }
+
+        .play-button:hover, .download-button:hover {
+            transform: scale(1.1);
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
         }
 
         /* Player Controls */
@@ -214,6 +265,181 @@
                 font-size: 14px;
             }
         }
+
+        /* Admin Button */
+        .admin-button {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            width: 72px; /* 20% kleiner als andere Buttons */
+            height: 72px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.6);
+            border: none;
+            cursor: pointer;
+            font-size: 14px;
+            color: black;
+            z-index: 1000;
+        }
+
+        /* Admin Modal */
+        .admin-modal {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 90%;
+            max-width: 400px;
+            background: rgba(255, 255, 255, 0.95);
+            padding: 20px;
+            border-radius: 15px;
+            z-index: 2000;
+        }
+
+        .admin-modal h2 {
+            color: black;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .admin-modal input {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+
+        .admin-modal button {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            border: none;
+            border-radius: 5px;
+            background: #4CAF50;
+            color: white;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        .close-button {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            font-size: 24px;
+            cursor: pointer;
+            color: black;
+            background: none;
+            border: none;
+            padding: 0;
+        }
+
+        @media (max-width: 480px) {
+            .admin-button {
+                width: 56px;
+                height: 56px;
+                font-size: 12px;
+            }
+        }
+
+        /* Upload Modal */
+        .upload-modal {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 90%;
+            max-width: 500px;
+            background: rgba(255, 255, 255, 0.95);
+            padding: 20px;
+            border-radius: 15px;
+            z-index: 2000;
+        }
+
+        .upload-modal h3 {
+            color: black;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+
+        .upload-form {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .upload-form label {
+            color: black;
+            font-weight: 600;
+        }
+
+        .upload-form input[type="file"] {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+
+        .upload-form input[type="text"] {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+
+        .upload-form button {
+            width: 100%;
+            padding: 10px;
+            background: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        .upload-form button:hover {
+            background: #45a049;
+        }
+
+        .upload-progress {
+            width: 100%;
+            height: 20px;
+            background-color: #f0f0f0;
+            border-radius: 10px;
+            overflow: hidden;
+            display: none;
+        }
+
+        .upload-progress-bar {
+            width: 0;
+            height: 100%;
+            background-color: #4CAF50;
+            transition: width 0.3s ease;
+        }
+
+        /* Birthday Message */
+        .birthday-message {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 140%; /* 40% größer als normaler Text */
+            color: white;
+            text-align: center;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.8);
+            animation: fadeInBirthday 1s ease-out;
+            z-index: 1000;
+            display: none;
+        }
+
+        @keyframes fadeInBirthday {
+            from { opacity: 0; transform: translate(-50%, -60%); }
+            to { opacity: 1; transform: translate(-50%, -50%); }
+        }
     </style>
 </head>
 <body>
@@ -227,6 +453,57 @@
         <button class="nav-button music" onclick="toggleMusic()">Musik</button>
         <button class="nav-button action" onclick="playQuackSound()">Action</button>
     </nav>
+
+    <button class="admin-button" onclick="openAdminModal()">Admin</button>
+
+    <!-- Admin Modal -->
+    <div class="admin-modal" id="adminModal">
+        <button class="close-button" onclick="closeAdminModal()">&times;</button>
+        <h2>Admin Login</h2>
+        <div class="upload-form">
+            <div>
+                <label for="parentName">Name der Eltern:</label>
+                <input type="text" id="parentName" required>
+            </div>
+            <div>
+                <label for="childName">Name des Kindes:</label>
+                <input type="text" id="childName" required>
+            </div>
+            <div>
+                <label for="childBirthday">Geburtstag des Kindes:</label>
+                <input type="date" id="childBirthday" required>
+            </div>
+            <div>
+                <label for="adminPassword">Passwort (6 Buchstaben + 2 Zahlen):</label>
+                <input type="password" id="adminPassword" placeholder="z.B. Sommer42" required>
+            </div>
+            <button onclick="validatePassword()">Login</button>
+        </div>
+    </div>
+
+    <!-- Upload Modal -->
+    <div class="upload-modal" id="uploadModal">
+        <button class="close-button" onclick="closeUploadModal()">&times;</button>
+        <h3>Medien hinzufügen</h3>
+        <div class="upload-form">
+            <div>
+                <label for="mediaTitle">Titel:</label>
+                <input type="text" id="mediaTitle" required>
+            </div>
+            <div>
+                <label for="mediaFile">Datei (MP3, WAV, MP4):</label>
+                <input type="file" id="mediaFile" accept=".mp3,.wav,.mp4" required>
+            </div>
+            <div>
+                <label for="mediaCover">Cover (optional):</label>
+                <input type="file" id="mediaCover" accept="image/*">
+            </div>
+            <div class="upload-progress">
+                <div class="upload-progress-bar"></div>
+            </div>
+            <button onclick="handleUpload()">Hinzufügen</button>
+        </div>
+    </div>
 
     <div id="audiobookModal" class="library-modal">
         <div class="library-grid">
@@ -242,6 +519,11 @@
 
     <div class="lyrics-container">
         <!-- Lyrics will be dynamically added here -->
+    </div>
+
+    <!-- Birthday Message -->
+    <div class="birthday-message" id="birthdayMessage">
+        Geburtstagsgrüße vom Mars, dein Lars
     </div>
 
     <script>
@@ -367,6 +649,93 @@
         }
 
         // Bibliotheks-System
+        function updateLibrary(type) {
+            const mediaList = JSON.parse(localStorage.getItem('mediaList') || '[]');
+            const container = document.querySelector(`#${type}Modal .library-grid`);
+            container.innerHTML = '';
+
+            const filteredMedia = mediaList.filter(media => 
+                type === 'audiobook' ? media.type === 'audio' : media.type === 'video'
+            ).slice(0, 4); // Maximal 4 Einträge
+
+            filteredMedia.forEach(media => {
+                const item = document.createElement('div');
+                item.className = `library-item ${media.type} downloaded`;
+                
+                const title = document.createElement('div');
+                title.className = 'library-item-title';
+                title.textContent = media.title;
+                
+                const controls = document.createElement('div');
+                controls.className = 'library-item-controls';
+                
+                const playButton = document.createElement('button');
+                playButton.className = 'play-button';
+                playButton.innerHTML = '▶';
+                playButton.onclick = (e) => {
+                    e.stopPropagation();
+                    playMedia(media);
+                };
+                
+                controls.appendChild(playButton);
+                item.appendChild(title);
+                item.appendChild(controls);
+                
+                if (media.cover) {
+                    item.style.backgroundImage = `url(${media.cover})`;
+                    item.style.backgroundSize = 'cover';
+                    item.style.backgroundPosition = 'center';
+                }
+                
+                container.appendChild(item);
+            });
+        }
+
+        function playMedia(media) {
+            // Stop any currently playing media
+            if (currentAudio) {
+                currentAudio.pause();
+                currentAudio = null;
+            }
+            if (currentVideo) {
+                currentVideo.pause();
+                currentVideo = null;
+            }
+
+            if (media.type === 'audio') {
+                const audio = new Audio(media.data);
+                audio.play();
+                currentAudio = audio;
+            } else {
+                const video = document.createElement('video');
+                video.src = media.data;
+                video.controls = true;
+                video.style.position = 'fixed';
+                video.style.top = '50%';
+                video.style.left = '50%';
+                video.style.transform = 'translate(-50%, -50%)';
+                video.style.maxWidth = '90%';
+                video.style.maxHeight = '80vh';
+                video.style.zIndex = '2001';
+                document.body.appendChild(video);
+                video.play();
+                currentVideo = video;
+
+                // Click outside to close video
+                video.onclick = (e) => e.stopPropagation();
+                document.onclick = (e) => {
+                    if (e.target !== video) {
+                        video.remove();
+                        currentVideo = null;
+                        document.onclick = null;
+                    }
+                };
+            }
+        }
+
+        let currentAudio = null;
+        let currentVideo = null;
+
         function handleButtonClick(type) {
             const modal = document.getElementById(type + 'Modal');
             if (modal.style.display === 'block') {
@@ -375,8 +744,198 @@
                 // Hide other modals
                 document.querySelectorAll('.library-modal').forEach(m => m.style.display = 'none');
                 modal.style.display = 'block';
+                updateLibrary(type);
             }
         }
+
+        // Admin System
+        const adminModal = document.querySelector('.admin-modal');
+        const adminButton = document.querySelector('.admin-button');
+
+        function openAdminModal() {
+            adminModal.style.display = 'block';
+        }
+
+        function closeAdminModal() {
+            adminModal.style.display = 'none';
+            document.getElementById('adminPassword').value = '';
+            document.getElementById('parentName').value = '';
+            document.getElementById('childName').value = '';
+            document.getElementById('childBirthday').value = '';
+        }
+
+        // Close modal when clicking outside
+        window.addEventListener('click', (e) => {
+            if (e.target === adminModal) {
+                closeAdminModal();
+            }
+        });
+
+        function validatePassword() {
+            const password = document.getElementById('adminPassword').value;
+            const parentName = document.getElementById('parentName').value;
+            const childName = document.getElementById('childName').value;
+            const childBirthday = document.getElementById('childBirthday').value;
+
+            if (!parentName || !childName || !childBirthday) {
+                alert('Bitte alle Felder ausfüllen');
+                return;
+            }
+
+            const regex = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8}$/;
+            const letterCount = (password.match(/[A-Za-z]/g) || []).length;
+            const numberCount = (password.match(/\d/g) || []).length;
+
+            if (regex.test(password) && letterCount === 6 && numberCount === 2) {
+                // Speichere Benutzerdaten
+                const userData = {
+                    parentName,
+                    childName,
+                    birthday: childBirthday,
+                    lastLogin: new Date().toISOString()
+                };
+                localStorage.setItem('userData', JSON.stringify(userData));
+                
+                // Speichere Geburtstagsdaten separat für die Geburtstagsprüfung
+                const birthdayData = {
+                    birthday: childBirthday,
+                    lastShown: null
+                };
+                localStorage.setItem('birthdayData', JSON.stringify(birthdayData));
+
+                // Öffne Upload-Modal
+                adminModal.style.display = 'none';
+                document.getElementById('uploadModal').style.display = 'block';
+                
+                // Formular zurücksetzen
+                document.getElementById('adminPassword').value = '';
+                document.getElementById('parentName').value = '';
+                document.getElementById('childName').value = '';
+                document.getElementById('childBirthday').value = '';
+            } else {
+                alert('Passwort muss 6 Buchstaben und 2 Zahlen enthalten');
+            }
+        }
+
+        // Upload System
+        const uploadModal = document.querySelector('.upload-modal');
+        const progressBar = document.querySelector('.upload-progress-bar');
+        const progressContainer = document.querySelector('.upload-progress');
+
+        function closeUploadModal() {
+            uploadModal.style.display = 'none';
+            progressContainer.style.display = 'none';
+            progressBar.style.width = '0%';
+        }
+
+        function handleUpload() {
+            const title = document.getElementById('mediaTitle').value;
+            const file = document.getElementById('mediaFile').files[0];
+            const cover = document.getElementById('mediaCover').files[0];
+
+            if (!title || !file) {
+                alert('Bitte Titel und Datei auswählen');
+                return;
+            }
+
+            // Validate file type
+            const validTypes = ['.mp3', '.wav', '.mp4'];
+            const fileExtension = '.' + file.name.split('.').pop().toLowerCase();
+            if (!validTypes.includes(fileExtension)) {
+                alert('Nur MP3, WAV und MP4 Dateien sind erlaubt');
+                return;
+            }
+
+            // Show progress bar
+            progressContainer.style.display = 'block';
+            progressBar.style.width = '0%';
+
+            // Read and store file
+            const reader = new FileReader();
+            reader.onprogress = (e) => {
+                if (e.lengthComputable) {
+                    const progress = (e.loaded / e.total) * 100;
+                    progressBar.style.width = progress + '%';
+                }
+            };
+
+            reader.onload = function(e) {
+                const mediaData = {
+                    title: title,
+                    type: fileExtension === '.mp4' ? 'video' : 'audio',
+                    data: e.target.result,
+                    timestamp: Date.now()
+                };
+
+                if (cover) {
+                    const coverReader = new FileReader();
+                    coverReader.onload = function(e) {
+                        mediaData.cover = e.target.result;
+                        storeMedia(mediaData);
+                    };
+                    coverReader.readAsDataURL(cover);
+                } else {
+                    storeMedia(mediaData);
+                }
+            };
+
+            reader.readAsDataURL(file);
+        }
+
+        function storeMedia(mediaData) {
+            // Get existing media list or create new one
+            let mediaList = JSON.parse(localStorage.getItem('mediaList') || '[]');
+            mediaList.push(mediaData);
+            localStorage.setItem('mediaList', JSON.stringify(mediaList));
+            
+            alert('Medium erfolgreich hinzugefügt!');
+            closeUploadModal();
+            
+            // Clear form
+            document.getElementById('mediaTitle').value = '';
+            document.getElementById('mediaFile').value = '';
+            document.getElementById('mediaCover').value = '';
+        }
+
+        // Birthday System
+        function checkBirthday() {
+            const today = new Date();
+            const birthdayData = localStorage.getItem('birthdayData');
+            
+            if (birthdayData) {
+                const data = JSON.parse(birthdayData);
+                const lastShown = data.lastShown ? new Date(data.lastShown) : null;
+                const birthday = new Date(data.birthday);
+                
+                // Prüfe ob heute Geburtstag ist und die Nachricht noch nicht heute gezeigt wurde
+                if (today.getDate() === birthday.getDate() && 
+                    today.getMonth() === birthday.getMonth() && 
+                    (!lastShown || lastShown.toDateString() !== today.toDateString())) {
+                    
+                    // Zeige Geburtstagsnachricht
+                    const birthdayMessage = document.getElementById('birthdayMessage');
+                    birthdayMessage.style.display = 'block';
+                    
+                    // Speichere wann die Nachricht zuletzt gezeigt wurde
+                    data.lastShown = today.toISOString();
+                    localStorage.setItem('birthdayData', JSON.stringify(data));
+                    
+                    // Vorbereitung für Geburtstagssong (Platzhalter)
+                    const birthdaySongPath = './assets/birthday_song.mp3';
+                    
+                    // Event-Listener für Medien-Buttons
+                    const mediaButtons = document.querySelectorAll('.nav-button');
+                    mediaButtons.forEach(button => {
+                        button.addEventListener('click', () => {
+                            birthdayMessage.style.display = 'none';
+                        }, { once: true });
+                    });
+                }
+            }
+        }
+
+        // Prüfe beim Start der App
+        window.addEventListener('load', checkBirthday);
 
         // Service Worker Registration
         if ('serviceWorker' in navigator) {
