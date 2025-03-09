@@ -43,21 +43,21 @@
             text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
         }
 
-        /* Navigation - Neu und Einfach */
+        /* Navigation */
         .nav-container {
+            display: flex;
+            gap: 20px;
             position: fixed;
             bottom: 20px;
             left: 0;
             right: 0;
-            display: flex;
             justify-content: center;
-            gap: 20px;
-            padding: 0 20px;
         }
 
         .nav-button {
             width: 90px;
             height: 90px;
+            aspect-ratio: 1;
             border-radius: 50%;
             border: none;
             cursor: pointer;
@@ -69,25 +69,30 @@
             align-items: center;
             justify-content: center;
             text-align: center;
+            background: transparent;
         }
 
         .nav-button:active {
             transform: scale(0.95);
         }
 
-        /* Button Colors */
-        .audiobook { background-color: rgba(255,255,0,0.6); }
-        .video { background-color: rgba(173,216,230,0.6); }
-        .music { background-color: rgba(255,160,160,0.6); }
-        .action { background-color: rgba(144,238,144,0.6); }
-        .login { 
+        .nav-button.audiobook { background: rgba(255,255,0,0.6); }
+        .nav-button.video { background: rgba(173,216,230,0.6); }
+        .nav-button.music { background: rgba(255,160,160,0.6); }
+        .nav-button.action { background: rgba(144,238,144,0.6); }
+
+        .login-button {
             position: fixed;
             top: 20px;
             right: 20px;
-            background-color: rgba(255,192,203,0.6);
+            background: rgba(255,192,203,0.6) !important;
+            width: 90px !important;
+            height: 90px !important;
+            aspect-ratio: 1;
+            font-size: 16px !important;
+            border-radius: 50%;
         }
 
-        /* Mobile Anpassungen */
         @media (max-width: 480px) {
             .nav-button {
                 width: 70px;
@@ -151,7 +156,7 @@
         <button class="nav-button action" onclick="playQuackSound()">Action</button>
     </nav>
 
-    <button class="nav-button login" onclick="showModal('loginModal')">Eltern<br>Login</button>
+    <button class="login-button" onclick="showModal('loginModal')">Eltern<br>Login</button>
 
     <!-- Login Modal -->
     <div class="modal-background" id="modalBackground"></div>
