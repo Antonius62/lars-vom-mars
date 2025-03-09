@@ -19,7 +19,7 @@
             box-sizing: border-box;
         }
 
-        /* Base Styles */
+        /* Base */
         body {
             margin: 0;
             padding: 0;
@@ -37,27 +37,13 @@
             overflow-x: hidden;
         }
 
-        /* Header */
-        .app-header {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            text-align: center;
-            padding: 10px;
-            z-index: 1000;
+        h1 {
+            margin-top: 20px;
+            font-size: 2em;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
         }
 
-        .app-title {
-            font-size: 1.5em;
-            text-shadow: 2px 2px 4px black;
-            color: rgba(255,255,255,0.5);
-            line-height: 1.4;
-            font-family: 'Montserrat', sans-serif;
-            font-weight: 600;
-        }
-
-        /* Navigation - sauber und isoliert */
+        /* Navigation - Neu und Einfach */
         .nav-container {
             position: fixed;
             bottom: 20px;
@@ -66,7 +52,7 @@
             display: flex;
             justify-content: center;
             gap: 20px;
-            z-index: 9999;
+            padding: 0 20px;
         }
 
         .nav-button {
@@ -79,18 +65,29 @@
             font-weight: bold;
             color: black;
             transition: transform 0.2s;
-            background: transparent;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
         }
 
-        .nav-button:hover {
-            transform: scale(1.1);
+        .nav-button:active {
+            transform: scale(0.95);
         }
 
-        .nav-button.audiobook { background: rgba(255,255,0,0.6); }
-        .nav-button.video { background: rgba(173,216,230,0.6); }
-        .nav-button.music { background: rgba(255,160,160,0.6); }
-        .nav-button.action { background: rgba(144,238,144,0.6); }
+        /* Button Colors */
+        .audiobook { background-color: rgba(255,255,0,0.6); }
+        .video { background-color: rgba(173,216,230,0.6); }
+        .music { background-color: rgba(255,160,160,0.6); }
+        .action { background-color: rgba(144,238,144,0.6); }
+        .login { 
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background-color: rgba(255,192,203,0.6);
+        }
 
+        /* Mobile Anpassungen */
         @media (max-width: 480px) {
             .nav-button {
                 width: 70px;
@@ -99,19 +96,7 @@
             }
         }
 
-        /* Basis-Styles */
-        .login-button {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            background: rgba(255,192,203,0.6) !important;
-            width: 100px !important;
-            height: 100px !important;
-            font-size: 16px !important;
-            z-index: 100;
-            border-radius: 50%;
-        }
-
+        /* Login Modal */
         .modal {
             display: none;
             position: fixed;
@@ -121,8 +106,8 @@
             background: white;
             padding: 20px;
             border-radius: 15px;
-            box-shadow: 0 0 10px rgba(0,0,0,0.5);
             z-index: 1000;
+            color: black;
         }
 
         .modal-background {
@@ -136,39 +121,7 @@
             z-index: 999;
         }
 
-        /* Bibliothek komplett entfernen */
-        .library-modal, .library-grid {
-            display: none !important;
-        }
-
-        /* Player Controls */
-        .player-controls {
-            display: none;
-            position: absolute;
-            bottom: 10px;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 90%;
-            text-align: center;
-        }
-
-        .progress-bar {
-            width: 100%;
-            height: 4px;
-            background: rgba(255,255,255,0.3);
-            border-radius: 2px;
-            margin: 5px 0;
-        }
-
-        .progress {
-            width: 0%;
-            height: 100%;
-            background: rgba(255,255,0,0.8);
-            border-radius: 2px;
-            transition: width 0.1s linear;
-        }
-
-        /* Lyrics Container */
+        /* Lyrics */
         .lyrics-container {
             position: fixed;
             bottom: 180px;
@@ -176,61 +129,31 @@
             transform: translateX(-50%);
             width: 90%;
             max-width: 800px;
-            height: 200px;
             text-align: center;
-            font-family: 'Montserrat', sans-serif;
-            font-size: 16px;
-            font-weight: 600;
-            color: #ffffff;
-            text-shadow: 1px 1px 2px rgba(0,0,0,0.9), 
-                       2px 2px 4px rgba(0,0,0,0.7); /* Verstärkter Schatten für bessere Lesbarkeit */
             display: none;
-            background: transparent;
-            overflow: hidden;
-        }
-
-        .lyrics-block {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            height: 100%;
-            line-height: 1.2;
         }
 
         .lyrics-line {
-            opacity: 0;
-            animation: fadeIn 0.5s forwards;
-            margin: 2px 0;
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
-        }
-
-        @media (max-width: 768px) {
-            .lyrics-container {
-                bottom: 150px;
-                font-size: 14px;
-            }
+            font-size: 18px;
+            margin: 10px 0;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.7);
         }
     </style>
 </head>
 <body>
     <h1>Lars vom Mars</h1>
 
-    <!-- Nur Login-Button und Navigation -->
-    <button class="nav-button login-button" onclick="showModal('loginModal')">Eltern<br>Login</button>
-
+    <!-- Navigation -->
     <nav class="nav-container">
-        <!-- Hörbuch temporär entfernt -->
+        <button class="nav-button audiobook">Hörbuch</button>
         <button class="nav-button video">Video</button>
         <button class="nav-button music" onclick="toggleMusic()">Musik</button>
         <button class="nav-button action" onclick="playQuackSound()">Action</button>
     </nav>
 
-    <!-- Nur wichtige Modals -->
+    <button class="nav-button login" onclick="showModal('loginModal')">Eltern<br>Login</button>
+
+    <!-- Login Modal -->
     <div class="modal-background" id="modalBackground"></div>
     <div class="modal" id="loginModal">
         <h2>Eltern Login</h2>
@@ -238,12 +161,11 @@
         <button onclick="checkPassword()">Login</button>
     </div>
 
-    <div class="lyrics-container">
-        <!-- Lyrics werden dynamisch eingefügt -->
-    </div>
+    <!-- Lyrics Container -->
+    <div class="lyrics-container"></div>
 
     <script>
-        // Basis-Funktionen
+        // Modal Funktionen
         function showModal(modalId) {
             document.getElementById(modalId).style.display = 'block';
             document.getElementById('modalBackground').style.display = 'block';
@@ -254,7 +176,7 @@
             document.getElementById('modalBackground').style.display = 'none';
         }
 
-        // Musik-System
+        // Musik Funktionen
         function toggleMusic() {
             const music = document.getElementById('backgroundMusic');
             if (music.paused) {
@@ -267,22 +189,20 @@
         }
 
         function showLyrics() {
-            const container = document.querySelector('.lyrics-container');
-            container.classList.add('visible');
+            document.querySelector('.lyrics-container').style.display = 'block';
         }
 
         function hideLyrics() {
-            const container = document.querySelector('.lyrics-container');
-            container.classList.remove('visible');
+            document.querySelector('.lyrics-container').style.display = 'none';
         }
 
-        // Action-Sound
+        // Sound Effekte
         function playQuackSound() {
             const quack = document.getElementById('quackSound');
             quack.play();
         }
 
-        // Login-System
+        // Login
         function checkPassword() {
             const password = document.getElementById('password').value;
             if (password === '123456') {
@@ -293,7 +213,7 @@
             }
         }
 
-        // Modal-Schließen
+        // Modal Schließen bei Klick außerhalb
         document.getElementById('modalBackground').addEventListener('click', function() {
             document.querySelectorAll('.modal').forEach(modal => {
                 modal.style.display = 'none';
