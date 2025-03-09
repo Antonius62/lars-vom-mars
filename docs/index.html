@@ -57,7 +57,7 @@
             font-weight: 600;
         }
 
-        /* Hauptnavigation - komplett neu und einfach */
+        /* Navigation - sauber und isoliert */
         .nav-container {
             position: fixed;
             bottom: 20px;
@@ -66,19 +66,24 @@
             display: flex;
             justify-content: center;
             gap: 20px;
-            z-index: 9999; /* Über allem */
+            z-index: 9999;
         }
 
         .nav-button {
             width: 90px;
             height: 90px;
-            aspect-ratio: 1;
             border-radius: 50%;
             border: none;
+            cursor: pointer;
+            font-size: 16px;
             font-weight: bold;
             color: black;
-            cursor: pointer;
-            background: transparent; /* Wichtig für echte Transparenz */
+            transition: transform 0.2s;
+            background: transparent;
+        }
+
+        .nav-button:hover {
+            transform: scale(1.1);
         }
 
         .nav-button.audiobook { background: rgba(255,255,0,0.6); }
@@ -90,78 +95,50 @@
             .nav-button {
                 width: 70px;
                 height: 70px;
+                font-size: 14px;
             }
         }
 
-        /* Bibliothek temporär auskommentiert */
-        /*
-        .library-modal {
-            display: none;
+        /* Basis-Styles */
+        .login-button {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: rgba(255,192,203,0.6) !important;
+            width: 100px !important;
+            height: 100px !important;
+            font-size: 16px !important;
+            z-index: 100;
+            border-radius: 50%;
         }
-        .library-grid {
-            display: none;
-        }
-        */
 
-        /* Library Styles - komplett separat */
-        .library-modal {
+        .modal {
             display: none;
             position: fixed;
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
-            width: 95%;
-            max-width: 1100px;
-            max-height: 90vh;
-            background: transparent;
-            border-radius: 20px;
-            padding: 40px;
-            z-index: 1001;
-            overflow-y: auto;
+            background: white;
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.5);
+            z-index: 1000;
         }
 
-        .library-grid {
-            display: grid;
-            grid-template-columns: repeat(5, 1fr);
-            gap: 20px;
-            margin-top: 20px;
+        .modal-background {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 999;
         }
 
-        .library-item {
-            width: 180px;
-            height: 180px;
-            border-radius: 50%;
-            background: rgba(255, 255, 255, 0.1);
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            position: relative;
-            backdrop-filter: blur(5px);
-            transition: all 0.3s ease;
-        }
-
-        /* Upload Button */
-        .upload-button {
-            position: absolute;
-            top: 20px;
-            right: 20px;
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            background: rgba(255, 255, 255, 0.9);
-            border: none;
-            cursor: pointer;
-            font-size: 20px;
-            color: #333;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: transform 0.2s;
-        }
-
-        .upload-button:hover {
-            transform: scale(1.1);
+        /* Bibliothek komplett entfernen */
+        .library-modal, .library-grid {
+            display: none !important;
         }
 
         /* Player Controls */
@@ -241,9 +218,10 @@
     </style>
 </head>
 <body>
-    <header class="app-header">
-        <h1 class="app-title">Willkommen in der Welt von Lars vom Mars</h1>
-    </header>
+    <h1>Lars vom Mars</h1>
+
+    <!-- Nur Login-Button und Navigation -->
+    <button class="nav-button login-button" onclick="showModal('loginModal')">Eltern<br>Login</button>
 
     <nav class="nav-container">
         <button class="nav-button audiobook">Hörbuch</button>
@@ -252,274 +230,76 @@
         <button class="nav-button action" onclick="playQuackSound()">Action</button>
     </nav>
 
-    <!-- Bibliothek temporär auskommentiert -->
-    <!--
-    <div id="audiobookModal" class="library-modal">
-        <button class="upload-button" onclick="openUploadModal('audio')">+</button>
-        <div class="library-grid">
-        </div>
+    <!-- Nur wichtige Modals -->
+    <div class="modal-background" id="modalBackground"></div>
+    <div class="modal" id="loginModal">
+        <h2>Eltern Login</h2>
+        <input type="password" id="password" placeholder="Passwort">
+        <button onclick="checkPassword()">Login</button>
     </div>
-
-    <div id="videoModal" class="library-modal">
-        <button class="upload-button" onclick="openUploadModal('video')">+</button>
-        <div class="library-grid">
-        </div>
-    </div>
-    -->
 
     <div class="lyrics-container">
-        <!-- Lyrics will be dynamically added here -->
+        <!-- Lyrics werden dynamisch eingefügt -->
     </div>
 
     <script>
-        // Musik und Liedtext-System
-        let musicPlaying = false;
-        const song = new Audio('./lars_vom_mars_song.wav');
-        const lyricsContainer = document.querySelector('.lyrics-container');
-        window.timeouts = [];
-
-        function displayBlock(lines, startTime, nextBlockTime) {
-            window.timeouts.push(setTimeout(() => {
-                const block = document.createElement('div');
-                block.className = 'lyrics-block';
-                lyricsContainer.innerHTML = ''; // Vorherigen Block löschen
-                lyricsContainer.appendChild(block);
-
-                lines.forEach((line, index) => {
-                    window.timeouts.push(setTimeout(() => {
-                        const div = document.createElement('div');
-                        div.className = 'lyrics-line';
-                        div.textContent = line;
-                        block.appendChild(div);
-                    }, index * 4000)); // 4 Sekunden zwischen den Zeilen
-                });
-            }, startTime));
+        // Basis-Funktionen
+        function showModal(modalId) {
+            document.getElementById(modalId).style.display = 'block';
+            document.getElementById('modalBackground').style.display = 'block';
         }
 
-        function showLyrics() {
-            lyricsContainer.style.display = 'block';
-            
-            // Verse 1 (10 Sekunden)
-            const verse1 = [
-                "In stummen Nächten singt Lars, der Frosch allein,",
-                "Er schwingt auf seinen Träumen, sehnt sich nach daheim,",
-                "In ferner Stille, hallt leise sein Gesang,",
-                "Ein Lied von Wüsten, die einst nach Heimat klang."
-            ];
-            displayBlock(verse1, 10000);
-
-            // Chorus 1 (36 Sekunden)
-            const chorus1 = [
-                "Lars vom Mars, Lars vom Mars,",
-                "sein Herz so groß, sein Blick so klar.",
-                "Er singt vom roten Staub der Ewigkeit,",
-                "träumt von Heimat, doch die bleibt so weit."
-            ];
-            displayBlock(chorus1, 36000);
-
-            // Verse 2 (56 Sekunden)
-            const verse2 = [
-                "Sein Lied fliegt durch die Stürme aus feurigem Sand,",
-                "verloren in den Dünen, in einem fremden Land.",
-                "Die Krater sind wie Narben, gezeichnet vom All,",
-                "und Lars fragt den Himmel: Wann endet mein Fall?"
-            ];
-            displayBlock(verse2, 56000);
-
-            // Chorus 2 (84 Sekunden)
-            const chorus2 = [
-                "Lars vom Mars, Lars vom Mars,",
-                "sein Herz so groß, sein Blick so klar.",
-                "Er singt vom roten Staub der Ewigkeit,",
-                "träumt von Heimat, doch die bleibt so weit."
-            ];
-            displayBlock(chorus2, 84000);
-
-            // Bridge (102 Sekunden)
-            const bridge = [
-                "Vielleicht hört ihn der Wind, der vom Olymp weht,",
-                "vielleicht singt er für Sterne, die niemand je versteht,",
-                "Vielleicht trägt ihn der Traum durch die Unendlichkeit,",
-                "bis jemand ruft: Lars, es ist soweit!"
-            ];
-            displayBlock(bridge, 102000);
-
-            // Chorus Outro (132 Sekunden)
-            const chorusOutro = [
-                "Lars vom Mars, Lars vom Mars,",
-                "sein Herz so groß, sein Blick so klar.",
-                "Er singt vom roten Staub der Ewigkeit,",
-                "träumt von Heimat, doch die bleibt so weit."
-            ];
-            displayBlock(chorusOutro, 132000);
+        function closeModal(modalId) {
+            document.getElementById(modalId).style.display = 'none';
+            document.getElementById('modalBackground').style.display = 'none';
         }
 
-        function hideLyrics() {
-            lyricsContainer.style.display = 'none';
-            lyricsContainer.innerHTML = '';
-            window.timeouts.forEach(timeout => clearTimeout(timeout));
-            window.timeouts = [];
-        }
-
+        // Musik-System
         function toggleMusic() {
-            if (!musicPlaying) {
-                song.currentTime = 0;
-                song.play();
-                musicPlaying = true;
+            const music = document.getElementById('backgroundMusic');
+            if (music.paused) {
+                music.play();
                 showLyrics();
             } else {
-                song.pause();
-                song.currentTime = 0;
-                musicPlaying = false;
+                music.pause();
                 hideLyrics();
             }
         }
 
-        // Quack Sound System
-        let quackPlaying = false;
-        let quackSound = null;
+        function showLyrics() {
+            const container = document.querySelector('.lyrics-container');
+            container.classList.add('visible');
+        }
 
+        function hideLyrics() {
+            const container = document.querySelector('.lyrics-container');
+            container.classList.remove('visible');
+        }
+
+        // Action-Sound
         function playQuackSound() {
-            if (!quackPlaying) {
-                quackSound = new Audio('./quack_sound.mp3');
-                quackSound.play();
-                quackPlaying = true;
+            const quack = document.getElementById('quackSound');
+            quack.play();
+        }
+
+        // Login-System
+        function checkPassword() {
+            const password = document.getElementById('password').value;
+            if (password === '123456') {
+                alert('Login erfolgreich!');
+                closeModal('loginModal');
             } else {
-                if (quackSound) {
-                    quackSound.pause();
-                    quackSound.currentTime = 0;
-                }
-                quackPlaying = false;
+                alert('Falsches Passwort!');
             }
         }
 
-        // Bibliotheks-System temporär deaktiviert
-        function handleButtonClick(type) {
-            // Deaktiviert
-            return;
-        }
-
-        // Admin System
-        const adminModal = document.querySelector('.admin-modal');
-        const adminButton = document.querySelector('.admin-button');
-
-        function openAdminModal() {
-            adminModal.style.display = 'block';
-        }
-
-        function closeAdminModal() {
-            adminModal.style.display = 'none';
-            document.getElementById('adminPassword').value = '';
-            document.getElementById('parentName').value = '';
-            document.getElementById('childName').value = '';
-            document.getElementById('childBirthday').value = '';
-        }
-
-        // Close modal when clicking outside
-        window.addEventListener('click', (e) => {
-            if (e.target === adminModal) {
-                closeAdminModal();
-            }
-        });
-
-        function validatePassword() {
-            const password = document.getElementById('adminPassword').value;
-            const parentName = document.getElementById('parentName').value;
-            const childName = document.getElementById('childName').value;
-            const childBirthday = document.getElementById('childBirthday').value;
-
-            if (!parentName || !childName || !childBirthday) {
-                alert('Bitte alle Felder ausfüllen');
-                return;
-            }
-
-            const regex = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8}$/;
-            const letterCount = (password.match(/[A-Za-z]/g) || []).length;
-            const numberCount = (password.match(/\d/g) || []).length;
-
-            if (regex.test(password) && letterCount === 6 && numberCount === 2) {
-                // Speichere Benutzerdaten
-                const userData = {
-                    parentName,
-                    childName,
-                    birthday: childBirthday,
-                    lastLogin: new Date().toISOString()
-                };
-                localStorage.setItem('userData', JSON.stringify(userData));
-                
-                // Speichere Geburtstagsdaten separat für die Geburtstagsprüfung
-                const birthdayData = {
-                    birthday: childBirthday,
-                    lastShown: null
-                };
-                localStorage.setItem('birthdayData', JSON.stringify(birthdayData));
-
-                // Öffne Upload-Modal
-                adminModal.style.display = 'none';
-                document.getElementById('uploadModal').style.display = 'block';
-                
-                // Formular zurücksetzen
-                document.getElementById('adminPassword').value = '';
-                document.getElementById('parentName').value = '';
-                document.getElementById('childName').value = '';
-                document.getElementById('childBirthday').value = '';
-            } else {
-                alert('Passwort muss 6 Buchstaben und 2 Zahlen enthalten');
-            }
-        }
-
-        // Birthday System
-        function checkBirthday() {
-            const today = new Date();
-            const birthdayData = localStorage.getItem('birthdayData');
-            
-            if (birthdayData) {
-                const data = JSON.parse(birthdayData);
-                const lastShown = data.lastShown ? new Date(data.lastShown) : null;
-                const birthday = new Date(data.birthday);
-                
-                // Prüfe ob heute Geburtstag ist und die Nachricht noch nicht heute gezeigt wurde
-                if (today.getDate() === birthday.getDate() && 
-                    today.getMonth() === birthday.getMonth() && 
-                    (!lastShown || lastShown.toDateString() !== today.toDateString())) {
-                    
-                    // Zeige Geburtstagsnachricht
-                    const birthdayMessage = document.getElementById('birthdayMessage');
-                    birthdayMessage.style.display = 'block';
-                    
-                    // Speichere wann die Nachricht zuletzt gezeigt wurde
-                    data.lastShown = today.toISOString();
-                    localStorage.setItem('birthdayData', JSON.stringify(data));
-                    
-                    // Vorbereitung für Geburtstagssong (Platzhalter)
-                    const birthdaySongPath = './assets/birthday_song.mp3';
-                    
-                    // Event-Listener für Medien-Buttons
-                    const mediaButtons = document.querySelectorAll('.nav-button');
-                    mediaButtons.forEach(button => {
-                        button.addEventListener('click', () => {
-                            birthdayMessage.style.display = 'none';
-                        }, { once: true });
-                    });
-                }
-            }
-        }
-
-        // Prüfe beim Start der App
-        window.addEventListener('load', checkBirthday);
-
-        // Service Worker Registration
-        if ('serviceWorker' in navigator) {
-            window.addEventListener('load', () => {
-                navigator.serviceWorker.register('./sw.js')
-                    .then(registration => {
-                        console.log('ServiceWorker registration successful');
-                    })
-                    .catch(err => {
-                        console.log('ServiceWorker registration failed: ', err);
-                    });
+        // Modal-Schließen
+        document.getElementById('modalBackground').addEventListener('click', function() {
+            document.querySelectorAll('.modal').forEach(modal => {
+                modal.style.display = 'none';
             });
-        }
+            this.style.display = 'none';
+        });
     </script>
 </body>
 </html>
