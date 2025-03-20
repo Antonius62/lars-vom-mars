@@ -460,8 +460,11 @@
                 const db = event.target.result;
                 if (!db.objectStoreNames.contains('audiobooks')) {
                     hideLoading();
-                    alert('Keine Hörbücher-Datenbank gefunden');
-                    goBack();
+                    if (confirm('Keine Hörbücher gefunden. Möchten Sie zur Admin-Seite, um den Demo-Code "Lars" einzulösen?')) {
+                        window.location.href = 'admin.html';
+                    } else {
+                        goBack();
+                    }
                     return;
                 }
                 
@@ -474,8 +477,11 @@
                     
                     if (!audiobook) {
                         hideLoading();
-                        alert('Hörbuch nicht gefunden');
-                        goBack();
+                        if (confirm('Hörbuch nicht gefunden. Möchten Sie zur Admin-Seite, um den Demo-Code "Lars" einzulösen?')) {
+                            window.location.href = 'admin.html';
+                        } else {
+                            goBack();
+                        }
                         return;
                     }
                     
