@@ -269,6 +269,7 @@
         <div class="admin-tabs">
             <button class="tab-button active" onclick="showTab('upload')">Hörbuch hochladen</button>
             <button class="tab-button" onclick="showTab('manage')">Hörbücher verwalten</button>
+            <button class="tab-button" onclick="showTab('redeem')">Code einlösen</button>
         </div>
         
         <div id="status-message" class="status-message" style="display: none;"></div>
@@ -323,6 +324,23 @@
                 <div class="empty-message">Keine Hörbücher vorhanden.</div>
             </div>
         </div>
+        
+        <div id="redeem-tab" class="tab-content">
+            <h2>Hörbuch-Code einlösen</h2>
+            <div class="form-group">
+                <label for="download-code">Download-Code:</label>
+                <input type="text" id="download-code" placeholder="Geben Sie Ihren Code ein">
+            </div>
+            <button onclick="redeemCode()">Code einlösen</button>
+            
+            <div id="redeem-status" class="status-message" style="display: none;"></div>
+            
+            <h3 style="margin-top: 30px;">Verfügbare Hörbücher</h3>
+            <div id="available-downloads" class="audiobook-list">
+                <!-- Verfügbare Downloads erscheinen hier -->
+                <div class="empty-message">Keine Hörbücher verfügbar.</div>
+            </div>
+        </div>
     </div>
     
     <script>
@@ -345,6 +363,8 @@
             
             if (tabId === 'manage') {
                 loadAudiobooks();
+            } else if (tabId === 'redeem') {
+                loadAvailableDownloads();
             }
         }
         
@@ -663,6 +683,103 @@
         // Hörbuch bearbeiten (vereinfachte Version - nur Anzeige)
         function editAudiobook(audiobookId) {
             showStatus('Bearbeiten-Funktion wird in einer zukünftigen Version implementiert.', 'info');
+        }
+        
+        // Code einlösen
+        function redeemCode() {
+            const code = document.getElementById('download-code').value.trim();
+            
+            if (!code) {
+                showStatus('Bitte geben Sie einen Code ein!', 'error');
+                return;
+            }
+            
+            // Für Testzwecke: Code "Lars" akzeptieren
+            if (code === "Lars") {
+                // Testdaten für ein Hörbuch
+                const demoAudiobook = {
+                    id: 'demo-' + Date.now().toString(),
+                    title: 'Lars vom Mars - Demoversion',
+                    description: 'Eine kurze Demoversion des Hörbuchs Lars vom Mars. Dieses Hörbuch wurde mit dem Testcode "Lars" freigeschaltet.',
+                    coverImage: null,  // Kein Cover-Bild für die Demo
+                    chapters: [
+                        {
+                            id: 'chapter1',
+                            title: 'Kapitel 1: Der Start',
+                            // Einfaches 1-Sekunden Audio-Signal für Testzwecke
+                            audioUrl: 'data:audio/wav;base64,UklGRigAAABXQVZFZm10IBAAAAABAAEARKwAAIhYAQACABAAZGF0YQQAAAAzAFQAaQB+AJMApwC7AM8A4wD3AAsAHwAzAEcAWwBvAIMAcQBfAE0AOQAlABEA/f/p/9X/wf+t/5n/hf9x/13/Sf81/yH/Df/5/uX+0f69/qn+lf6B/m3+Wf5F/jH+Hf4J/vX94f3N/bn9pf2R/X39af1V/UH9Lf0Z/QX98/zf/Mv8t/yj/I/8e/xn/FP8P/wr/Bf8A/zv+9v7x/uz+5/7i/t3+2P7T/s7+yT7EPr8+ej51/nD+bD5nPmI+XP5YPlL+Tf5I/kP+fv46fjV+MH4rfiZ+IX4cPhe+En4NfghUklGRigAAABXQVZFZm10IBAAAAABAAEARKwAAIhYAQACABAAZGF0YQQAAAAzAFQAaQB+AJMApwC7AM8A4wD3AAsAHwAzAEcAWwBvAIMAcQBfAE0AOQAlABEA/f/p/9X/wf+t/5n/hf9x/13/Sf81/yH/Df/5/uX+0f69/qn+lf6B/m3+Wf5F/jH+Hf4J/vX94f3N/bn9pf2R/X39af1V/UH9Lf0Z/QX98/zf/Mv8t/yj/I/8e/xn/FP8P/wr/Bf8A/zv+9v7x/uz+5/7i/t3+2P7T/s7+yT7EPr8+ej51/nD+bD5nPmI+XP5YPlL+Tf5I/kP+fv46fjV+MH4rfiZ+IX4cPhe+En4NfghUklGRigAAABXQVZFZm10IBAAAAABAAEARKwAAIhYAQACABAAZGF0YQQAAAAz'
+                        },
+                        {
+                            id: 'chapter2',
+                            title: 'Kapitel 2: Die Reise',
+                            // Einfaches 1-Sekunden Audio-Signal für Testzwecke (anderer Ton)
+                            audioUrl: 'data:audio/wav;base64,UklGRigAAABXQVZFZm10IBAAAAABAAEARKwAAIhYAQACABAAZGF0YQQAAAAzAFQAaQB+AJMApwC7AM8A4wD3AAsAHwAzAEcAWwBvAIMAcQBfAE0AOQAlABEA/f/p/9X/wf+t/5n/hf9x/13/Sf81/yH/Df/5/uX+0f69/qn+lf6B/m3+Wf5F/jH+Hf4J/vX94f3N/bn9pf2R/X39af1V/UH9Lf0Z/QX98/zf/Mv8t/yj/I/8e/xn/FP8P/wr/Bf8A/zv+9v7x/uz+5/7i/t3+2P7T/s7+yT7EPr8+ej51/nD+bD5nPmI+XP5YPlL+Tf5I/kP+fv46fjV+MH4rfiZ+IX4cPhe+En4NfghUklGRigAAABXQVZFZm10IBAAAAABAAEARKwAAIhYAQACABAAZGF0YQQAAAAzAFQAaQB+AJMApwC7AM8A4wD3AAsAHwAzAEcAWwBvAIMAcQBfAE0AOQAlABEA/f/p/9X/wf+t/5n/hf9x/13/Sf81/yH/Df/5/uX+0f69/qn+lf6B/m3+Wf5F/jH+Hf4J/vX94f3N/bn9pf2R/X39af1V/UH9Lf0Z/QX98/zf/Mv8t/yj/I/8e/xn/FP8P/wr/Bf8A/zv+9v7x/uz+5/7i/t3+2P7T/s7+yT7EPr8+ej51/nD+bD5nPmI+XP5YPlL+Tf5I/kP+fv46fjV+MH4rfiZ+IX4cPhe+En4NfghUklGRigAAABXQVZFZm10IBAAAAABAAEARKwAAIhYAQACABAAZGF0YQQAAAAz'
+                        }
+                    ],
+                    dateAdded: new Date().toISOString(),
+                    isDemo: true
+                };
+                
+                // Hörbuch in der Datenbank speichern
+                saveToIndexedDB(demoAudiobook)
+                    .then(() => {
+                        document.getElementById('download-code').value = '';
+                        showStatus('Code erfolgreich eingelöst! Das Demo-Hörbuch wurde zu Ihrer Bibliothek hinzugefügt.', 'success');
+                        loadAvailableDownloads();
+                    })
+                    .catch(error => {
+                        showStatus('Fehler beim Speichern des Hörbuchs: ' + error, 'error');
+                    });
+            } else {
+                showStatus('Ungültiger Code. Bitte versuchen Sie es erneut.', 'error');
+            }
+        }
+        
+        // Verfügbare Downloads laden
+        function loadAvailableDownloads() {
+            // Hier würden normalerweise verfügbare Downloads vom Server abgerufen
+            // Für Testzwecke zeigen wir nur eine festgelegte Liste an
+            
+            const availableList = document.getElementById('available-downloads');
+            
+            // Prüfen, ob bereits ein Demo-Hörbuch in der Datenbank ist
+            const request = indexedDB.open('LarsVomMarsDB', 1);
+            
+            request.onsuccess = function(event) {
+                const db = event.target.result;
+                if (!db.objectStoreNames.contains('audiobooks')) {
+                    showDemoBooks();
+                    return;
+                }
+                
+                const transaction = db.transaction(['audiobooks'], 'readonly');
+                const store = transaction.objectStore('audiobooks');
+                const getAllRequest = store.getAll();
+                
+                getAllRequest.onsuccess = function() {
+                    const audiobooks = getAllRequest.result;
+                    const hasDemo = audiobooks.some(book => book.isDemo);
+                    
+                    if (hasDemo) {
+                        availableList.innerHTML = '<div class="info-message">Sie haben bereits ein Demo-Hörbuch in Ihrer Bibliothek. Gehen Sie zur Bibliothek, um es anzuhören.</div>';
+                    } else {
+                        showDemoBooks();
+                    }
+                };
+            };
+            
+            function showDemoBooks() {
+                availableList.innerHTML = `
+                    <div class="audiobook-item">
+                        <div style="width: 60px; height: 60px; background: rgba(255, 255, 0, 0.3); border-radius: 5px; display: flex; align-items: center; justify-content: center;">L</div>
+                        <div class="audiobook-info">
+                            <div class="audiobook-title">Lars vom Mars - Demoversion</div>
+                            <div style="font-size: 12px;">2 Kapitel</div>
+                            <div style="font-size: 12px; margin-top: 5px;">Geben Sie den Code "Lars" ein, um dieses Demo-Hörbuch freizuschalten</div>
+                        </div>
+                    </div>
+                `;
+            }
         }
         
         // Service Worker überprüfen
