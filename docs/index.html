@@ -61,7 +61,7 @@
             width: 90%;
             max-width: 800px;
             margin: 0 auto;
-            background: rgba(0, 0, 0, 0.1);
+            background: rgba(0, 0, 0, 0.1); /* Transparenz erhöht (von 0.2 auf 0.1) */
             backdrop-filter: blur(5px);
             border-radius: 20px;
             padding: 30px;
@@ -109,6 +109,143 @@
             z-index: 1000;
         }
         
+        /* Bibliotheksbereich */
+        .library-container {
+            display: none;
+            position: absolute;
+            top: 70px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 90%;
+            height: calc(100% - 200px);
+            background: rgba(0, 0, 0, 0.2);
+            backdrop-filter: blur(5px);
+            border-radius: 20px;
+            padding: 20px;
+            overflow-y: auto;
+            z-index: 50;
+        }
+        
+        .bubble-grid {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            grid-template-rows: repeat(2, 1fr);
+            gap: 15px;
+            padding: 10px;
+        }
+        
+        .media-bubble {
+            position: relative;
+            width: 100%;
+            padding-bottom: 100%; /* Quadratische Proportion */
+            border-radius: 50%;
+            cursor: pointer;
+        }
+        
+        .audiobook-bubble {
+            background: rgba(255, 255, 0, 0.3);
+        }
+        
+        .video-bubble {
+            background: rgba(173, 216, 230, 0.3);
+        }
+        
+        .bubble-number {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 24px;
+            font-weight: bold;
+            color: white;
+            text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.7);
+        }
+        
+        .downloaded {
+            box-shadow: 0 0 15px rgba(0, 255, 0, 0.7);
+            border: 2px solid rgba(0, 255, 0, 0.7);
+        }
+        
+        .download-status {
+            position: absolute;
+            bottom: 5px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0, 0, 0, 0.5);
+            color: white;
+            padding: 3px 8px;
+            border-radius: 10px;
+            font-size: 12px;
+            white-space: nowrap;
+        }
+        
+        .progress-bar {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            height: 4px;
+            background: rgba(0, 255, 0, 0.7);
+            border-radius: 0 0 0 20px;
+            width: 0;
+            transition: width 0.3s;
+        }
+        
+        .player-controls {
+            display: none;
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0, 0, 0, 0.7);
+            border-radius: 20px;
+            padding: 10px 20px;
+            width: 80%;
+            max-width: 500px;
+            z-index: 60;
+        }
+        
+        .time-display {
+            display: flex;
+            justify-content: space-between;
+            color: white;
+            margin-bottom: 5px;
+            font-size: 12px;
+        }
+        
+        .timeline {
+            height: 5px;
+            background: rgba(255, 255, 255, 0.3);
+            border-radius: 5px;
+            overflow: hidden;
+            margin-bottom: 10px;
+            cursor: pointer;
+        }
+        
+        .timeline-progress {
+            height: 100%;
+            width: 0;
+            background: rgba(255, 255, 0, 0.8);
+            border-radius: 5px;
+        }
+        
+        .control-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+        }
+        
+        .control-btn {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 18px;
+            cursor: pointer;
+        }
+        
+        .control-btn.play-pause {
+            font-size: 24px;
+        }
+        
         @media (max-width: 768px) {
             #lyrics-box {
                 font-size: 18px;
@@ -121,6 +258,10 @@
             }
             .nav-container {
                 gap: 15px;
+            }
+            .bubble-grid {
+                grid-template-columns: repeat(3, 1fr);
+                grid-template-rows: repeat(4, 1fr);
             }
         }
     </style>
@@ -136,13 +277,141 @@
         <tr>
             <td id="content-cell">
                 <div id="lyrics-box"></div>
+                
+                <!-- Hörbuch-Bibliothek -->
+                <div id="audiobook-library" class="library-container">
+                    <div class="bubble-grid">
+                        <div class="media-bubble audiobook-bubble" data-id="1">
+                            <div class="bubble-number">1</div>
+                            <div class="download-status">Download</div>
+                            <div class="progress-bar"></div>
+                        </div>
+                        <div class="media-bubble audiobook-bubble" data-id="2">
+                            <div class="bubble-number">2</div>
+                            <div class="download-status">Download</div>
+                            <div class="progress-bar"></div>
+                        </div>
+                        <div class="media-bubble audiobook-bubble" data-id="3">
+                            <div class="bubble-number">3</div>
+                            <div class="download-status">Download</div>
+                            <div class="progress-bar"></div>
+                        </div>
+                        <div class="media-bubble audiobook-bubble" data-id="4">
+                            <div class="bubble-number">4</div>
+                            <div class="download-status">Download</div>
+                            <div class="progress-bar"></div>
+                        </div>
+                        <div class="media-bubble audiobook-bubble" data-id="5">
+                            <div class="bubble-number">5</div>
+                            <div class="download-status">Download</div>
+                            <div class="progress-bar"></div>
+                        </div>
+                        <div class="media-bubble audiobook-bubble" data-id="6">
+                            <div class="bubble-number">6</div>
+                            <div class="download-status">Download</div>
+                            <div class="progress-bar"></div>
+                        </div>
+                        <div class="media-bubble audiobook-bubble" data-id="7">
+                            <div class="bubble-number">7</div>
+                            <div class="download-status">Download</div>
+                            <div class="progress-bar"></div>
+                        </div>
+                        <div class="media-bubble audiobook-bubble" data-id="8">
+                            <div class="bubble-number">8</div>
+                            <div class="download-status">Download</div>
+                            <div class="progress-bar"></div>
+                        </div>
+                        <div class="media-bubble audiobook-bubble" data-id="9">
+                            <div class="bubble-number">9</div>
+                            <div class="download-status">Download</div>
+                            <div class="progress-bar"></div>
+                        </div>
+                        <div class="media-bubble audiobook-bubble" data-id="10">
+                            <div class="bubble-number">10</div>
+                            <div class="download-status">Download</div>
+                            <div class="progress-bar"></div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Video-Bibliothek -->
+                <div id="video-library" class="library-container">
+                    <div class="bubble-grid">
+                        <div class="media-bubble video-bubble" data-id="1">
+                            <div class="bubble-number">1</div>
+                            <div class="download-status">Download</div>
+                            <div class="progress-bar"></div>
+                        </div>
+                        <div class="media-bubble video-bubble" data-id="2">
+                            <div class="bubble-number">2</div>
+                            <div class="download-status">Download</div>
+                            <div class="progress-bar"></div>
+                        </div>
+                        <div class="media-bubble video-bubble" data-id="3">
+                            <div class="bubble-number">3</div>
+                            <div class="download-status">Download</div>
+                            <div class="progress-bar"></div>
+                        </div>
+                        <div class="media-bubble video-bubble" data-id="4">
+                            <div class="bubble-number">4</div>
+                            <div class="download-status">Download</div>
+                            <div class="progress-bar"></div>
+                        </div>
+                        <div class="media-bubble video-bubble" data-id="5">
+                            <div class="bubble-number">5</div>
+                            <div class="download-status">Download</div>
+                            <div class="progress-bar"></div>
+                        </div>
+                        <div class="media-bubble video-bubble" data-id="6">
+                            <div class="bubble-number">6</div>
+                            <div class="download-status">Download</div>
+                            <div class="progress-bar"></div>
+                        </div>
+                        <div class="media-bubble video-bubble" data-id="7">
+                            <div class="bubble-number">7</div>
+                            <div class="download-status">Download</div>
+                            <div class="progress-bar"></div>
+                        </div>
+                        <div class="media-bubble video-bubble" data-id="8">
+                            <div class="bubble-number">8</div>
+                            <div class="download-status">Download</div>
+                            <div class="progress-bar"></div>
+                        </div>
+                        <div class="media-bubble video-bubble" data-id="9">
+                            <div class="bubble-number">9</div>
+                            <div class="download-status">Download</div>
+                            <div class="progress-bar"></div>
+                        </div>
+                        <div class="media-bubble video-bubble" data-id="10">
+                            <div class="bubble-number">10</div>
+                            <div class="download-status">Download</div>
+                            <div class="progress-bar"></div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Player-Steuerung -->
+                <div id="player-controls" class="player-controls">
+                    <div class="time-display">
+                        <span id="current-time">0:00</span>
+                        <span id="total-time">0:00</span>
+                    </div>
+                    <div class="timeline">
+                        <div class="timeline-progress"></div>
+                    </div>
+                    <div class="control-buttons">
+                        <button class="control-btn rewind">u23ea</button>
+                        <button class="control-btn play-pause">u25b6</button>
+                        <button class="control-btn forward">u23e9</button>
+                    </div>
+                </div>
             </td>
         </tr>
         <tr>
             <td id="buttons-cell">
                 <div class="nav-container">
-                    <button class="nav-button audiobook" onclick="showInfo('Hörbuch-Funktion kommt bald!')">Hörbuch</button>
-                    <button class="nav-button video" onclick="showInfo('Video-Funktion kommt bald!')">Video</button>
+                    <button class="nav-button audiobook" onclick="toggleAudiobookLibrary()">Hörbuch</button>
+                    <button class="nav-button video" onclick="toggleVideoLibrary()">Video</button>
                     <button class="nav-button music" onclick="toggleMusic()">Musik</button>
                     <button class="nav-button action" onclick="playQuackSound()">Action</button>
                 </div>
@@ -156,8 +425,11 @@
     
     <script>
         let audioPlayer = null;
+        let mediaPlayer = null;
         let isPlaying = false;
         let actionSound = null;
+        let activeMediaId = null;
+        let activeMediaType = null;
         window.timeouts = [];
         
         // Verhindere Standardaktionen bei Touch-Events
@@ -165,6 +437,7 @@
             event.preventDefault();
         }, { passive: false });
         
+        // Info-Meldung anzeigen
         function showInfo(message) {
             const modal = document.getElementById('info-modal');
             const text = document.getElementById('info-text');
@@ -175,6 +448,7 @@
             }, 2000);
         }
         
+        // Musik-Button-Funktion
         function toggleMusic() {
             if (!audioPlayer) {
                 audioPlayer = new Audio('lars_vom_mars_song.wav');
@@ -195,6 +469,7 @@
             }
         }
         
+        // Lyrikanzeige
         function displayBlock(lines, startTime) {
             window.timeouts.push(setTimeout(() => {
                 const container = document.getElementById('lyrics-box');
@@ -213,6 +488,7 @@
             }, startTime));
         }
         
+        // Lyrics anzeigen
         function showLyrics() {
             const container = document.getElementById('lyrics-box');
             if (!container) return;
@@ -256,6 +532,7 @@
             displayBlock(chorus1, 132000);
         }
         
+        // Lyrics ausblenden
         function hideLyrics() {
             const container = document.getElementById('lyrics-box');
             if (!container) return;
@@ -266,6 +543,7 @@
             window.timeouts = [];
         }
         
+        // Quack-Sound abspielen (Action-Button)
         function playQuackSound() {
             if (!actionSound) {
                 actionSound = new Audio('quack_sound.mp3');
@@ -281,6 +559,178 @@
                 actionSound.currentTime = 0;
             }
         }
+        
+        // Hörbuch-Bibliothek ein-/ausblenden
+        function toggleAudiobookLibrary() {
+            const audiobookLib = document.getElementById('audiobook-library');
+            const videoLib = document.getElementById('video-library');
+            
+            if (audiobookLib.style.display === 'block') {
+                audiobookLib.style.display = 'none';
+            } else {
+                audiobookLib.style.display = 'block';
+                videoLib.style.display = 'none';
+                
+                // Lade verfügbare Hörbücher
+                loadAvailableAudiobooks();
+            }
+        }
+        
+        // Video-Bibliothek ein-/ausblenden
+        function toggleVideoLibrary() {
+            const audiobookLib = document.getElementById('audiobook-library');
+            const videoLib = document.getElementById('video-library');
+            
+            if (videoLib.style.display === 'block') {
+                videoLib.style.display = 'none';
+            } else {
+                videoLib.style.display = 'block';
+                audiobookLib.style.display = 'none';
+            }
+        }
+        
+        // Verfügbare Hörbücher aus IndexedDB laden
+        function loadAvailableAudiobooks() {
+            const request = indexedDB.open('LarsVomMarsDB', 1);
+            
+            request.onupgradeneeded = function(event) {
+                const db = event.target.result;
+                if (!db.objectStoreNames.contains('audiobooks')) {
+                    db.createObjectStore('audiobooks', { keyPath: 'id' });
+                }
+            };
+            
+            request.onsuccess = function(event) {
+                const db = event.target.result;
+                if (!db.objectStoreNames.contains('audiobooks')) {
+                    return;
+                }
+                
+                const transaction = db.transaction(['audiobooks'], 'readonly');
+                const store = transaction.objectStore('audiobooks');
+                const getAllRequest = store.getAll();
+                
+                getAllRequest.onsuccess = function() {
+                    const audiobooks = getAllRequest.result;
+                    updateAudiobookBubbles(audiobooks);
+                };
+            };
+        }
+        
+        // Aktualisiere die Hörbuch-Blasen mit Daten aus der Datenbank
+        function updateAudiobookBubbles(audiobooks) {
+            const bubbles = document.querySelectorAll('.audiobook-bubble');
+            
+            // Zunächst alle Blasen zurücksetzen
+            bubbles.forEach(bubble => {
+                bubble.classList.remove('downloaded');
+                bubble.querySelector('.download-status').textContent = 'Download';
+                bubble.querySelector('.progress-bar').style.width = '0%';
+            });
+            
+            // Dann die Daten aus der Datenbank anwenden
+            audiobooks.forEach((book, index) => {
+                if (index < bubbles.length) {
+                    const bubble = bubbles[index];
+                    bubble.classList.add('downloaded');
+                    bubble.querySelector('.download-status').textContent = 'Abspielen';
+                    bubble.querySelector('.progress-bar').style.width = '100%';
+                    
+                    // Event-Listener für Klick aktualisieren
+                    bubble.onclick = function() {
+                        if (this.classList.contains('downloaded')) {
+                            playAudiobook(book.id);
+                        } else {
+                            downloadAudiobook(book.id, this);
+                        }
+                    };
+                }
+            });
+        }
+        
+        // Hörbuch abspielen
+        function playAudiobook(audiobookId) {
+            // Zur Hörbuch-Seite navigieren und ID übergeben
+            window.location.href = `audiobook.html?id=${audiobookId}`;
+        }
+        
+        // Hörbuch herunterladen
+        function downloadAudiobook(audiobookId, bubbleElement) {
+            // Download-Dialog anzeigen
+            if (confirm('Möchtest du dieses Hörbuch herunterladen? Es wird dann offline verfügbar sein.')) {
+                // Status anzeigen
+                const statusElement = bubbleElement.querySelector('.download-status');
+                const progressBar = bubbleElement.querySelector('.progress-bar');
+                statusElement.textContent = 'Wird heruntergeladen...';
+                
+                // Simulierte Download-Zeit (in einer realen App würde hier der echte Download stattfinden)
+                let progress = 0;
+                const interval = setInterval(() => {
+                    progress += 5;
+                    progressBar.style.width = progress + '%';
+                    
+                    if (progress >= 100) {
+                        clearInterval(interval);
+                        statusElement.textContent = 'Abspielen';
+                        bubbleElement.classList.add('downloaded');
+                        
+                        // Admin-Seite für das Hochladen öffnen
+                        showInfo('Hörbuch wurde heruntergeladen. Du kannst es jetzt abspielen.');
+                        
+                        // Event-Listener aktualisieren
+                        bubbleElement.onclick = function() {
+                            playAudiobook(audiobookId);
+                        };
+                    }
+                }, 200);
+            }
+        }
+        
+        // Service Worker Registration
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('./sw.js')
+                    .then(registration => {
+                        console.log('ServiceWorker registration successful');
+                    })
+                    .catch(err => {
+                        console.log('ServiceWorker registration failed: ', err);
+                    });
+            });
+        }
+        
+        // Admin-Bereich-Button (nur für Entwicklung, in der finalen App ausblenden)
+        document.addEventListener('keydown', function(event) {
+            // Tastenkombination Shift+Alt+A für den Admin-Bereich
+            if (event.shiftKey && event.altKey && event.key === 'A') {
+                window.location.href = 'admin.html';
+            }
+        });
+        
+        // Bubble-Klick-Event-Listener
+        document.querySelectorAll('.media-bubble').forEach(bubble => {
+            bubble.addEventListener('click', function() {
+                const id = this.getAttribute('data-id');
+                const isAudiobook = this.classList.contains('audiobook-bubble');
+                
+                if (this.classList.contains('downloaded')) {
+                    if (isAudiobook) {
+                        playAudiobook(id);
+                    } else {
+                        showInfo('Video-Funktion kommt bald!');
+                    }
+                } else {
+                    if (isAudiobook) {
+                        downloadAudiobook(id, this);
+                    } else {
+                        showInfo('Video-Funktion kommt bald!');
+                    }
+                }
+            });
+        });
+
+        // Version dieser Lösung (Backup-Marker)
+        console.log('Lars vom Mars App - Version 2025-03-20 (Bibliotheks-System mit Hörbuch-Funktion)');
     </script>
 </body>
 </html>
