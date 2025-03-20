@@ -90,10 +90,10 @@
             touch-action: manipulation;
         }
         
-        .nav-button.audiobook { background: rgba(255,255,0,0.6); }
-        .nav-button.video { background: rgba(173,216,230,0.6); }
+        .nav-button.parents { background: rgba(144,238,144,0.6); }
+        .nav-button.webshop { background: rgba(173,216,230,0.6); }
         .nav-button.music { background: rgba(255,160,160,0.6); }
-        .nav-button.action { background: rgba(144,238,144,0.6); }
+        .nav-button.action { background: rgba(255,255,0,0.6); }
         
         /* Admin-Button-Stil */
         .admin-button {
@@ -437,8 +437,8 @@
         <tr>
             <td id="buttons-cell">
                 <div class="nav-container">
-                    <button class="nav-button audiobook" onclick="toggleAudiobookLibrary()">Hörbuch</button>
-                    <button class="nav-button video" onclick="toggleVideoLibrary()">Video</button>
+                    <button class="nav-button parents" onclick="window.location.href='admin.html'">Eltern</button>
+                    <button class="nav-button webshop" onclick="openWebshop()">Webshop</button>
                     <button class="nav-button music" onclick="toggleMusic()">Musik</button>
                     <button class="nav-button action" onclick="playQuackSound()">Action</button>
                 </div>
@@ -758,6 +758,219 @@
 
         // Version dieser Lösung (Backup-Marker)
         console.log('Lars vom Mars App - Version 2025-03-20 (Bibliotheks-System mit Hörbuch-Funktion)');
+        
+        // Laden der Hörbücher
+        function loadAudiobooks() {
+            const audiobookGrid = document.getElementById('audiobook-grid');
+            audiobookGrid.innerHTML = '';
+            
+            // IndexedDB öffnen
+            const request = indexedDB.open('LarsVomMarsDB', 1);
+            
+            request.onupgradeneeded = function(event) {
+                const db = event.target.result;
+                if (!db.objectStoreNames.contains('audiobooks')) {
+                    db.createObjectStore('audiobooks', { keyPath: 'id' });
+                }
+            };
+            
+            request.onerror = function(event) {
+                console.error('Fehler beim Zugriff auf die Datenbank');
+                // Prüfen, ob das Demo-Hörbuch im localStorage freigeschaltet wurde
+                checkLocalStorageDemoAudiobook();
+            };
+            
+            request.onsuccess = function(event) {
+                const db = event.target.result;
+                
+                if (!db.objectStoreNames.contains('audiobooks')) {
+                    // Wenn keine audiobooks in IndexedDB, prüfe localStorage
+                    checkLocalStorageDemoAudiobook();
+                    return;
+                }
+                
+                const transaction = db.transaction(['audiobooks'], 'readonly');
+                const store = transaction.objectStore('audiobooks');
+                const getAllRequest = store.getAll();
+                
+                getAllRequest.onsuccess = function() {
+                    const audiobooks = getAllRequest.result;
+                    
+                    if (audiobooks && audiobooks.length > 0) {
+                        displayAudiobooks(audiobooks);
+                    } else {
+                        // Wenn keine audiobooks in IndexedDB, prüfe localStorage
+                        checkLocalStorageDemoAudiobook();
+                    }
+                };
+                
+                getAllRequest.onerror = function() {
+                    console.error('Fehler beim Laden der Hörbücher');
+                    // Bei Fehler, prüfe localStorage
+                    checkLocalStorageDemoAudiobook();
+                };
+            };
+        }
+        
+        // Prüfen, ob das Demo-Hörbuch im localStorage freigeschaltet wurde
+        function checkLocalStorageDemoAudiobook() {
+            if (localStorage.getItem('demo_audiobook_redeemed') === 'true') {
+                // Demo-Hörbuch in der lokalen Anzeige darstellen
+                const audiobookGrid = document.getElementById('audiobook-grid');
+                
+                // Demo-Hörbuch anzeigen
+                const demoAudiobookItem = document.createElement('div');
+                demoAudiobookItem.className = 'bubble audiobook-item downloaded';
+                demoAudiobookItem.innerHTML = `
+                    <div class="bubble-number">1</div>
+                    <div class="bubble-title">Lars vom Mars - Demo</div>
+                    <div class="player-controls">
+                        <button class="play-button" onclick="window.location.href='audiobook.html?demo=true'">▶</button>
+                    </div>
+                `;
+                
+                audiobookGrid.appendChild(demoAudiobookItem);
+            } else {
+                // Leere Platzhalter-Blase anzeigen
+                const audiobookGrid = document.getElementById('audiobook-grid');
+                
+                const emptyBubble = document.createElement('div');
+                emptyBubble.className = 'bubble audiobook-item';
+                emptyBubble.innerHTML = `
+                    <div class="bubble-number">1</div>
+                    <div class="bubble-title">Noch kein Hörbuch</div>
+                `;
+                
+                audiobookGrid.appendChild(emptyBubble);
+            }
+        }
+        
+        // Anzeigen der Hörbücher
+        function displayAudiobooks(audiobooks) {
+            const audiobookGrid = document.getElementById('audiobook-grid');
+            
+            audiobooks.forEach((book, index) => {
+                const audiobookItem = document.createElement('div');
+                audiobookItem.className = 'bubble audiobook-item downloaded'; // 'downloaded' Klasse für grünen Rahmen
+                audiobookItem.innerHTML = `
+                    <div class="bubble-number">${index + 1}</div>
+                    <div class="bubble-title">${book.title}</div>
+                    <div class="player-controls">
+                        <button class="play-button" onclick="window.location.href='audiobook.html?id=${book.id}'">▶</button>
+                    </div>
+                `;
+                
+                audiobookGrid.appendChild(audiobookItem);
+            });
+        }
+        
+        // Webshop-Simulation öffnen
+        function openWebshop() {
+            // HTML für die Webshop-Simulation
+            const webshopHtml = `
+                <div class="webshop-container" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 1000; display: flex; justify-content: center; align-items: center;">
+                    <div class="webshop-content" style="background: white; padding: 20px; border-radius: 10px; max-width: 80%; max-height: 80%; overflow-y: auto;">
+                        <h2>Lars vom Mars Webshop</h2>
+                        <p>Hier können Sie Hörbücher und Videos für die Lars vom Mars App kaufen.</p>
+                        
+                        <div style="margin: 20px 0; padding: 10px; border: 1px solid #ddd; border-radius: 5px;">
+                            <h3>Lars vom Mars - Komplettes Hörbuch</h3>
+                            <p>Alle Kapitel des beliebten Kinderhörbuchs.</p>
+                            <p><strong>Preis:</strong> 9,99 €</p>
+                            <button onclick="simulatePurchase('lars_complete')" style="background: #4CAF50; color: white; border: none; padding: 10px 15px; border-radius: 5px; cursor: pointer;">Kaufen</button>
+                        </div>
+                        
+                        <div style="margin: 20px 0; padding: 10px; border: 1px solid #ddd; border-radius: 5px;">
+                            <h3>Lars vom Mars - Abenteuer im Weltall</h3>
+                            <p>Der neue Teil der spannenden Reihe.</p>
+                            <p><strong>Preis:</strong> 12,99 €</p>
+                            <button onclick="simulatePurchase('lars_space')" style="background: #4CAF50; color: white; border: none; padding: 10px 15px; border-radius: 5px; cursor: pointer;">Kaufen</button>
+                        </div>
+                        
+                        <button onclick="closeWebshop()" style="background: #f44336; color: white; border: none; padding: 10px 15px; border-radius: 5px; cursor: pointer; margin-top: 20px;">Schließen</button>
+                    </div>
+                </div>
+            `;
+            
+            // Webshop-Container erstellen und zum Body hinzufügen
+            const webshopContainer = document.createElement('div');
+            webshopContainer.id = 'webshop-overlay';
+            webshopContainer.innerHTML = webshopHtml;
+            document.body.appendChild(webshopContainer);
+        }
+        
+        // Webshop-Simulation schließen
+        function closeWebshop() {
+            const webshopOverlay = document.getElementById('webshop-overlay');
+            if (webshopOverlay) {
+                webshopOverlay.remove();
+            }
+        }
+        
+        // Kauf simulieren
+        function simulatePurchase(productId) {
+            // Kauf-Bestätigung
+            const confirmPurchase = confirm('Möchten Sie dieses Produkt kaufen? (Dies ist nur eine Simulation, es werden keine echten Zahlungen durchgeführt)');
+            
+            if (confirmPurchase) {
+                // Kauferfolg-Dialog mit Optionen anzeigen
+                const successHtml = `
+                    <div class="purchase-success" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 1001; display: flex; justify-content: center; align-items: center;">
+                        <div class="success-content" style="background: white; padding: 20px; border-radius: 10px; max-width: 80%;">
+                            <h2>Vielen Dank für Ihren Kauf!</h2>
+                            <p>Sie haben erfolgreich ein Hörbuch gekauft. Sie haben nun folgende Möglichkeiten:</p>
+                            
+                            <div style="margin: 20px 0;">
+                                <button onclick="sendDownloadLink('${productId}')" style="background: #4CAF50; color: white; border: none; padding: 10px 15px; border-radius: 5px; cursor: pointer; margin-right: 10px;">Download-Link per E-Mail erhalten</button>
+                                <button onclick="directDownload('${productId}')" style="background: #2196F3; color: white; border: none; padding: 10px 15px; border-radius: 5px; cursor: pointer;">Jetzt direkt herunterladen</button>
+                            </div>
+                            
+                            <button onclick="closeSuccessDialog()" style="background: #f44336; color: white; border: none; padding: 10px 15px; border-radius: 5px; cursor: pointer;">Abbrechen</button>
+                        </div>
+                    </div>
+                `;
+                
+                // Erfolgsanzeige zum Body hinzufügen
+                const successContainer = document.createElement('div');
+                successContainer.id = 'purchase-success-overlay';
+                successContainer.innerHTML = successHtml;
+                document.body.appendChild(successContainer);
+                
+                // Webshop-Overlay entfernen
+                closeWebshop();
+            }
+        }
+        
+        // Erfolgs-Dialog schließen
+        function closeSuccessDialog() {
+            const successOverlay = document.getElementById('purchase-success-overlay');
+            if (successOverlay) {
+                successOverlay.remove();
+            }
+        }
+        
+        // Download-Link per E-Mail simulieren
+        function sendDownloadLink(productId) {
+            alert('Ein Download-Link wurde an Ihre E-Mail-Adresse gesendet! (Simulation)');
+            
+            // Beispiel-Link für die E-Mail generieren
+            const downloadLink = `${window.location.origin}${window.location.pathname.replace('index.html', '')}admin.html?code=${productId}&autoRedeem=true`;
+            
+            // Link anzeigen (in einer echten Anwendung würde dieser per E-Mail versendet werden)
+            const linkInfo = `\nHier ist Ihr Download-Link (normalerweise würden Sie diesen per E-Mail erhalten):\n${downloadLink}`;
+            alert(linkInfo);
+            
+            closeSuccessDialog();
+        }
+        
+        // Direkter Download
+        function directDownload(productId) {
+            // Direkt zur Admin-Seite mit automatischer Einlösung des Codes weiterleiten
+            const downloadUrl = `admin.html?code=${productId}&autoRedeem=true`;
+            window.location.href = downloadUrl;
+            
+            closeSuccessDialog();
+        }
     </script>
 </body>
 </html>

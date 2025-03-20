@@ -431,8 +431,35 @@
             // Hörbuch-ID aus URL-Parameter extrahieren
             const urlParams = new URLSearchParams(window.location.search);
             const audiobookId = urlParams.get('id');
+            const isDemo = urlParams.get('demo') === 'true';
             
-            if (!audiobookId) {
+            // Wenn es sich um die Demo handelt und der Code wurde eingelöst
+            if (isDemo && localStorage.getItem('demo_audiobook_redeemed') === 'true') {
+                // Demo-Hörbuch direkt laden
+                audiobook = {
+                    id: 'demo',
+                    title: 'Lars vom Mars - Demoversion',
+                    description: 'Eine kurze Demoversion des Hörbuchs Lars vom Mars. Dieses Hörbuch wurde mit dem Testcode "Lars" freigeschaltet.',
+                    chapters: [
+                        {
+                            id: 'chapter1',
+                            title: 'Kapitel 1: Der Start',
+                            audioUrl: './chapter1.mp3'
+                        },
+                        {
+                            id: 'chapter2',
+                            title: 'Kapitel 2: Die Reise',
+                            audioUrl: './chapter2.mp3'
+                        }
+                    ]
+                };
+                
+                displayAudiobookInfo();
+                hideLoading();
+                return;
+            }
+            
+            if (!audiobookId && !isDemo) {
                 hideLoading();
                 alert('Keine Hörbuch-ID gefunden');
                 goBack();

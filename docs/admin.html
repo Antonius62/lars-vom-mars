@@ -331,7 +331,7 @@
                 <label for="download-code">Download-Code:</label>
                 <input type="text" id="download-code" placeholder="Geben Sie Ihren Code ein">
             </div>
-            <button onclick="redeemCode()">Code einlösen</button>
+            <button id="redeem-code-btn" onclick="redeemCodeSimple()">Code einlösen</button>
             
             <div id="redeem-status" class="status-message" style="display: none;"></div>
             
@@ -685,53 +685,182 @@
             showStatus('Bearbeiten-Funktion wird in einer zukünftigen Version implementiert.', 'info');
         }
         
-        // Code einlösen
-        function redeemCode() {
+        // Service Worker überprüfen
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('./sw.js')
+                    .then(registration => {
+                        console.log('ServiceWorker registration successful');
+                    })
+                    .catch(err => {
+                        console.log('ServiceWorker registration failed: ', err);
+                    });
+            });
+        }
+        
+        // IndexedDB initialisieren
+        function initializeIndexedDB() {
+            return new Promise((resolve, reject) => {
+                const request = indexedDB.open('LarsVomMarsDB', 1);
+                
+                request.onupgradeneeded = function(event) {
+                    console.log('IndexedDB Upgrade wird durchgeführt');
+                    const db = event.target.result;
+                    if (!db.objectStoreNames.contains('audiobooks')) {
+                        db.createObjectStore('audiobooks', { keyPath: 'id' });
+                        console.log('Audiobooks Store wurde erstellt');
+                    }
+                };
+                
+                request.onsuccess = function(event) {
+                    console.log('IndexedDB erfolgreich initialisiert');
+                    resolve(event.target.result);
+                };
+                
+                request.onerror = function(event) {
+                    console.error('IndexedDB-Fehler:', event.target.error);
+                    reject(event.target.error);
+                };
+            });
+        }
+        
+        // Seiten-Initialisierung
+        document.addEventListener('DOMContentLoaded', async function() {
+            console.log('DOM vollständig geladen, initialisiere App...');
+            
+            try {
+                // IndexedDB initialisieren
+                const db = await initializeIndexedDB();
+                console.log('Datenbank bereit');
+                
+                // Tab-Wechsel vorbereiten
+                const tabs = document.querySelectorAll('.tab');
+                tabs.forEach(tab => {
+                    tab.addEventListener('click', function() {
+                        showTab(this.getAttribute('data-tab'));
+                    });
+                });
+                
+                // Login-Button-Event
+                const loginButton = document.getElementById('login-button');
+                if (loginButton) {
+                    loginButton.addEventListener('click', login);
+                }
+                
+                // Logout-Button-Event
+                const logoutButton = document.getElementById('logout-button');
+                if (logoutButton) {
+                    logoutButton.addEventListener('click', logout);
+                }
+                
+                // Code-Einlöse-Button-Event - KRITISCH
+                const redeemCodeBtn = document.getElementById('redeem-code-btn');
+                if (redeemCodeBtn) {
+                    console.log('Redeem-Code-Button gefunden');
+                    redeemCodeBtn.addEventListener('click', function(e) {
+                        e.preventDefault();
+                        console.log('Redeem-Button wurde geklickt');
+                        redeemCode();
+                    });
+                } else {
+                    console.error('Redeem-Code-Button nicht gefunden!');
+                }
+                
+                // Download-Code Input Enter-Taste
+                const downloadCodeInput = document.getElementById('download-code');
+                if (downloadCodeInput) {
+                    downloadCodeInput.addEventListener('keypress', function(e) {
+                        if (e.key === 'Enter') {
+                            e.preventDefault();
+                            redeemCode();
+                        }
+                    });
+                }
+                
+                // Initial laden
+                loadAudiobooks();
+                loadAvailableDownloads();
+                
+                // URL auf Download-Code überprüfen
+                checkUrlForDownloadCode();
+                
+            } catch (error) {
+                console.error('Fehler bei der Initialisierung:', error);
+                showStatus('Fehler bei der Initialisierung: ' + error, 'error');
+            }
+        });
+        
+        // URL auf Download-Code überprüfen
+        function checkUrlForDownloadCode() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const downloadCode = urlParams.get('code');
+            const autoRedeem = urlParams.get('autoRedeem') === 'true';
+            
+            // Wenn Code und autoRedeem Parameter vorhanden sind
+            if (downloadCode && autoRedeem) {
+                // Automatisch einloggen und Code einlösen
+                autoLoginAndRedeemCode(downloadCode);
+            }
+        }
+        
+        // Automatisches Einloggen und Einlösen des Codes
+        function autoLoginAndRedeemCode(code) {
+            // Admin-Login mit vordefinierten Anmeldedaten durchführen
+            document.getElementById('username').value = 'admin';
+            document.getElementById('password').value = 'lars2023';
+            
+            // Login durchführen und nach Erfolg den Code einlösen
+            loginAdmin(function() {
+                // Zur Code-Einlöse-Tab wechseln
+                switchTab('redeem-code');
+                
+                // Code einführen und einlösen
+                document.getElementById('download-code').value = code;
+                redeemCodeSimple();
+            });
+        }
+        
+        // Admin-Login
+        function loginAdmin(callback) {
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            
+            // Einfache Prüfung der Anmeldedaten (in einer echten Anwendung würde dies sicherer sein)
+            if (username === 'admin' && password === 'lars2023') {
+                // Erfolgreicher Login
+                document.querySelector('.admin-content').style.display = 'block';
+                document.querySelector('.login-container').style.display = 'none';
+                
+                // Log für Debugging
+                console.log('Login erfolgreich');
+                
+                // Wenn Callback vorhanden, ausführen
+                if (typeof callback === 'function') {
+                    callback();
+                }
+            } else {
+                alert('Falsche Anmeldedaten. Bitte versuchen Sie es erneut.');
+            }
+        }
+        
+        // Einfache Code-Einlösung
+        function redeemCodeSimple() {
             const code = document.getElementById('download-code').value.trim();
             
             if (!code) {
-                showStatus('Bitte geben Sie einen Code ein!', 'error');
+                alert('Bitte geben Sie einen Code ein!');
                 return;
             }
             
-            // Für Testzwecke: Code "Lars" akzeptieren
-            if (code === "Lars") {
-                // Testdaten für ein Hörbuch
-                const demoAudiobook = {
-                    id: 'demo-' + Date.now().toString(),
-                    title: 'Lars vom Mars - Demoversion',
-                    description: 'Eine kurze Demoversion des Hörbuchs Lars vom Mars. Dieses Hörbuch wurde mit dem Testcode "Lars" freigeschaltet.',
-                    coverImage: null,  // Kein Cover-Bild für die Demo
-                    chapters: [
-                        {
-                            id: 'chapter1',
-                            title: 'Kapitel 1: Der Start',
-                            // Einfaches 1-Sekunden Audio-Signal für Testzwecke
-                            audioUrl: 'data:audio/wav;base64,UklGRigAAABXQVZFZm10IBAAAAABAAEARKwAAIhYAQACABAAZGF0YQQAAAAzAFQAaQB+AJMApwC7AM8A4wD3AAsAHwAzAEcAWwBvAIMAcQBfAE0AOQAlABEA/f/p/9X/wf+t/5n/hf9x/13/Sf81/yH/Df/5/uX+0f69/qn+lf6B/m3+Wf5F/jH+Hf4J/vX94f3N/bn9pf2R/X39af1V/UH9Lf0Z/QX98/zf/Mv8t/yj/I/8e/xn/FP8P/wr/Bf8A/zv+9v7x/uz+5/7i/t3+2P7T/s7+yT7EPr8+ej51/nD+bD5nPmI+XP5YPlL+Tf5I/kP+fv46fjV+MH4rfiZ+IX4cPhe+En4NfghUklGRigAAABXQVZFZm10IBAAAAABAAEARKwAAIhYAQACABAAZGF0YQQAAAAzAFQAaQB+AJMApwC7AM8A4wD3AAsAHwAzAEcAWwBvAIMAcQBfAE0AOQAlABEA/f/p/9X/wf+t/5n/hf9x/13/Sf81/yH/Df/5/uX+0f69/qn+lf6B/m3+Wf5F/jH+Hf4J/vX94f3N/bn9pf2R/X39af1V/UH9Lf0Z/QX98/zf/Mv8t/yj/I/8e/xn/FP8P/wr/Bf8A/zv+9v7x/uz+5/7i/t3+2P7T/s7+yT7EPr8+ej51/nD+bD5nPmI+XP5YPlL+Tf5I/kP+fv46fjV+MH4rfiZ+IX4cPhe+En4NfghUklGRigAAABXQVZFZm10IBAAAAABAAEARKwAAIhYAQACABAAZGF0YQQAAAAz'
-                        },
-                        {
-                            id: 'chapter2',
-                            title: 'Kapitel 2: Die Reise',
-                            // Einfaches 1-Sekunden Audio-Signal für Testzwecke (anderer Ton)
-                            audioUrl: 'data:audio/wav;base64,UklGRigAAABXQVZFZm10IBAAAAABAAEARKwAAIhYAQACABAAZGF0YQQAAAAzAFQAaQB+AJMApwC7AM8A4wD3AAsAHwAzAEcAWwBvAIMAcQBfAE0AOQAlABEA/f/p/9X/wf+t/5n/hf9x/13/Sf81/yH/Df/5/uX+0f69/qn+lf6B/m3+Wf5F/jH+Hf4J/vX94f3N/bn9pf2R/X39af1V/UH9Lf0Z/QX98/zf/Mv8t/yj/I/8e/xn/FP8P/wr/Bf8A/zv+9v7x/uz+5/7i/t3+2P7T/s7+yT7EPr8+ej51/nD+bD5nPmI+XP5YPlL+Tf5I/kP+fv46fjV+MH4rfiZ+IX4cPhe+En4NfghUklGRigAAABXQVZFZm10IBAAAAABAAEARKwAAIhYAQACABAAZGF0YQQAAAAzAFQAaQB+AJMApwC7AM8A4wD3AAsAHwAzAEcAWwBvAIMAcQBfAE0AOQAlABEA/f/p/9X/wf+t/5n/hf9x/13/Sf81/yH/Df/5/uX+0f69/qn+lf6B/m3+Wf5F/jH+Hf4J/vX94f3N/bn9pf2R/X39af1V/UH9Lf0Z/QX98/zf/Mv8t/yj/I/8e/xn/FP8P/wr/Bf8A/zv+9v7x/uz+5/7i/t3+2P7T/s7+yT7EPr8+ej51/nD+bD5nPmI+XP5YPlL+Tf5I/kP+fv46fjV+MH4rfiZ+IX4cPhe+En4NfghUklGRigAAABXQVZFZm10IBAAAAABAAEARKwAAIhYAQACABAAZGF0YQQAAAAz'
-                        }
-                    ],
-                    dateAdded: new Date().toISOString(),
-                    isDemo: true
-                };
+            if (code.toLowerCase() === 'lars') {
+                // Einfache Variante: Lokalen Speicher verwenden
+                localStorage.setItem('demo_audiobook_redeemed', 'true');
+                alert('Code erfolgreich eingelöst! Das Demo-Hörbuch wurde zu Ihrer Bibliothek hinzugefügt.');
                 
-                // Hörbuch in der Datenbank speichern
-                saveToIndexedDB(demoAudiobook)
-                    .then(() => {
-                        document.getElementById('download-code').value = '';
-                        showStatus('Code erfolgreich eingelöst! Das Demo-Hörbuch wurde zu Ihrer Bibliothek hinzugefügt.', 'success');
-                        loadAvailableDownloads();
-                    })
-                    .catch(error => {
-                        showStatus('Fehler beim Speichern des Hörbuchs: ' + error, 'error');
-                    });
+                // Zurück zur Hauptseite
+                window.location.href = 'index.html';
             } else {
-                showStatus('Ungültiger Code. Bitte versuchen Sie es erneut.', 'error');
+                alert('Ungültiger Code. Bitte versuchen Sie es erneut.');
             }
         }
         
@@ -780,19 +909,6 @@
                     </div>
                 `;
             }
-        }
-        
-        // Service Worker überprüfen
-        if ('serviceWorker' in navigator) {
-            window.addEventListener('load', () => {
-                navigator.serviceWorker.register('./sw.js')
-                    .then(registration => {
-                        console.log('ServiceWorker registration successful');
-                    })
-                    .catch(err => {
-                        console.log('ServiceWorker registration failed: ', err);
-                    });
-            });
         }
     </script>
 </body>
