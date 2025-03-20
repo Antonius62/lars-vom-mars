@@ -1,83 +1,75 @@
 <!DOCTYPE html>
-<html>
+<html lang="de">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Lars vom Mars</title>
+    <link rel="manifest" href="./manifest.json">
+    <meta name="theme-color" content="#000000">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="apple-mobile-web-app-title" content="Lars vom Mars">
+    <link rel="apple-touch-icon" href="./Lars_App_Icon.png">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600&display=swap" rel="stylesheet">
     <style>
+        /* Reset */
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
         }
-        
+
+        /* Base Styles */
         body {
-            background: url('./mars_background.png') center/cover fixed;
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            background-image: url('./mars_background.png');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
             color: white;
-            font-family: Arial, sans-serif;
-            overflow: hidden;
+            font-family: 'Montserrat', sans-serif;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        /* Header */
+        .app-header {
             position: fixed;
-            width: 100%;
-            height: 100%;
-        }
-        
-        /* Haupt-Tabelle nimmt 100% der Höhe ein */
-        #main-table {
-            width: 100%;
-            height: 100%;
-            border-collapse: collapse;
-            table-layout: fixed;
-        }
-        
-        /* Header-Bereich - nimmt 15% der Höhe ein */
-        #header-cell {
-            height: 15%;
-            vertical-align: top;
+            top: 0;
+            left: 0;
+            right: 0;
             text-align: center;
-            padding-top: 20px;
+            padding: 10px;
+            z-index: 1000;
         }
-        
-        /* Content-Bereich - nimmt 65% der Höhe ein */
-        #content-cell {
-            height: 65%;
-            vertical-align: bottom;
-            text-align: center;
-            padding-bottom: 20px;
-        }
-        
-        /* Buttons-Bereich - nimmt 20% der Höhe ein */
-        #buttons-cell {
-            height: 20%;
-            vertical-align: top;
-            text-align: center;
-        }
-        
+
         .app-title {
-            font-size: 24px;
-            color: rgba(255,255,255,0.7);
+            font-size: 1.5em;
+            text-shadow: 2px 2px 4px black;
+            color: rgba(255,255,255,0.5);
+            line-height: 1.4;
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 600;
         }
-        
-        #lyrics-box {
-            width: 90%;
-            max-width: 800px;
-            margin: 0 auto;
-            background: rgba(0, 0, 0, 0.1); /* Transparenz erhöht (von 0.2 auf 0.1) */
-            backdrop-filter: blur(5px);
-            border-radius: 20px;
-            padding: 30px;
-            font-size: 24px;
-            text-align: center;
-            line-height: 1.6;
-            display: none;
-        }
-        
+
+        /* Navigation */
         .nav-container {
+            position: fixed;
+            bottom: 20px;
+            left: 0;
+            right: 0;
             display: flex;
             justify-content: center;
             gap: 20px;
             padding: 10px;
+            z-index: 1000;
         }
-        
+
         .nav-button {
             width: 90px;
             height: 90px;
@@ -87,194 +79,20 @@
             font-size: 16px;
             font-weight: bold;
             color: black;
-            touch-action: manipulation;
+            transition: transform 0.2s;
         }
-        
-        .nav-button.parents { background: rgba(144,238,144,0.6); }
-        .nav-button.webshop { background: rgba(173,216,230,0.6); }
+
+        .nav-button:hover {
+            transform: scale(1.1);
+        }
+
+        .nav-button.audiobook { background: rgba(255,255,0,0.6); }
+        .nav-button.video { background: rgba(173,216,230,0.6); }
         .nav-button.music { background: rgba(255,160,160,0.6); }
-        .nav-button.action { background: rgba(255,255,0,0.6); }
-        
-        /* Admin-Button-Stil */
-        .admin-button {
-            position: absolute;
-            top: 10px;
-            right: 10px;
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            background: rgba(0, 0, 255, 0.6);
-            color: white;
-            border: 2px solid white;
-            font-size: 14px;
-            cursor: pointer;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
-            z-index: 1000;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-        
-        .admin-button:hover {
-            background: rgba(0, 0, 255, 0.8);
-        }
-        
-        #info-modal {
-            display: none;
-            position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            background: rgba(0, 0, 0, 0.8);
-            padding: 20px;
-            border-radius: 15px;
-            color: white;
-            text-align: center;
-            z-index: 1000;
-        }
-        
-        /* Bibliotheksbereich */
-        .library-container {
-            display: none;
-            position: absolute;
-            top: 70px;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 90%;
-            height: calc(100% - 200px);
-            background: rgba(0, 0, 0, 0.2);
-            backdrop-filter: blur(5px);
-            border-radius: 20px;
-            padding: 20px;
-            overflow-y: auto;
-            z-index: 50;
-        }
-        
-        .bubble-grid {
-            display: grid;
-            grid-template-columns: repeat(5, 1fr);
-            grid-template-rows: repeat(2, 1fr);
-            gap: 15px;
-            padding: 10px;
-        }
-        
-        .media-bubble {
-            position: relative;
-            width: 100%;
-            padding-bottom: 100%; /* Quadratische Proportion */
-            border-radius: 50%;
-            cursor: pointer;
-        }
-        
-        .audiobook-bubble {
-            background: rgba(255, 255, 0, 0.3);
-        }
-        
-        .video-bubble {
-            background: rgba(173, 216, 230, 0.3);
-        }
-        
-        .bubble-number {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            font-size: 24px;
-            font-weight: bold;
-            color: white;
-            text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.7);
-        }
-        
-        .downloaded {
-            box-shadow: 0 0 15px rgba(0, 255, 0, 0.7);
-            border: 2px solid rgba(0, 255, 0, 0.7);
-        }
-        
-        .download-status {
-            position: absolute;
-            bottom: 5px;
-            left: 50%;
-            transform: translateX(-50%);
-            background: rgba(0, 0, 0, 0.5);
-            color: white;
-            padding: 3px 8px;
-            border-radius: 10px;
-            font-size: 12px;
-            white-space: nowrap;
-        }
-        
-        .progress-bar {
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            height: 4px;
-            background: rgba(0, 255, 0, 0.7);
-            border-radius: 0 0 0 20px;
-            width: 0;
-            transition: width 0.3s;
-        }
-        
-        .player-controls {
-            display: none;
-            position: absolute;
-            bottom: 20px;
-            left: 50%;
-            transform: translateX(-50%);
-            background: rgba(0, 0, 0, 0.7);
-            border-radius: 20px;
-            padding: 10px 20px;
-            width: 80%;
-            max-width: 500px;
-            z-index: 60;
-        }
-        
-        .time-display {
-            display: flex;
-            justify-content: space-between;
-            color: white;
-            margin-bottom: 5px;
-            font-size: 12px;
-        }
-        
-        .timeline {
-            height: 5px;
-            background: rgba(255, 255, 255, 0.3);
-            border-radius: 5px;
-            overflow: hidden;
-            margin-bottom: 10px;
-            cursor: pointer;
-        }
-        
-        .timeline-progress {
-            height: 100%;
-            width: 0;
-            background: rgba(255, 255, 0, 0.8);
-            border-radius: 5px;
-        }
-        
-        .control-buttons {
-            display: flex;
-            justify-content: center;
-            gap: 20px;
-        }
-        
-        .control-btn {
-            background: none;
-            border: none;
-            color: white;
-            font-size: 18px;
-            cursor: pointer;
-        }
-        
-        .control-btn.play-pause {
-            font-size: 24px;
-        }
-        
-        @media (max-width: 768px) {
-            #lyrics-box {
-                font-size: 18px;
-                padding: 20px;
-            }
+        .nav-button.action { background: rgba(144,238,144,0.6); }
+
+        /* Mobile Optimization */
+        @media (max-width: 480px) {
             .nav-button {
                 width: 70px;
                 height: 70px;
@@ -282,165 +100,915 @@
             }
             .nav-container {
                 gap: 15px;
+                bottom: 10px;
             }
-            .bubble-grid {
-                grid-template-columns: repeat(3, 1fr);
-                grid-template-rows: repeat(4, 1fr);
+        }
+
+        /* Library Modals */
+        .library-modal {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 95%;
+            max-width: 800px;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 30px;
+            z-index: 1001;
+        }
+
+        .library-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            grid-template-rows: repeat(2, 1fr);
+            gap: 40px;
+            padding: 20px;
+        }
+
+        .library-item {
+            position: relative;
+            aspect-ratio: 1;
+            border-radius: 50%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            animation: float 3s ease-in-out infinite;
+        }
+
+        .library-item.audio {
+            background: rgba(255, 255, 0, 0.3);
+        }
+
+        .library-item.video {
+            background: rgba(173, 216, 230, 0.3);
+        }
+
+        .library-item-title {
+            color: white;
+            text-align: center;
+            font-size: 18px;
+            margin-bottom: 15px;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.8);
+        }
+
+        .library-item-controls {
+            display: flex;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .play-button {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            border: none;
+            background: rgba(255, 255, 255, 0.9);
+            color: #333;
+            font-size: 24px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: transform 0.2s;
+        }
+
+        .play-button:hover {
+            transform: scale(1.1);
+        }
+
+        .play-button.playing {
+            background: rgba(255, 0, 0, 0.9);
+            color: white;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+
+        /* Upload Button */
+        .upload-button {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.9);
+            border: none;
+            cursor: pointer;
+            font-size: 20px;
+            color: #333;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: transform 0.2s;
+        }
+
+        .upload-button:hover {
+            transform: scale(1.1);
+        }
+
+        /* Player Controls */
+        .player-controls {
+            display: none;
+            position: absolute;
+            bottom: 10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 90%;
+            text-align: center;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 4px;
+            background: rgba(255,255,255,0.3);
+            border-radius: 2px;
+            margin: 5px 0;
+        }
+
+        .progress {
+            width: 0%;
+            height: 100%;
+            background: rgba(255,255,0,0.8);
+            border-radius: 2px;
+            transition: width 0.1s linear;
+        }
+
+        /* Lyrics Container */
+        .lyrics-container {
+            position: fixed;
+            bottom: 180px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 90%;
+            max-width: 800px;
+            height: 200px;
+            text-align: center;
+            font-family: 'Montserrat', sans-serif;
+            font-size: 16px;
+            font-weight: 600;
+            color: #ffffff;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.9), 
+                       2px 2px 4px rgba(0,0,0,0.7); /* Verstärkter Schatten für bessere Lesbarkeit */
+            display: none;
+            background: transparent;
+            overflow: hidden;
+        }
+
+        .lyrics-block {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
+            line-height: 1.2;
+        }
+
+        .lyrics-line {
+            opacity: 0;
+            animation: fadeIn 0.5s forwards;
+            margin: 2px 0;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @media (max-width: 768px) {
+            .lyrics-container {
+                bottom: 150px;
+                font-size: 14px;
             }
+        }
+
+        /* Admin Button */
+        .admin-button {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            width: 72px; /* 20% kleiner als andere Buttons */
+            height: 72px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.6);
+            border: none;
+            cursor: pointer;
+            font-size: 14px;
+            color: black;
+            z-index: 1000;
+        }
+
+        /* Admin Modal */
+        .admin-modal {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 90%;
+            max-width: 400px;
+            background: rgba(255, 255, 255, 0.95);
+            padding: 20px;
+            border-radius: 15px;
+            z-index: 2000;
+        }
+
+        .admin-modal h2 {
+            color: black;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .admin-modal input {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+
+        .admin-modal button {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            border: none;
+            border-radius: 5px;
+            background: #4CAF50;
+            color: white;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        .close-button {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            font-size: 24px;
+            cursor: pointer;
+            color: black;
+            background: none;
+            border: none;
+            padding: 0;
+        }
+
+        @media (max-width: 480px) {
+            .admin-button {
+                width: 56px;
+                height: 56px;
+                font-size: 12px;
+            }
+        }
+
+        /* Upload Modal */
+        .upload-modal {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 90%;
+            max-width: 500px;
+            background: rgba(255, 255, 255, 0.95);
+            padding: 20px;
+            border-radius: 15px;
+            z-index: 2000;
+        }
+
+        .upload-modal h3 {
+            color: black;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+
+        .upload-form {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .upload-form label {
+            color: black;
+            font-weight: 600;
+        }
+
+        .upload-form input[type="file"] {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+
+        .upload-form input[type="text"] {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+
+        .upload-form button {
+            width: 100%;
+            padding: 10px;
+            background: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        .upload-form button:hover {
+            background: #45a049;
+        }
+
+        .upload-progress {
+            width: 100%;
+            height: 20px;
+            background-color: #f0f0f0;
+            border-radius: 10px;
+            overflow: hidden;
+            display: none;
+        }
+
+        .upload-progress-bar {
+            width: 0;
+            height: 100%;
+            background-color: #4CAF50;
+            transition: width 0.3s ease;
+        }
+
+        /* Birthday Message */
+        .birthday-message {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 140%; /* 40% größer als normaler Text */
+            color: white;
+            text-align: center;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.8);
+            animation: fadeInBirthday 1s ease-out;
+            z-index: 1000;
+            display: none;
+        }
+
+        @keyframes fadeInBirthday {
+            from { opacity: 0; transform: translate(-50%, -60%); }
+            to { opacity: 1; transform: translate(-50%, -50%); }
         }
     </style>
 </head>
 <body>
-    <!-- Admin-Button oben rechts -->
-    <button class="admin-button" onclick="window.location.href='admin.html'">&#x1F464;</button>
-    
-    <!-- Haupt-Tabelle mit festen Anteilen für Header, Content und Buttons -->
-    <table id="main-table">
-        <tr>
-            <td id="header-cell">
-                <h1 class="app-title">Willkommen in der Welt von Lars vom Mars</h1>
-            </td>
-        </tr>
-        <tr>
-            <td id="content-cell">
-                <div id="lyrics-box"></div>
+    <header class="app-header">
+        <h1 class="app-title">Willkommen in der Welt von Lars vom Mars</h1>
+    </header>
+
+    <nav class="nav-container">
+        <button class="nav-button audiobook" onclick="handleButtonClick('audiobook')">Hörbuch</button>
+        <button class="nav-button video" onclick="handleButtonClick('video')">Video</button>
+        <button class="nav-button music" onclick="toggleMusic()">Musik</button>
+        <button class="nav-button action" onclick="playQuackSound()">Action</button>
+    </nav>
+
+    <button class="admin-button" onclick="openAdminModal()">Admin</button>
+
+    <!-- Admin Modal -->
+    <div class="admin-modal" id="adminModal">
+        <button class="close-button" onclick="closeAdminModal()">&times;</button>
+        <h2>Admin Login</h2>
+        <div class="upload-form">
+            <div>
+                <label for="parentName">Name der Eltern:</label>
+                <input type="text" id="parentName" required>
+            </div>
+            <div>
+                <label for="childName">Name des Kindes:</label>
+                <input type="text" id="childName" required>
+            </div>
+            <div>
+                <label for="childBirthday">Geburtstag des Kindes:</label>
+                <input type="date" id="childBirthday" required>
+            </div>
+            <div>
+                <label for="adminPassword">Passwort (6 Buchstaben + 2 Zahlen):</label>
+                <input type="password" id="adminPassword" placeholder="z.B. Sommer42" required>
+            </div>
+            <button onclick="validatePassword()">Login</button>
+        </div>
+    </div>
+
+    <!-- Upload Modal -->
+    <div class="upload-modal" id="uploadModal">
+        <button class="close-button" onclick="closeUploadModal()">&times;</button>
+        <h3>Medium hinzufügen</h3>
+        <div class="upload-form">
+            <div>
+                <label for="mediaTitle">Titel:</label>
+                <input type="text" id="mediaTitle" required>
+            </div>
+            <div>
+                <label for="mediaFile">Datei:</label>
+                <input type="file" id="mediaFile" required>
+            </div>
+            <div>
+                <label for="mediaCover">Cover (optional):</label>
+                <input type="file" id="mediaCover" accept="image/*">
+            </div>
+            <div class="upload-progress">
+                <div class="upload-progress-bar"></div>
+            </div>
+            <button onclick="handleUpload()">Hinzufügen</button>
+        </div>
+    </div>
+
+    <!-- Audiobook Modal -->
+    <div id="audiobookModal" class="library-modal">
+        <button class="upload-button" onclick="openUploadModal('audio')">+</button>
+        <div class="library-grid">
+            <!-- Audiobook items will be added here -->
+        </div>
+    </div>
+
+    <!-- Video Modal -->
+    <div id="videoModal" class="library-modal">
+        <button class="upload-button" onclick="openUploadModal('video')">+</button>
+        <div class="library-grid">
+            <!-- Video items will be added here -->
+        </div>
+    </div>
+
+    <div class="lyrics-container">
+        <!-- Lyrics will be dynamically added here -->
+    </div>
+
+    <!-- Birthday Message -->
+    <div class="birthday-message" id="birthdayMessage">
+        Geburtstagsgrüße vom Mars, dein Lars
+    </div>
+
+    <script>
+        // Musik und Liedtext-System
+        let musicPlaying = false;
+        const song = new Audio('./lars_vom_mars_song.wav');
+        const lyricsContainer = document.querySelector('.lyrics-container');
+        window.timeouts = [];
+
+        function displayBlock(lines, startTime, nextBlockTime) {
+            window.timeouts.push(setTimeout(() => {
+                const block = document.createElement('div');
+                block.className = 'lyrics-block';
+                lyricsContainer.innerHTML = ''; // Vorherigen Block löschen
+                lyricsContainer.appendChild(block);
+
+                lines.forEach((line, index) => {
+                    window.timeouts.push(setTimeout(() => {
+                        const div = document.createElement('div');
+                        div.className = 'lyrics-line';
+                        div.textContent = line;
+                        block.appendChild(div);
+                    }, index * 4000)); // 4 Sekunden zwischen den Zeilen
+                });
+            }, startTime));
+        }
+
+        function showLyrics() {
+            lyricsContainer.style.display = 'block';
+            
+            // Verse 1 (10 Sekunden)
+            const verse1 = [
+                "In stummen Nächten singt Lars, der Frosch allein,",
+                "Er schwingt auf seinen Träumen, sehnt sich nach daheim,",
+                "In ferner Stille, hallt leise sein Gesang,",
+                "Ein Lied von Wüsten, die einst nach Heimat klang."
+            ];
+            displayBlock(verse1, 10000);
+
+            // Chorus 1 (36 Sekunden)
+            const chorus1 = [
+                "Lars vom Mars, Lars vom Mars,",
+                "sein Herz so groß, sein Blick so klar.",
+                "Er singt vom roten Staub der Ewigkeit,",
+                "träumt von Heimat, doch die bleibt so weit."
+            ];
+            displayBlock(chorus1, 36000);
+
+            // Verse 2 (56 Sekunden)
+            const verse2 = [
+                "Sein Lied fliegt durch die Stürme aus feurigem Sand,",
+                "verloren in den Dünen, in einem fremden Land.",
+                "Die Krater sind wie Narben, gezeichnet vom All,",
+                "und Lars fragt den Himmel: Wann endet mein Fall?"
+            ];
+            displayBlock(verse2, 56000);
+
+            // Chorus 2 (84 Sekunden)
+            const chorus2 = [
+                "Lars vom Mars, Lars vom Mars,",
+                "sein Herz so groß, sein Blick so klar.",
+                "Er singt vom roten Staub der Ewigkeit,",
+                "träumt von Heimat, doch die bleibt so weit."
+            ];
+            displayBlock(chorus2, 84000);
+
+            // Bridge (102 Sekunden)
+            const bridge = [
+                "Vielleicht hört ihn der Wind, der vom Olymp weht,",
+                "vielleicht singt er für Sterne, die niemand je versteht,",
+                "Vielleicht trägt ihn der Traum durch die Unendlichkeit,",
+                "bis jemand ruft: Lars, es ist soweit!"
+            ];
+            displayBlock(bridge, 102000);
+
+            // Chorus Outro (132 Sekunden)
+            const chorusOutro = [
+                "Lars vom Mars, Lars vom Mars,",
+                "sein Herz so groß, sein Blick so klar.",
+                "Er singt vom roten Staub der Ewigkeit,",
+                "träumt von Heimat, doch die bleibt so weit."
+            ];
+            displayBlock(chorusOutro, 132000);
+        }
+
+        function hideLyrics() {
+            lyricsContainer.style.display = 'none';
+            lyricsContainer.innerHTML = '';
+            window.timeouts.forEach(timeout => clearTimeout(timeout));
+            window.timeouts = [];
+        }
+
+        function toggleMusic() {
+            if (!musicPlaying) {
+                song.currentTime = 0;
+                song.play();
+                musicPlaying = true;
+                showLyrics();
+            } else {
+                song.pause();
+                song.currentTime = 0;
+                musicPlaying = false;
+                hideLyrics();
+            }
+        }
+
+        // Quack Sound System
+        let quackPlaying = false;
+        let quackSound = null;
+
+        function playQuackSound() {
+            if (!quackPlaying) {
+                quackSound = new Audio('./quack_sound.mp3');
+                quackSound.play();
+                quackPlaying = true;
+            } else {
+                if (quackSound) {
+                    quackSound.pause();
+                    quackSound.currentTime = 0;
+                }
+                quackPlaying = false;
+            }
+        }
+
+        // Bibliotheks-System
+        let currentMediaType = null;
+        let currentAudio = null;
+        let currentVideo = null;
+
+        function openUploadModal(type) {
+            currentMediaType = type;
+            const fileInput = document.getElementById('mediaFile');
+            fileInput.accept = type === 'audio' ? '.mp3,.wav' : '.mp4';
+            document.getElementById('uploadModal').style.display = 'block';
+        }
+
+        function closeUploadModal() {
+            document.getElementById('uploadModal').style.display = 'none';
+            resetUploadForm();
+        }
+
+        function resetUploadForm() {
+            document.getElementById('mediaTitle').value = '';
+            document.getElementById('mediaFile').value = '';
+            document.getElementById('mediaCover').value = '';
+            document.querySelector('.upload-progress').style.display = 'none';
+            document.querySelector('.upload-progress-bar').style.width = '0%';
+        }
+
+        function updateLibrary(type) {
+            const mediaList = JSON.parse(localStorage.getItem('mediaList') || '[]');
+            const container = document.querySelector(`#${type}Modal .library-grid`);
+            container.innerHTML = '';
+
+            const filteredMedia = mediaList.filter(media => 
+                type === 'audiobook' ? media.type === 'audio' : media.type === 'video'
+            );
+
+            filteredMedia.forEach(media => {
+                const item = document.createElement('div');
+                item.className = `library-item ${media.type === 'audio' ? 'audio' : 'video'}`;
                 
-                <!-- Hörbuch-Bibliothek -->
-                <div id="audiobook-library" class="library-container">
-                    <div class="bubble-grid">
-                        <div class="media-bubble audiobook-bubble" data-id="1">
-                            <div class="bubble-number">1</div>
-                            <div class="download-status">Download</div>
-                            <div class="progress-bar"></div>
-                        </div>
-                        <div class="media-bubble audiobook-bubble" data-id="2">
-                            <div class="bubble-number">2</div>
-                            <div class="download-status">Download</div>
-                            <div class="progress-bar"></div>
-                        </div>
-                        <div class="media-bubble audiobook-bubble" data-id="3">
-                            <div class="bubble-number">3</div>
-                            <div class="download-status">Download</div>
-                            <div class="progress-bar"></div>
-                        </div>
-                        <div class="media-bubble audiobook-bubble" data-id="4">
-                            <div class="bubble-number">4</div>
-                            <div class="download-status">Download</div>
-                            <div class="progress-bar"></div>
-                        </div>
-                        <div class="media-bubble audiobook-bubble" data-id="5">
-                            <div class="bubble-number">5</div>
-                            <div class="download-status">Download</div>
-                            <div class="progress-bar"></div>
-                        </div>
-                        <div class="media-bubble audiobook-bubble" data-id="6">
-                            <div class="bubble-number">6</div>
-                            <div class="download-status">Download</div>
-                            <div class="progress-bar"></div>
-                        </div>
-                        <div class="media-bubble audiobook-bubble" data-id="7">
-                            <div class="bubble-number">7</div>
-                            <div class="download-status">Download</div>
-                            <div class="progress-bar"></div>
-                        </div>
-                        <div class="media-bubble audiobook-bubble" data-id="8">
-                            <div class="bubble-number">8</div>
-                            <div class="download-status">Download</div>
-                            <div class="progress-bar"></div>
-                        </div>
-                        <div class="media-bubble audiobook-bubble" data-id="9">
-                            <div class="bubble-number">9</div>
-                            <div class="download-status">Download</div>
-                            <div class="progress-bar"></div>
-                        </div>
-                        <div class="media-bubble audiobook-bubble" data-id="10">
-                            <div class="bubble-number">10</div>
-                            <div class="download-status">Download</div>
-                            <div class="progress-bar"></div>
-                        </div>
-                    </div>
-                </div>
+                const title = document.createElement('div');
+                title.className = 'library-item-title';
+                title.textContent = media.title;
                 
-                <!-- Video-Bibliothek -->
-                <div id="video-library" class="library-container">
-                    <div class="bubble-grid">
-                        <div class="media-bubble video-bubble" data-id="1">
-                            <div class="bubble-number">1</div>
-                            <div class="download-status">Download</div>
-                            <div class="progress-bar"></div>
-                        </div>
-                        <div class="media-bubble video-bubble" data-id="2">
-                            <div class="bubble-number">2</div>
-                            <div class="download-status">Download</div>
-                            <div class="progress-bar"></div>
-                        </div>
-                        <div class="media-bubble video-bubble" data-id="3">
-                            <div class="bubble-number">3</div>
-                            <div class="download-status">Download</div>
-                            <div class="progress-bar"></div>
-                        </div>
-                        <div class="media-bubble video-bubble" data-id="4">
-                            <div class="bubble-number">4</div>
-                            <div class="download-status">Download</div>
-                            <div class="progress-bar"></div>
-                        </div>
-                        <div class="media-bubble video-bubble" data-id="5">
-                            <div class="bubble-number">5</div>
-                            <div class="download-status">Download</div>
-                            <div class="progress-bar"></div>
-                        </div>
-                        <div class="media-bubble video-bubble" data-id="6">
-                            <div class="bubble-number">6</div>
-                            <div class="download-status">Download</div>
-                            <div class="progress-bar"></div>
-                        </div>
-                        <div class="media-bubble video-bubble" data-id="7">
-                            <div class="bubble-number">7</div>
-                            <div class="download-status">Download</div>
-                            <div class="progress-bar"></div>
-                        </div>
-                        <div class="media-bubble video-bubble" data-id="8">
-                            <div class="bubble-number">8</div>
-                            <div class="download-status">Download</div>
-                            <div class="progress-bar"></div>
-                        </div>
-                        <div class="media-bubble video-bubble" data-id="9">
-                            <div class="bubble-number">9</div>
-                            <div class="download-status">Download</div>
-                            <div class="progress-bar"></div>
-                        </div>
-                        <div class="media-bubble video-bubble" data-id="10">
-                            <div class="bubble-number">10</div>
-                            <div class="download-status">Download</div>
-                            <div class="progress-bar"></div>
-                        </div>
-                    </div>
-                </div>
+                const controls = document.createElement('div');
+                controls.className = 'library-item-controls';
                 
-                <!-- Player-Steuerung -->
-                <div id="player-controls" class="player-controls">
-                    <div class="time-display">
-                        <span id="current-time">0:00</span>
-                        <span id="total-time">0:00</span>
-                    </div>
-                    <div class="timeline">
-                        <div class="timeline-progress"></div>
-                    </div>
-                    <div class="control-buttons">
-                        <button class="control-btn rewind">u23ea</button>
-                        <button class="control-btn play-pause">u25b6</button>
-                        <button class="control-btn forward">u23e9</button>
-                    </div>
-                </div>
-            </td>
-        </tr>
-        <tr>
-            <td id="buttons-cell">
-                <div class="nav-container">
-                    <button class="nav-button parents" onclick="window.location.href='admin.html'">Eltern</button>
-                    <button class="nav-button webshop" onclick="openWebshop()">Webshop</button>
-                    <button class="nav-button music" onclick="toggleMusic()">Musik</button>
-                    <button class="nav-button action" onclick="playQuackSound()">Action</button>
+                const playButton = document.createElement('button');
+                playButton.className = 'play-button';
+                playButton.innerHTML = '▶';
+                
+                let isPlaying = false;
+                playButton.onclick = () => {
+                    if (!isPlaying) {
+                        stopAllMedia();
+                        playMedia(media);
+                        playButton.innerHTML = '⏸';
+                        playButton.classList.add('playing');
+                    } else {
+                        stopAllMedia();
+                        playButton.innerHTML = '▶';
+                        playButton.classList.remove('playing');
+                    }
+                    isPlaying = !isPlaying;
+                };
+                
+                controls.appendChild(playButton);
+                item.appendChild(title);
+                item.appendChild(controls);
+                
+                if (media.cover) {
+                    item.style.backgroundImage = `url(${media.cover})`;
+                    item.style.backgroundSize = 'cover';
+                    item.style.backgroundPosition = 'center';
+                }
+                
+                container.appendChild(item);
+            });
+        }
+
+        function stopAllMedia() {
+            if (currentAudio) {
+                currentAudio.pause();
+                currentAudio = null;
+            }
+            if (currentVideo) {
+                currentVideo.pause();
+                currentVideo.remove();
+                currentVideo = null;
+            }
+            
+            // Reset all play buttons
+            document.querySelectorAll('.play-button').forEach(button => {
+                button.innerHTML = '▶';
+                button.classList.remove('playing');
+            });
+        }
+
+        function playMedia(media) {
+            if (media.type === 'audio') {
+                const audio = new Audio(media.data);
+                audio.play();
+                currentAudio = audio;
+                
+                audio.onended = () => {
+                    stopAllMedia();
+                };
+            } else {
+                const video = document.createElement('video');
+                video.src = media.data;
+                video.controls = true;
+                video.style.position = 'fixed';
+                video.style.top = '50%';
+                video.style.left = '50%';
+                video.style.transform = 'translate(-50%, -50%)';
+                video.style.maxWidth = '90%';
+                video.style.maxHeight = '80vh';
+                video.style.zIndex = '2001';
+                document.body.appendChild(video);
+                video.play();
+                currentVideo = video;
+
+                video.onended = () => {
+                    stopAllMedia();
+                };
+
+                // Click outside to close video
+                video.onclick = (e) => e.stopPropagation();
+                document.onclick = (e) => {
+                    if (e.target !== video) {
+                        stopAllMedia();
+                        document.onclick = null;
+                    }
+                };
+            }
+        }
+
+        function handleUpload() {
+            const title = document.getElementById('mediaTitle').value;
+            const file = document.getElementById('mediaFile').files[0];
+            const cover = document.getElementById('mediaCover').files[0];
+
+            if (!title || !file) {
+                alert('Bitte Titel und Datei auswählen');
+                return;
+            }
+
+            const fileExtension = '.' + file.name.split('.').pop().toLowerCase();
+            const isAudio = currentMediaType === 'audio';
+            const validTypes = isAudio ? ['.mp3', '.wav'] : ['.mp4'];
+
+            if (!validTypes.includes(fileExtension)) {
+                alert(`Nur ${validTypes.join(', ')} Dateien sind erlaubt`);
+                return;
+            }
+
+            const progressContainer = document.querySelector('.upload-progress');
+            const progressBar = document.querySelector('.upload-progress-bar');
+            progressContainer.style.display = 'block';
+            progressBar.style.width = '0%';
+
+            const reader = new FileReader();
+            reader.onprogress = (e) => {
+                if (e.lengthComputable) {
+                    const progress = (e.loaded / e.total) * 100;
+                    progressBar.style.width = progress + '%';
+                }
+            };
+
+            reader.onload = function(e) {
+                const mediaData = {
+                    title: title,
+                    type: currentMediaType,
+                    data: e.target.result,
+                    timestamp: Date.now()
+                };
+
+                if (cover) {
+                    const coverReader = new FileReader();
+                    coverReader.onload = function(e) {
+                        mediaData.cover = e.target.result;
+                        storeMedia(mediaData);
+                    };
+                    coverReader.readAsDataURL(cover);
+                } else {
+                    storeMedia(mediaData);
+                }
+            };
+
+            reader.readAsDataURL(file);
+        }
+
+        function storeMedia(mediaData) {
+            let mediaList = JSON.parse(localStorage.getItem('mediaList') || '[]');
+            mediaList.push(mediaData);
+            localStorage.setItem('mediaList', JSON.stringify(mediaList));
+            
+            closeUploadModal();
+            updateLibrary(mediaData.type === 'audio' ? 'audiobook' : 'video');
+        }
+
+        // Event Listeners
+        document.querySelector('.nav-button.audiobook').addEventListener('click', () => {
+            updateLibrary('audiobook');
+        });
+
+        document.querySelector('.nav-button.video').addEventListener('click', () => {
+            updateLibrary('video');
+        });
+
+        // Admin System
+        const adminModal = document.querySelector('.admin-modal');
+        const adminButton = document.querySelector('.admin-button');
+
+        function openAdminModal() {
+            adminModal.style.display = 'block';
+        }
+
+        function closeAdminModal() {
+            adminModal.style.display = 'none';
+            document.getElementById('adminPassword').value = '';
+            document.getElementById('parentName').value = '';
+            document.getElementById('childName').value = '';
+            document.getElementById('childBirthday').value = '';
+        }
+
+        // Close modal when clicking outside
+        window.addEventListener('click', (e) => {
+            if (e.target === adminModal) {
+                closeAdminModal();
+            }
+        });
+
+        function validatePassword() {
+            const password = document.getElementById('adminPassword').value;
+            const parentName = document.getElementById('parentName').value;
+            const childName = document.getElementById('childName').value;
+            const childBirthday = document.getElementById('childBirthday').value;
+
+            if (!parentName || !childName || !childBirthday) {
+                alert('Bitte alle Felder ausfüllen');
+                return;
+            }
+
+            const regex = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8}$/;
+            const letterCount = (password.match(/[A-Za-z]/g) || []).length;
+            const numberCount = (password.match(/\d/g) || []).length;
+
+            if (regex.test(password) && letterCount === 6 && numberCount === 2) {
+                // Speichere Benutzerdaten
+                const userData = {
+                    parentName,
+                    childName,
+                    birthday: childBirthday,
+                    lastLogin: new Date().toISOString()
+                };
+                localStorage.setItem('userData', JSON.stringify(userData));
+                
+                // Speichere Geburtstagsdaten separat für die Geburtstagsprüfung
+                const birthdayData = {
+                    birthday: childBirthday,
+                    lastShown: null
+                };
+                localStorage.setItem('birthdayData', JSON.stringify(birthdayData));
+
+                // Öffne Upload-Modal
+                adminModal.style.display = 'none';
+                document.getElementById('uploadModal').style.display = 'block';
+                
+                // Formular zurücksetzen
+                document.getElementById('adminPassword').value = '';
+                document.getElementById('parentName').value = '';
+                document.getElementById('childName').value = '';
+                document.getElementById('childBirthday').value = '';
+            } else {
+                alert('Passwort muss 6 Buchstaben und 2 Zahlen enthalten');
+            }
+        }
+
+        // Birthday System
+        function checkBirthday() {
+            const today = new Date();
+            const birthdayData = localStorage.getItem('birthdayData');
+            
+            if (birthdayData) {
+                const data = JSON.parse(birthdayData);
+                const lastShown = data.lastShown ? new Date(data.lastShown) : null;
+                const birthday = new Date(data.birthday);
+                
+                // Prüfe ob heute Geburtstag ist und die Nachricht noch nicht heute gezeigt wurde
+                if (today.getDate() === birthday.getDate() && 
+                    today.getMonth() === birthday.getMonth() && 
+                    (!lastShown || lastShown.toDateString() !== today.toDateString())) {
+                    
+                    // Zeige Geburtstagsnachricht
+                    const birthdayMessage = document.getElementById('birthdayMessage');
+                    birthdayMessage.style.display = 'block';
+                    
+                    // Speichere wann die Nachricht zuletzt gezeigt wurde
+                    data.lastShown = today.toISOString();
+                    localStorage.setItem('birthdayData', JSON.stringify(data));
+                    
+                    // Vorbereitung für Geburtstagssong (Platzhalter)
+                    const birthdaySongPath = './assets/birthday_song.mp3';
+                    
+                    // Event-Listener für Medien-Buttons
+                    const mediaButtons = document.querySelectorAll('.nav-button');
+                    mediaButtons.forEach(button => {
+                        button.addEventListener('click', () => {
+                            birthdayMessage.style.display = 'none';
+                        }, { once: true });
+                    });
+                }
+            }
+        }
+
+        // Prüfe beim Start der App
+        window.addEventListener('load', checkBirthday);
+
+        // Service Worker Registration
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('./sw.js')
+                    .then(registration => {
+                        console.log('ServiceWorker registration successful');
+                    })
+                    .catch(err => {
+                        console.log('ServiceWorker registration failed: ', err);
+                    });
+            });
+        }
+    </script>
+</body>
+</html>
                 </div>
             </td>
         </tr>
