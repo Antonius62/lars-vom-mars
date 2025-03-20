@@ -971,6 +971,39 @@
             
             closeSuccessDialog();
         }
+        
+        // URL auf Demo-Code überprüfen
+        function checkUrlForDemoCode() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const demoCode = urlParams.get('demoCode');
+            
+            if (demoCode === 'lars') {
+                // Demo-Code in den lokalen Speicher setzen
+                localStorage.setItem('demo_audiobook_redeemed', 'true');
+                alert('Demo-Hörbuch wurde aktiviert!');
+                
+                // URL ohne Parameter neu laden
+                window.history.replaceState({}, document.title, window.location.pathname);
+            }
+        }
+        
+        // App initialisieren
+        function initializeApp() {
+            // Alle Funktionalitäten initialisieren
+        }
+        
+        // Bei Seitenladung ausführen
+        document.addEventListener('DOMContentLoaded', function() {
+            // URL-Parameter überprüfen
+            checkUrlForDemoCode();
+            
+            // Alle Funktionalitäten initialisieren
+            initializeApp();
+            
+            // Bibliotheken laden
+            loadAudiobooks();
+            loadVideos();
+        });
     </script>
 </body>
 </html>

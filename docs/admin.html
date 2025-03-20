@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Lars vom Mars - Admin</title>
+    <title>Lars vom Mars - Elternbereich</title>
     <style>
         * {
             margin: 0;
@@ -12,903 +12,408 @@
         }
         
         body {
-            background: url('./mars_background.png') center/cover fixed;
+            font-family: 'Arial Rounded MT Bold', 'Arial', sans-serif;
+            background-image: url('images/space-background.jpg');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            background-attachment: fixed;
             color: white;
-            font-family: Arial, sans-serif;
-            overflow-x: hidden;
             min-height: 100vh;
-            padding: 20px;
-        }
-        
-        .admin-container {
-            max-width: 900px;
-            margin: 0 auto;
-            background: rgba(0, 0, 0, 0.6);
-            backdrop-filter: blur(5px);
-            border-radius: 20px;
-            padding: 30px;
-        }
-        
-        .admin-header {
             display: flex;
-            justify-content: space-between;
+            flex-direction: column;
             align-items: center;
-            margin-bottom: 30px;
+            justify-content: center;
         }
         
-        .admin-title {
-            font-size: 24px;
-            color: rgba(255, 255, 0, 0.8);
-        }
-        
-        .back-button {
-            background: rgba(255, 255, 255, 0.2);
-            border: none;
-            border-radius: 5px;
-            padding: 8px 15px;
-            color: white;
-            cursor: pointer;
-        }
-        
-        .admin-tabs {
-            display: flex;
-            margin-bottom: 20px;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
-        }
-        
-        .tab-button {
-            background: transparent;
-            border: none;
-            color: white;
-            padding: 10px 20px;
-            cursor: pointer;
-            opacity: 0.7;
+        .container {
+            width: 90%;
+            max-width: 800px;
+            background-color: rgba(0, 0, 0, 0.7);
+            border-radius: 15px;
+            padding: 20px;
+            margin: 20px auto;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.6);
             position: relative;
         }
         
-        .tab-button.active {
-            opacity: 1;
+        .close-button {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: rgba(255, 255, 255, 0.3);
+            border: none;
+            color: white;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            font-size: 18px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background 0.3s;
         }
         
-        .tab-button.active::after {
-            content: '';
-            position: absolute;
-            bottom: -1px;
-            left: 0;
+        .close-button:hover {
+            background: rgba(255, 255, 255, 0.5);
+        }
+        
+        h1 {
+            color: #FFD700;
+            text-align: center;
+            margin-bottom: 20px;
+            font-size: 24px;
+        }
+        
+        .login-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+        }
+        
+        .parent-content {
+            display: none;
             width: 100%;
-            height: 3px;
-            background: rgba(255, 255, 0, 0.8);
+        }
+        
+        .tab-container {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 20px;
+        }
+        
+        .tab-button {
+            background-color: rgba(255, 255, 255, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.4);
+            color: white;
+            padding: 10px 15px;
+            margin: 0 5px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        
+        .tab-button.active {
+            background-color: rgba(255, 215, 0, 0.4);
+            font-weight: bold;
         }
         
         .tab-content {
             display: none;
-        }
-        
-        .tab-content.active {
-            display: block;
-        }
-        
-        .form-group {
-            margin-bottom: 20px;
-        }
-        
-        label {
-            display: block;
-            margin-bottom: 8px;
-            font-weight: bold;
+            padding: 20px;
+            background-color: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
         }
         
         input[type="text"],
         input[type="password"],
-        input[type="file"],
-        textarea {
+        input[type="date"] {
             width: 100%;
-            padding: 10px;
-            background: rgba(255, 255, 255, 0.1);
+            padding: 12px;
+            margin: 10px 0;
             border: 1px solid rgba(255, 255, 255, 0.3);
             border-radius: 5px;
+            background-color: rgba(255, 255, 255, 0.2);
             color: white;
         }
         
-        textarea {
-            resize: vertical;
-            min-height: 100px;
+        input::placeholder {
+            color: rgba(255, 255, 255, 0.7);
         }
         
         button {
-            background: rgba(255, 255, 0, 0.6);
-            color: black;
+            background-color: #FFD700;
+            color: #333;
             border: none;
-            padding: 10px 20px;
+            padding: 12px 20px;
             border-radius: 5px;
             cursor: pointer;
             font-weight: bold;
+            margin-top: 10px;
+            transition: background-color 0.3s;
         }
         
         button:hover {
-            background: rgba(255, 255, 0, 0.8);
+            background-color: #FFC107;
         }
         
-        .chapter-list {
-            max-height: 300px;
-            overflow-y: auto;
-            margin-bottom: 20px;
-            background: rgba(0, 0, 0, 0.3);
-            border-radius: 5px;
-            padding: 10px;
+        .form-group {
+            margin-bottom: 15px;
+            width: 100%;
         }
         
-        .chapter-item {
-            padding: 15px;
-            margin-bottom: 10px;
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: 5px;
-            position: relative;
-        }
-        
-        .remove-chapter {
-            position: absolute;
-            right: 10px;
-            top: 10px;
-            background: rgba(255, 0, 0, 0.5);
-            color: white;
-            border: none;
-            width: 24px;
-            height: 24px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-        }
-        
-        .login-container {
-            max-width: 400px;
-            margin: 100px auto;
-            background: rgba(0, 0, 0, 0.6);
-            backdrop-filter: blur(5px);
-            border-radius: 20px;
-            padding: 30px;
-            text-align: center;
-        }
-        
-        .audiobook-list {
-            margin-top: 20px;
-            border-top: 1px solid rgba(255, 255, 255, 0.2);
-            padding-top: 20px;
-        }
-        
-        .audiobook-item {
-            display: flex;
-            align-items: center;
-            padding: 10px;
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: 5px;
-            margin-bottom: 10px;
-        }
-        
-        .audiobook-item img {
-            width: 60px;
-            height: 60px;
-            border-radius: 5px;
-            margin-right: 15px;
-            object-fit: cover;
-        }
-        
-        .audiobook-info {
-            flex-grow: 1;
-        }
-        
-        .audiobook-title {
-            font-weight: bold;
+        label {
+            display: block;
             margin-bottom: 5px;
-        }
-        
-        .audiobook-actions {
-            display: flex;
-            gap: 10px;
+            color: #FFD700;
         }
         
         .status-message {
+            margin-top: 15px;
             padding: 10px;
-            margin: 10px 0;
             border-radius: 5px;
             text-align: center;
         }
         
-        .success {
-            background: rgba(0, 255, 0, 0.2);
+        .status-message.success {
+            background-color: rgba(76, 175, 80, 0.3);
+            border: 1px solid #4CAF50;
         }
         
-        .error {
-            background: rgba(255, 0, 0, 0.2);
+        .status-message.error {
+            background-color: rgba(244, 67, 54, 0.3);
+            border: 1px solid #F44336;
         }
         
-        .loading {
-            display: none;
-            align-items: center;
-            justify-content: center;
+        .file-input-container {
+            position: relative;
             margin: 20px 0;
         }
         
-        .spinner {
-            width: 30px;
-            height: 30px;
-            border: 3px solid rgba(255, 255, 255, 0.3);
-            border-radius: 50%;
-            border-top-color: white;
-            animation: spin 1s ease-in-out infinite;
-            margin-right: 10px;
+        .file-input {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            opacity: 0;
+            cursor: pointer;
         }
         
-        @keyframes spin {
-            to { transform: rotate(360deg); }
+        .file-input-label {
+            display: block;
+            padding: 15px;
+            background-color: rgba(255, 255, 255, 0.2);
+            border-radius: 5px;
+            text-align: center;
+            cursor: pointer;
+        }
+        
+        .child-info-container,
+        .import-container {
+            margin-top: 20px;
+        }
+        
+        .back-button {
+            background-color: rgba(255, 255, 255, 0.2);
+            color: white;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-top: 20px;
+            transition: background-color 0.3s;
+        }
+        
+        .back-button:hover {
+            background-color: rgba(255, 255, 255, 0.3);
         }
     </style>
 </head>
 <body>
-    <div id="login-screen" class="login-container">
-        <h1 class="admin-title">Lars vom Mars Admin</h1>
-        <div class="form-group">
-            <label for="username">Benutzername:</label>
-            <input type="text" id="username" placeholder="Benutzername eingeben">
+    <div class="container">
+        <button class="close-button" onclick="goHome()">×</button>
+        
+        <h1>Lars vom Mars - Elternbereich</h1>
+        
+        <div class="login-container" id="login-container">
+            <form id="login-form">
+                <div class="form-group">
+                    <label for="username">Benutzername:</label>
+                    <input type="text" id="username" placeholder="Benutzername eingeben">
+                </div>
+                
+                <div class="form-group">
+                    <label for="password">Passwort:</label>
+                    <input type="password" id="password" placeholder="Passwort eingeben">
+                </div>
+                
+                <button type="submit">Anmelden</button>
+            </form>
         </div>
-        <div class="form-group">
-            <label for="password">Passwort:</label>
-            <input type="password" id="password" placeholder="Passwort eingeben">
-        </div>
-        <button onclick="login()">Anmelden</button>
-    </div>
-    
-    <div id="admin-panel" class="admin-container" style="display: none;">
-        <div class="admin-header">
-            <h1 class="admin-title">Lars vom Mars Admin-Bereich</h1>
+        
+        <div class="parent-content" id="parent-content">
+            <div class="tab-container">
+                <button class="tab-button active" data-tab="child-info">Kinderinfos</button>
+                <button class="tab-button" data-tab="import-audiobooks">Hörbücher importieren</button>
+            </div>
+            
+            <div class="tab-content" id="child-info" style="display: block;">
+                <h2>Informationen zum Kind</h2>
+                
+                <div class="form-group">
+                    <label for="child-name">Vorname des Kindes:</label>
+                    <input type="text" id="child-name" placeholder="Vorname eingeben">
+                </div>
+                
+                <div class="form-group">
+                    <label for="child-birthday">Geburtsdatum:</label>
+                    <input type="date" id="child-birthday">
+                </div>
+                
+                <button onclick="saveChildInfo()">Speichern</button>
+                <div id="child-info-status" class="status-message" style="display: none;"></div>
+            </div>
+            
+            <div class="tab-content" id="import-audiobooks">
+                <h2>Hörbücher importieren</h2>
+                <p>Wählen Sie die heruntergeladenen Hörbuch-Dateien aus.</p>
+                
+                <div class="file-input-container">
+                    <div class="file-input-label">Hörbuch-Datei auswählen</div>
+                    <input type="file" id="audiobook-file" class="file-input" accept=".mp3,.m4a,.mp4,.zip,.lvm">
+                </div>
+                
+                <button onclick="importAudiobook()">Importieren</button>
+                <div id="import-status" class="status-message" style="display: none;"></div>
+            </div>
+            
             <button class="back-button" onclick="logout()">Abmelden</button>
-        </div>
-        
-        <div class="admin-tabs">
-            <button class="tab-button active" onclick="showTab('upload')">Hörbuch hochladen</button>
-            <button class="tab-button" onclick="showTab('manage')">Hörbücher verwalten</button>
-            <button class="tab-button" onclick="showTab('redeem')">Code einlösen</button>
-        </div>
-        
-        <div id="status-message" class="status-message" style="display: none;"></div>
-        
-        <div id="upload-tab" class="tab-content active">
-            <div class="form-group">
-                <label for="audiobook-title">Hörbuch-Titel:</label>
-                <input type="text" id="audiobook-title" placeholder="Titel des Hörbuchs">
-            </div>
-            
-            <div class="form-group">
-                <label for="audiobook-description">Beschreibung:</label>
-                <textarea id="audiobook-description" placeholder="Beschreibung des Hörbuchs"></textarea>
-            </div>
-            
-            <div class="form-group">
-                <label for="cover-image">Cover-Bild:</label>
-                <input type="file" id="cover-image" accept="image/*">
-            </div>
-            
-            <h3>Kapitel hinzufügen</h3>
-            <div class="form-group">
-                <label for="chapter-title">Kapitel-Titel:</label>
-                <input type="text" id="chapter-title" placeholder="Titel des Kapitels">
-            </div>
-            
-            <div class="form-group">
-                <label for="chapter-audio">Audio-Datei:</label>
-                <input type="file" id="chapter-audio" accept="audio/*">
-            </div>
-            
-            <button id="add-chapter-btn" onclick="addChapter()">Kapitel hinzufügen</button>
-            
-            <h3>Kapitel-Liste</h3>
-            <div id="chapter-list" class="chapter-list">
-                <!-- Kapitel werden hier hinzugefügt -->
-                <div class="empty-message">Noch keine Kapitel hinzugefügt.</div>
-            </div>
-            
-            <button id="save-audiobook-btn" onclick="saveAudiobook()">Hörbuch speichern</button>
-            
-            <div id="loading" class="loading">
-                <div class="spinner"></div>
-                <span>Wird verarbeitet...</span>
-            </div>
-        </div>
-        
-        <div id="manage-tab" class="tab-content">
-            <h2>Vorhandene Hörbücher</h2>
-            <div id="audiobook-list" class="audiobook-list">
-                <!-- Hörbücher werden hier angezeigt -->
-                <div class="empty-message">Keine Hörbücher vorhanden.</div>
-            </div>
-        </div>
-        
-        <div id="redeem-tab" class="tab-content">
-            <h2>Hörbuch-Code einlösen</h2>
-            <div class="form-group">
-                <label for="download-code">Download-Code:</label>
-                <input type="text" id="download-code" placeholder="Geben Sie Ihren Code ein">
-            </div>
-            <button id="redeem-code-btn" onclick="redeemCodeSimple()">Code einlösen</button>
-            
-            <div id="redeem-status" class="status-message" style="display: none;"></div>
-            
-            <h3 style="margin-top: 30px;">Verfügbare Hörbücher</h3>
-            <div id="available-downloads" class="audiobook-list">
-                <!-- Verfügbare Downloads erscheinen hier -->
-                <div class="empty-message">Keine Hörbücher verfügbar.</div>
-            </div>
         </div>
     </div>
     
     <script>
-        // Globale Variablen
-        let chapterCounter = 0;
-        let chapters = [];
-        let coverImageData = null;
+        // Bei Seitenladung ausführen
+        document.addEventListener('DOMContentLoaded', function() {
+            // Demo-Code-Prüfung in der URL
+            checkUrlForDemoCode();
+            
+            // Registerkarten-Funktionalität
+            document.querySelectorAll('.tab-button').forEach(button => {
+                button.addEventListener('click', function() {
+                    switchTab(this.getAttribute('data-tab'));
+                });
+            });
+            
+            // Login-Formular absenden
+            document.getElementById('login-form').addEventListener('submit', function(e) {
+                e.preventDefault();
+                loginParent();
+            });
+            
+            // Kind-Infos aus dem lokalen Speicher laden
+            loadChildInfo();
+        });
         
-        // Tab-Wechsel
-        function showTab(tabId) {
+        // Zur Hauptseite zurückgehen
+        function goHome() {
+            window.location.href = 'index.html';
+        }
+        
+        // URL auf Demo-Code überprüfen
+        function checkUrlForDemoCode() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const demoCode = urlParams.get('demoCode');
+            
+            if (demoCode === 'lars') {
+                // Demo-Code in den lokalen Speicher setzen
+                localStorage.setItem('demo_audiobook_redeemed', 'true');
+                alert('Demo-Hörbuch wurde aktiviert!');
+                window.location.href = 'index.html'; // Zur Hauptseite weiterleiten
+            }
+        }
+        
+        // Tab wechseln
+        function switchTab(tabId) {
+            // Alle Tabs ausblenden
+            document.querySelectorAll('.tab-content').forEach(tab => {
+                tab.style.display = 'none';
+            });
+            
+            // Aktivklasse von allen Tab-Buttons entfernen
             document.querySelectorAll('.tab-button').forEach(button => {
                 button.classList.remove('active');
             });
-            document.querySelectorAll('.tab-content').forEach(content => {
-                content.classList.remove('active');
-            });
             
-            document.querySelector(`.tab-button[onclick="showTab('${tabId}')"]`).classList.add('active');
-            document.getElementById(`${tabId}-tab`).classList.add('active');
-            
-            if (tabId === 'manage') {
-                loadAudiobooks();
-            } else if (tabId === 'redeem') {
-                loadAvailableDownloads();
-            }
+            // Ausgewählten Tab anzeigen und Button aktivieren
+            document.getElementById(tabId).style.display = 'block';
+            document.querySelector(`.tab-button[data-tab="${tabId}"]`).classList.add('active');
         }
         
-        // Login-Funktion
-        function login() {
+        // Eltern-Login
+        function loginParent() {
             const username = document.getElementById('username').value;
             const password = document.getElementById('password').value;
             
-            // Einfache Überprüfung (in einer echten App würde man einen sicheren Authentifizierungsmechanismus verwenden)
+            // Einfache Prüfung (in einer echten Anwendung würde dies sicherer sein)
             if (username === 'admin' && password === 'lars2023') {
-                document.getElementById('login-screen').style.display = 'none';
-                document.getElementById('admin-panel').style.display = 'block';
-            } else {
-                showStatus('Falsche Zugangsdaten!', 'error');
-            }
-        }
-        
-        // Logout-Funktion
-        function logout() {
-            document.getElementById('login-screen').style.display = 'block';
-            document.getElementById('admin-panel').style.display = 'none';
-            document.getElementById('username').value = '';
-            document.getElementById('password').value = '';
-        }
-        
-        // Status-Meldung anzeigen
-        function showStatus(message, type) {
-            const statusElement = document.getElementById('status-message');
-            statusElement.textContent = message;
-            statusElement.className = 'status-message ' + type;
-            statusElement.style.display = 'block';
-            
-            setTimeout(() => {
-                statusElement.style.display = 'none';
-            }, 3000);
-        }
-        
-        // Kapitel hinzufügen
-        function addChapter() {
-            const chapterTitle = document.getElementById('chapter-title').value;
-            const chapterAudio = document.getElementById('chapter-audio').files[0];
-            
-            if (!chapterTitle || !chapterAudio) {
-                showStatus('Bitte Kapitel-Titel und Audio-Datei angeben!', 'error');
-                return;
-            }
-            
-            // Kapitel zur Liste hinzufügen
-            const chapterId = Date.now().toString();
-            const chapter = {
-                id: chapterId,
-                title: chapterTitle,
-                audioFile: chapterAudio
-            };
-            chapters.push(chapter);
-            
-            // Kapitel in der UI anzeigen
-            const chapterList = document.getElementById('chapter-list');
-            if (chapterList.querySelector('.empty-message')) {
-                chapterList.innerHTML = '';
-            }
-            
-            const chapterElement = document.createElement('div');
-            chapterElement.className = 'chapter-item';
-            chapterElement.setAttribute('data-id', chapterId);
-            chapterElement.innerHTML = `
-                <div>${chapterTitle}</div>
-                <div style="font-size: 12px; margin-top: 5px;">${chapterAudio.name}</div>
-                <button class="remove-chapter" onclick="removeChapter('${chapterId}')">×</button>
-            `;
-            chapterList.appendChild(chapterElement);
-            
-            // Formular zurücksetzen
-            document.getElementById('chapter-title').value = '';
-            document.getElementById('chapter-audio').value = '';
-        }
-        
-        // Kapitel entfernen
-        function removeChapter(chapterId) {
-            // Aus der Kapitel-Liste entfernen
-            chapters = chapters.filter(chapter => chapter.id !== chapterId);
-            
-            // Aus der UI entfernen
-            const chapterElement = document.querySelector(`.chapter-item[data-id="${chapterId}"]`);
-            if (chapterElement) {
-                chapterElement.remove();
-            }
-            
-            // Wenn keine Kapitel mehr vorhanden sind, Nachricht anzeigen
-            const chapterList = document.getElementById('chapter-list');
-            if (chapters.length === 0) {
-                chapterList.innerHTML = '<div class="empty-message">Noch keine Kapitel hinzugefügt.</div>';
-            }
-        }
-        
-        // Cover-Bild verarbeiten
-        document.getElementById('cover-image').addEventListener('change', function(e) {
-            const file = e.target.files[0];
-            if (!file) return;
-            
-            const reader = new FileReader();
-            reader.onload = function(event) {
-                coverImageData = event.target.result;
-            };
-            reader.readAsDataURL(file);
-        });
-        
-        // Hörbuch speichern
-        async function saveAudiobook() {
-            const title = document.getElementById('audiobook-title').value;
-            const description = document.getElementById('audiobook-description').value;
-            
-            if (!title) {
-                showStatus('Bitte einen Titel angeben!', 'error');
-                return;
-            }
-            
-            if (chapters.length === 0) {
-                showStatus('Bitte mindestens ein Kapitel hinzufügen!', 'error');
-                return;
-            }
-            
-            // Ladeanzeige anzeigen
-            document.getElementById('loading').style.display = 'flex';
-            
-            try {
-                // Kapitel-Audio-Dateien verarbeiten
-                const processedChapters = [];
-                for (const chapter of chapters) {
-                    // Audio-Datei in Base64 umwandeln
-                    const audioData = await readFileAsDataURL(chapter.audioFile);
-                    
-                    processedChapters.push({
-                        id: chapter.id,
-                        title: chapter.title,
-                        audioUrl: audioData
-                    });
-                }
-                
-                // Hörbuch-Objekt erstellen
-                const audiobook = {
-                    id: Date.now().toString(),
-                    title: title,
-                    description: description,
-                    coverImage: coverImageData,
-                    chapters: processedChapters,
-                    dateAdded: new Date().toISOString()
-                };
-                
-                // In IndexedDB speichern
-                await saveToIndexedDB(audiobook);
-                
-                // UI zurücksetzen
-                resetForm();
-                showStatus('Hörbuch erfolgreich gespeichert!', 'success');
-            } catch (error) {
-                console.error('Fehler beim Speichern:', error);
-                showStatus('Fehler beim Speichern des Hörbuchs!', 'error');
-            } finally {
-                document.getElementById('loading').style.display = 'none';
-            }
-        }
-        
-        // Datei als DataURL lesen
-        function readFileAsDataURL(file) {
-            return new Promise((resolve, reject) => {
-                const reader = new FileReader();
-                reader.onload = () => resolve(reader.result);
-                reader.onerror = reject;
-                reader.readAsDataURL(file);
-            });
-        }
-        
-        // In IndexedDB speichern
-        function saveToIndexedDB(audiobook) {
-            return new Promise((resolve, reject) => {
-                const request = indexedDB.open('LarsVomMarsDB', 1);
-                
-                request.onupgradeneeded = function(event) {
-                    const db = event.target.result;
-                    if (!db.objectStoreNames.contains('audiobooks')) {
-                        db.createObjectStore('audiobooks', { keyPath: 'id' });
-                    }
-                };
-                
-                request.onerror = function(event) {
-                    reject('Datenbankfehler: ' + event.target.error);
-                };
-                
-                request.onsuccess = function(event) {
-                    const db = event.target.result;
-                    const transaction = db.transaction(['audiobooks'], 'readwrite');
-                    const store = transaction.objectStore('audiobooks');
-                    
-                    const addRequest = store.put(audiobook);
-                    
-                    addRequest.onsuccess = function() {
-                        resolve(audiobook);
-                    };
-                    
-                    addRequest.onerror = function(event) {
-                        reject('Fehler beim Speichern: ' + event.target.error);
-                    };
-                };
-            });
-        }
-        
-        // Formular zurücksetzen
-        function resetForm() {
-            document.getElementById('audiobook-title').value = '';
-            document.getElementById('audiobook-description').value = '';
-            document.getElementById('cover-image').value = '';
-            document.getElementById('chapter-title').value = '';
-            document.getElementById('chapter-audio').value = '';
-            
-            chapters = [];
-            coverImageData = null;
-            
-            document.getElementById('chapter-list').innerHTML = '<div class="empty-message">Noch keine Kapitel hinzugefügt.</div>';
-        }
-        
-        // Hörbücher laden
-        function loadAudiobooks() {
-            const request = indexedDB.open('LarsVomMarsDB', 1);
-            
-            request.onupgradeneeded = function(event) {
-                const db = event.target.result;
-                if (!db.objectStoreNames.contains('audiobooks')) {
-                    db.createObjectStore('audiobooks', { keyPath: 'id' });
-                }
-            };
-            
-            request.onsuccess = function(event) {
-                const db = event.target.result;
-                if (!db.objectStoreNames.contains('audiobooks')) {
-                    return;
-                }
-                
-                const transaction = db.transaction(['audiobooks'], 'readonly');
-                const store = transaction.objectStore('audiobooks');
-                const getAllRequest = store.getAll();
-                
-                getAllRequest.onsuccess = function() {
-                    const audiobooks = getAllRequest.result;
-                    displayAudiobooks(audiobooks);
-                };
-            };
-        }
-        
-        // Hörbücher anzeigen
-        function displayAudiobooks(audiobooks) {
-            const audiobookList = document.getElementById('audiobook-list');
-            
-            if (!audiobooks || audiobooks.length === 0) {
-                audiobookList.innerHTML = '<div class="empty-message">Keine Hörbücher vorhanden.</div>';
-                return;
-            }
-            
-            audiobookList.innerHTML = '';
-            
-            audiobooks.forEach(book => {
-                const bookElement = document.createElement('div');
-                bookElement.className = 'audiobook-item';
-                
-                // Cover-Bild
-                let coverHtml = `<div style="width: 60px; height: 60px; background: rgba(255, 255, 0, 0.3); border-radius: 5px; display: flex; align-items: center; justify-content: center;">${book.title.charAt(0)}</div>`;
-                if (book.coverImage) {
-                    coverHtml = `<img src="${book.coverImage}" alt="${book.title}">`;
-                }
-                
-                // Kapitel zählen
-                const chapterCount = book.chapters ? book.chapters.length : 0;
-                
-                bookElement.innerHTML = `
-                    ${coverHtml}
-                    <div class="audiobook-info">
-                        <div class="audiobook-title">${book.title}</div>
-                        <div style="font-size: 12px;">${chapterCount} Kapitel</div>
-                    </div>
-                    <div class="audiobook-actions">
-                        <button onclick="editAudiobook('${book.id}')">Bearbeiten</button>
-                        <button onclick="deleteAudiobook('${book.id}')">Löschen</button>
-                    </div>
-                `;
-                
-                audiobookList.appendChild(bookElement);
-            });
-        }
-        
-        // Hörbuch löschen
-        function deleteAudiobook(audiobookId) {
-            if (!confirm('Möchtest du dieses Hörbuch wirklich löschen?')) {
-                return;
-            }
-            
-            const request = indexedDB.open('LarsVomMarsDB', 1);
-            
-            request.onsuccess = function(event) {
-                const db = event.target.result;
-                const transaction = db.transaction(['audiobooks'], 'readwrite');
-                const store = transaction.objectStore('audiobooks');
-                
-                const deleteRequest = store.delete(audiobookId);
-                
-                deleteRequest.onsuccess = function() {
-                    showStatus('Hörbuch erfolgreich gelöscht!', 'success');
-                    loadAudiobooks();
-                };
-                
-                deleteRequest.onerror = function(event) {
-                    showStatus('Fehler beim Löschen des Hörbuchs!', 'error');
-                };
-            };
-        }
-        
-        // Hörbuch bearbeiten (vereinfachte Version - nur Anzeige)
-        function editAudiobook(audiobookId) {
-            showStatus('Bearbeiten-Funktion wird in einer zukünftigen Version implementiert.', 'info');
-        }
-        
-        // Service Worker überprüfen
-        if ('serviceWorker' in navigator) {
-            window.addEventListener('load', () => {
-                navigator.serviceWorker.register('./sw.js')
-                    .then(registration => {
-                        console.log('ServiceWorker registration successful');
-                    })
-                    .catch(err => {
-                        console.log('ServiceWorker registration failed: ', err);
-                    });
-            });
-        }
-        
-        // IndexedDB initialisieren
-        function initializeIndexedDB() {
-            return new Promise((resolve, reject) => {
-                const request = indexedDB.open('LarsVomMarsDB', 1);
-                
-                request.onupgradeneeded = function(event) {
-                    console.log('IndexedDB Upgrade wird durchgeführt');
-                    const db = event.target.result;
-                    if (!db.objectStoreNames.contains('audiobooks')) {
-                        db.createObjectStore('audiobooks', { keyPath: 'id' });
-                        console.log('Audiobooks Store wurde erstellt');
-                    }
-                };
-                
-                request.onsuccess = function(event) {
-                    console.log('IndexedDB erfolgreich initialisiert');
-                    resolve(event.target.result);
-                };
-                
-                request.onerror = function(event) {
-                    console.error('IndexedDB-Fehler:', event.target.error);
-                    reject(event.target.error);
-                };
-            });
-        }
-        
-        // Seiten-Initialisierung
-        document.addEventListener('DOMContentLoaded', async function() {
-            console.log('DOM vollständig geladen, initialisiere App...');
-            
-            try {
-                // IndexedDB initialisieren
-                const db = await initializeIndexedDB();
-                console.log('Datenbank bereit');
-                
-                // Tab-Wechsel vorbereiten
-                const tabs = document.querySelectorAll('.tab');
-                tabs.forEach(tab => {
-                    tab.addEventListener('click', function() {
-                        showTab(this.getAttribute('data-tab'));
-                    });
-                });
-                
-                // Login-Button-Event
-                const loginButton = document.getElementById('login-button');
-                if (loginButton) {
-                    loginButton.addEventListener('click', login);
-                }
-                
-                // Logout-Button-Event
-                const logoutButton = document.getElementById('logout-button');
-                if (logoutButton) {
-                    logoutButton.addEventListener('click', logout);
-                }
-                
-                // Code-Einlöse-Button-Event - KRITISCH
-                const redeemCodeBtn = document.getElementById('redeem-code-btn');
-                if (redeemCodeBtn) {
-                    console.log('Redeem-Code-Button gefunden');
-                    redeemCodeBtn.addEventListener('click', function(e) {
-                        e.preventDefault();
-                        console.log('Redeem-Button wurde geklickt');
-                        redeemCode();
-                    });
-                } else {
-                    console.error('Redeem-Code-Button nicht gefunden!');
-                }
-                
-                // Download-Code Input Enter-Taste
-                const downloadCodeInput = document.getElementById('download-code');
-                if (downloadCodeInput) {
-                    downloadCodeInput.addEventListener('keypress', function(e) {
-                        if (e.key === 'Enter') {
-                            e.preventDefault();
-                            redeemCode();
-                        }
-                    });
-                }
-                
-                // Initial laden
-                loadAudiobooks();
-                loadAvailableDownloads();
-                
-                // URL auf Download-Code überprüfen
-                checkUrlForDownloadCode();
-                
-            } catch (error) {
-                console.error('Fehler bei der Initialisierung:', error);
-                showStatus('Fehler bei der Initialisierung: ' + error, 'error');
-            }
-        });
-        
-        // URL auf Download-Code überprüfen
-        function checkUrlForDownloadCode() {
-            const urlParams = new URLSearchParams(window.location.search);
-            const downloadCode = urlParams.get('code');
-            const autoRedeem = urlParams.get('autoRedeem') === 'true';
-            
-            // Wenn Code und autoRedeem Parameter vorhanden sind
-            if (downloadCode && autoRedeem) {
-                // Automatisch einloggen und Code einlösen
-                autoLoginAndRedeemCode(downloadCode);
-            }
-        }
-        
-        // Automatisches Einloggen und Einlösen des Codes
-        function autoLoginAndRedeemCode(code) {
-            // Admin-Login mit vordefinierten Anmeldedaten durchführen
-            document.getElementById('username').value = 'admin';
-            document.getElementById('password').value = 'lars2023';
-            
-            // Login durchführen und nach Erfolg den Code einlösen
-            loginAdmin(function() {
-                // Zur Code-Einlöse-Tab wechseln
-                switchTab('redeem-code');
-                
-                // Code einführen und einlösen
-                document.getElementById('download-code').value = code;
-                redeemCodeSimple();
-            });
-        }
-        
-        // Admin-Login
-        function loginAdmin(callback) {
-            const username = document.getElementById('username').value;
-            const password = document.getElementById('password').value;
-            
-            // Einfache Prüfung der Anmeldedaten (in einer echten Anwendung würde dies sicherer sein)
-            if (username === 'admin' && password === 'lars2023') {
-                // Erfolgreicher Login
-                document.querySelector('.admin-content').style.display = 'block';
-                document.querySelector('.login-container').style.display = 'none';
-                
-                // Log für Debugging
+                // Login erfolgreich
+                document.getElementById('login-container').style.display = 'none';
+                document.getElementById('parent-content').style.display = 'block';
                 console.log('Login erfolgreich');
-                
-                // Wenn Callback vorhanden, ausführen
-                if (typeof callback === 'function') {
-                    callback();
-                }
             } else {
                 alert('Falsche Anmeldedaten. Bitte versuchen Sie es erneut.');
             }
         }
         
-        // Einfache Code-Einlösung
-        function redeemCodeSimple() {
-            const code = document.getElementById('download-code').value.trim();
+        // Abmelden
+        function logout() {
+            document.getElementById('login-container').style.display = 'flex';
+            document.getElementById('parent-content').style.display = 'none';
+        }
+        
+        // Kind-Informationen speichern
+        function saveChildInfo() {
+            const childName = document.getElementById('child-name').value;
+            const childBirthday = document.getElementById('child-birthday').value;
             
-            if (!code) {
-                alert('Bitte geben Sie einen Code ein!');
+            // Im lokalen Speicher speichern
+            localStorage.setItem('child_name', childName);
+            localStorage.setItem('child_birthday', childBirthday);
+            
+            showStatus('child-info-status', 'Die Informationen wurden gespeichert.', 'success');
+        }
+        
+        // Kind-Informationen laden
+        function loadChildInfo() {
+            const childName = localStorage.getItem('child_name');
+            const childBirthday = localStorage.getItem('child_birthday');
+            
+            if (childName) document.getElementById('child-name').value = childName;
+            if (childBirthday) document.getElementById('child-birthday').value = childBirthday;
+        }
+        
+        // Hörbuch importieren
+        function importAudiobook() {
+            const fileInput = document.getElementById('audiobook-file');
+            
+            if (fileInput.files.length === 0) {
+                showStatus('import-status', 'Bitte wählen Sie eine Datei aus.', 'error');
                 return;
             }
             
-            if (code.toLowerCase() === 'lars') {
-                // Einfache Variante: Lokalen Speicher verwenden
-                localStorage.setItem('demo_audiobook_redeemed', 'true');
-                alert('Code erfolgreich eingelöst! Das Demo-Hörbuch wurde zu Ihrer Bibliothek hinzugefügt.');
-                
-                // Zurück zur Hauptseite
-                window.location.href = 'index.html';
-            } else {
-                alert('Ungültiger Code. Bitte versuchen Sie es erneut.');
-            }
+            const file = fileInput.files[0];
+            
+            // Hier würde normalerweise der Import-Prozess stattfinden
+            // Für die Demo aktivieren wir einfach das Demo-Hörbuch
+            localStorage.setItem('demo_audiobook_redeemed', 'true');
+            
+            showStatus('import-status', `Die Datei "${file.name}" wurde erfolgreich importiert.`, 'success');
+            
+            // Formular zurücksetzen
+            fileInput.value = '';
+            
+            // Nach 2 Sekunden zur Hauptseite weiterleiten
+            setTimeout(() => {
+                if (confirm('Hörbuch wurde importiert. Zur Hauptseite zurückkehren?')) {
+                    window.location.href = 'index.html';
+                }
+            }, 2000);
         }
         
-        // Verfügbare Downloads laden
-        function loadAvailableDownloads() {
-            // Hier würden normalerweise verfügbare Downloads vom Server abgerufen
-            // Für Testzwecke zeigen wir nur eine festgelegte Liste an
+        // Status-Nachricht anzeigen
+        function showStatus(elementId, message, type) {
+            const statusElement = document.getElementById(elementId);
+            statusElement.textContent = message;
+            statusElement.className = 'status-message ' + type;
+            statusElement.style.display = 'block';
             
-            const availableList = document.getElementById('available-downloads');
-            
-            // Prüfen, ob bereits ein Demo-Hörbuch in der Datenbank ist
-            const request = indexedDB.open('LarsVomMarsDB', 1);
-            
-            request.onsuccess = function(event) {
-                const db = event.target.result;
-                if (!db.objectStoreNames.contains('audiobooks')) {
-                    showDemoBooks();
-                    return;
-                }
-                
-                const transaction = db.transaction(['audiobooks'], 'readonly');
-                const store = transaction.objectStore('audiobooks');
-                const getAllRequest = store.getAll();
-                
-                getAllRequest.onsuccess = function() {
-                    const audiobooks = getAllRequest.result;
-                    const hasDemo = audiobooks.some(book => book.isDemo);
-                    
-                    if (hasDemo) {
-                        availableList.innerHTML = '<div class="info-message">Sie haben bereits ein Demo-Hörbuch in Ihrer Bibliothek. Gehen Sie zur Bibliothek, um es anzuhören.</div>';
-                    } else {
-                        showDemoBooks();
-                    }
-                };
-            };
-            
-            function showDemoBooks() {
-                availableList.innerHTML = `
-                    <div class="audiobook-item">
-                        <div style="width: 60px; height: 60px; background: rgba(255, 255, 0, 0.3); border-radius: 5px; display: flex; align-items: center; justify-content: center;">L</div>
-                        <div class="audiobook-info">
-                            <div class="audiobook-title">Lars vom Mars - Demoversion</div>
-                            <div style="font-size: 12px;">2 Kapitel</div>
-                            <div style="font-size: 12px; margin-top: 5px;">Geben Sie den Code "Lars" ein, um dieses Demo-Hörbuch freizuschalten</div>
-                        </div>
-                    </div>
-                `;
-            }
+            // Nach 3 Sekunden ausblenden
+            setTimeout(() => {
+                statusElement.style.display = 'none';
+            }, 3000);
         }
     </script>
 </body>
