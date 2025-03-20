@@ -1,73 +1,83 @@
 <!DOCTYPE html>
-<html lang="de">
+<html>
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Lars vom Mars</title>
-    <link rel="manifest" href="./manifest.json">
-    <meta name="theme-color" content="#000000">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black">
-    <meta name="apple-mobile-web-app-title" content="Lars vom Mars">
-    <link rel="apple-touch-icon" href="./Lars_App_Icon.png">
     <style>
-        /* Reset für alle Styles */
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
         }
-
+        
         body {
-            margin: 0;
-            padding: 0;
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            background-image: url('./mars_background.png');
-            background-size: cover;
-            background-position: center;
-            background-attachment: fixed;
+            background: url('./mars_background.png') center/cover fixed;
             color: white;
             font-family: Arial, sans-serif;
-            position: relative;
-            overflow-x: hidden;
+            overflow: hidden;
+            position: fixed;
+            width: 100%;
+            height: 100%;
         }
-
-        /* Header Styles - Keine anderen Styles überschreiben diese */
-        #main-title {
-            font-size: 1.5em;
-            text-shadow: 2px 2px 4px black;
+        
+        /* Haupt-Tabelle nimmt 100% der Höhe ein */
+        #main-table {
+            width: 100%;
+            height: 100%;
+            border-collapse: collapse;
+            table-layout: fixed;
+        }
+        
+        /* Header-Bereich - nimmt 15% der Höhe ein */
+        #header-cell {
+            height: 15%;
+            vertical-align: top;
             text-align: center;
-            margin-top: 20px;
-            color: rgba(255,255,255,0.5);
-            padding: 10px;
-            line-height: 1.4;
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            z-index: 1000;
+            padding-top: 20px;
         }
-
-        /* Button Container - Absolute Positionierung */
-        #main-buttons {
+        
+        /* Content-Bereich - nimmt 65% der Höhe ein */
+        #content-cell {
+            height: 65%;
+            vertical-align: bottom;
+            text-align: center;
+            padding-bottom: 20px;
+        }
+        
+        /* Buttons-Bereich - nimmt 20% der Höhe ein */
+        #buttons-cell {
+            height: 20%;
+            vertical-align: top;
+            text-align: center;
+        }
+        
+        .app-title {
+            font-size: 24px;
+            color: rgba(255,255,255,0.7);
+        }
+        
+        #lyrics-box {
+            width: 90%;
+            max-width: 800px;
+            margin: 0 auto;
+            background: rgba(0, 0, 0, 0.2);
+            backdrop-filter: blur(5px);
+            border-radius: 20px;
+            padding: 30px;
+            font-size: 24px;
+            text-align: center;
+            line-height: 1.6;
+            display: none;
+        }
+        
+        .nav-container {
             display: flex;
-            gap: 20px;
-            position: fixed;
-            bottom: 20px;
-            left: 50%;
-            transform: translateX(-50%);
-            z-index: 9999;
-            flex-wrap: nowrap;
             justify-content: center;
+            gap: 20px;
             padding: 10px;
-            width: auto;
-            background: transparent;
         }
-
-        /* Button Styles - Keine anderen Styles überschreiben diese */
+        
         .nav-button {
             width: 90px;
             height: 90px;
@@ -75,950 +85,96 @@
             border: none;
             cursor: pointer;
             font-size: 16px;
-            color: black;
             font-weight: bold;
-            transition: transform 0.2s;
+            color: black;
+            touch-action: manipulation;
         }
-
-        .nav-button:hover {
-            transform: scale(1.1);
+        
+        .nav-button.audiobook { background: rgba(255,255,0,0.6); }
+        .nav-button.video { background: rgba(173,216,230,0.6); }
+        .nav-button.music { background: rgba(255,160,160,0.6); }
+        .nav-button.action { background: rgba(144,238,144,0.6); }
+        
+        #info-modal {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(0, 0, 0, 0.8);
+            padding: 20px;
+            border-radius: 15px;
+            color: white;
+            text-align: center;
+            z-index: 1000;
         }
-
-        .nav-button.audiobook {
-            background: rgba(255,255,0,0.6);
-        }
-
-        .nav-button.video {
-            background: rgba(173,216,230,0.6);
-        }
-
-        .nav-button.music {
-            background: rgba(255,160,160,0.6);
-        }
-
-        .nav-button.sounds {
-            background: rgba(144,238,144,0.6);
-        }
-
-        @media (max-width: 480px) {
+        
+        @media (max-width: 768px) {
+            #lyrics-box {
+                font-size: 18px;
+                padding: 20px;
+            }
             .nav-button {
                 width: 70px;
                 height: 70px;
                 font-size: 14px;
             }
-            #main-buttons {
+            .nav-container {
                 gap: 15px;
-                bottom: 10px;
             }
-        }
-
-        /* Bibliotheks-Styles */
-        .library-modal {
-            display: none;
-            position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            width: 95%;
-            max-width: 1100px;
-            max-height: 90vh;
-            background: transparent;
-            border-radius: 20px;
-            padding: 40px;
-            z-index: 1000;
-            overflow-y: auto;
-        }
-
-        .library-modal h2 {
-            color: #fff;
-            text-align: center;
-            margin-bottom: 20px;
-            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
-        }
-
-        .close-button {
-            position: absolute;
-            top: 10px;
-            right: 10px;
-            width: 35px;
-            height: 35px;
-            border-radius: 50%;
-            background: rgba(255, 255, 255, 0.3);
-            border: 2px solid rgba(255, 255, 255, 0.5);
-            color: white;
-            font-size: 24px;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: all 0.3s;
-            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
-            padding: 0;
-            line-height: 1;
-        }
-
-        .close-button:hover {
-            background: rgba(255, 255, 255, 0.5);
-            transform: scale(1.1);
-        }
-
-        .library-grid {
-            display: grid;
-            grid-template-columns: repeat(5, 100px);
-            column-gap: 120px;
-            row-gap: 50px;
-            padding: 30px;
-            justify-content: center;
-            margin: 0 auto;
-        }
-
-        .library-item {
-            background: rgba(255, 255, 0, 0.1);
-            border-radius: 50%;
-            padding: 15px;
-            text-align: center;
-            cursor: pointer;
-            transition: transform 0.3s ease;
-            position: relative;
-            aspect-ratio: 1;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            width: 100px;
-            height: 100px;
-            margin: 0 auto;
-            border: 2px solid rgba(0, 0, 0, 0.3);
-        }
-
-        .library-item[data-downloaded="true"] {
-            border-color: rgba(0, 255, 0, 0.5);
-            box-shadow: 0 0 15px rgba(0, 255, 0, 0.2);
-        }
-
-        .library-item:hover {
-            transform: translateY(-5px);
-            background: rgba(255, 255, 0, 0.2);
-        }
-
-        .library-item h3 {
-            color: #fff;
-            margin: 5px 0;
-            font-size: 1.8em;
-            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
-        }
-
-        /* Video Library Styles */
-        #videoModal .library-item {
-            background: rgba(0, 191, 255, 0.05);
-            border: 2px solid rgba(0, 0, 0, 0.3);
-        }
-
-        #videoModal .library-item[data-downloaded="true"] {
-            border-color: rgba(0, 255, 0, 0.5);
-            box-shadow: 0 0 15px rgba(0, 255, 0, 0.2);
-        }
-
-        #videoModal .library-item:hover {
-            background: rgba(0, 191, 255, 0.1);
-        }
-
-        /* Login Modal Styles */
-        #loginModal {
-            background: rgba(0, 0, 0, 0.6);
-            backdrop-filter: blur(10px);
-            padding: 30px;
-            border-radius: 20px;
-            max-width: 400px;
-            margin: 0 auto;
-            position: fixed;
-        }
-
-        .login-form {
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
-        }
-
-        .login-form .input-group {
-            margin-bottom: 15px;
-        }
-
-        .login-form .input-group label {
-            color: #fff;
-            display: block;
-            margin-bottom: 5px;
-            font-size: 0.9em;
-        }
-
-        .login-form input {
-            padding: 12px;
-            border: none;
-            border-radius: 10px;
-            background: rgba(255, 255, 255, 0.9);
-            font-size: 1.1em;
-            width: 100%;
-        }
-
-        .login-form input[type="date"] {
-            color: #333;
-        }
-
-        .login-form button {
-            padding: 12px;
-            border: none;
-            border-radius: 10px;
-            background: #4CAF50;
-            color: white;
-            font-size: 1.1em;
-            cursor: pointer;
-            margin-top: 10px;
-        }
-
-        .login-form button:hover {
-            background: #45a049;
-        }
-
-        .password-requirements {
-            color: #fff;
-            font-size: 0.9em;
-            margin-top: 5px;
-            opacity: 0.8;
-        }
-
-        .password-error {
-            color: #ff6b6b;
-            font-size: 0.9em;
-            margin-top: 5px;
-            display: none;
-        }
-
-        .email-confirmation {
-            color: #4CAF50;
-            font-size: 0.9em;
-            margin-top: 10px;
-            display: none;
-        }
-
-        .email-error {
-            color: #ff6b6b;
-            font-size: 0.9em;
-            margin-top: 5px;
-            display: none;
-        }
-
-        /* Geburtstags-Eingabe Styles */
-        .birthday-group {
-            display: flex;
-            gap: 10px;
-            align-items: center;
-        }
-
-        .birthday-group select {
-            padding: 12px;
-            border: none;
-            border-radius: 10px;
-            background: rgba(255, 255, 255, 0.9);
-            font-size: 1.1em;
-            cursor: pointer;
-        }
-
-        .birthday-group select:focus {
-            outline: none;
-            background: rgba(255, 255, 255, 1);
-        }
-
-        /* Modal Styles */
-        .modal {
-            display: none;
-            position: fixed;
-            left: 50%;
-            top: 50%;
-            transform: translate(-50%, -50%);
-            background: rgba(0, 0, 0, 0.6);
-            backdrop-filter: blur(10px);
-            padding: 30px;
-            border-radius: 20px;
-            z-index: 1000;
-            max-width: 400px;
-            width: 90%;
-        }
-
-        /* Download-Dialog Styles */
-        .download-dialog {
-            display: none;
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            background: rgba(255, 255, 0, 0.1);
-            padding: 20px;
-            border-radius: 15px;
-            text-align: center;
-            z-index: 2;
-            backdrop-filter: blur(5px);
-            width: 80%;
-        }
-
-        .download-dialog h4 {
-            color: #fff;
-            margin: 0 0 10px 0;
-            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
-        }
-
-        .download-dialog p {
-            color: #fff;
-            margin: 0 0 15px 0;
-            font-size: 0.9em;
-            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
-        }
-
-        .download-dialog button {
-            background: rgba(255, 255, 0, 0.3);
-            color: #fff;
-            border: none;
-            padding: 8px 15px;
-            border-radius: 15px;
-            cursor: pointer;
-            margin: 0 5px;
-            font-size: 0.9em;
-            transition: background 0.3s ease;
-            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
-        }
-
-        .download-dialog button:hover {
-            background: rgba(255, 255, 0, 0.5);
-        }
-
-        /* Close Button Styles */
-        .close-button {
-            position: absolute;
-            top: 10px;
-            right: 10px;
-            width: 35px;
-            height: 35px;
-            border-radius: 50%;
-            background: rgba(255, 255, 255, 0.3);
-            border: 2px solid rgba(255, 255, 255, 0.5);
-            color: white;
-            font-size: 24px;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: all 0.3s;
-            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
-            padding: 0;
-            line-height: 1;
-        }
-
-        .close-button:hover {
-            background: rgba(255, 255, 255, 0.5);
-            transform: scale(1.1);
-        }
-
-        /* Library Item Styles */
-        .library-item {
-            background: rgba(255, 255, 0, 0.1);
-            border-radius: 50%;
-            padding: 15px;
-            text-align: center;
-            cursor: pointer;
-            transition: transform 0.3s ease;
-            position: relative;
-            aspect-ratio: 1;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            width: 150px;
-            height: 150px;
-            margin: 0 auto;
-        }
-
-        .library-item:hover {
-            transform: translateY(-5px);
-            background: rgba(255, 255, 0, 0.2);
-        }
-
-        .library-item h3 {
-            color: #fff;
-            margin: 5px 0;
-            font-size: 1.2em;
-            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
-        }
-
-        /* Player Controls Styles */
-        .player-controls {
-            background: transparent;
-            padding: 5px;
-            margin-top: 5px;
-            text-align: center;
-            display: none;
-            width: 100%;
-        }
-
-        .player-controls button {
-            background: rgba(255, 255, 0, 0.3);
-            color: #fff;
-            border: none;
-            padding: 5px 10px;
-            border-radius: 15px;
-            cursor: pointer;
-            margin: 0;
-            font-size: 0.9em;
-            transition: background 0.3s ease;
-            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
-        }
-
-        .player-controls button:hover {
-            background: rgba(255, 255, 0, 0.5);
         }
     </style>
 </head>
 <body>
-    <!-- Header -->
-    <div id="header-container">
-        <h1 id="main-title">Willkommen in der Welt von Lars vom Mars</h1>
+    <!-- Haupt-Tabelle mit festen Anteilen für Header, Content und Buttons -->
+    <table id="main-table">
+        <tr>
+            <td id="header-cell">
+                <h1 class="app-title">Willkommen in der Welt von Lars vom Mars</h1>
+            </td>
+        </tr>
+        <tr>
+            <td id="content-cell">
+                <div id="lyrics-box"></div>
+            </td>
+        </tr>
+        <tr>
+            <td id="buttons-cell">
+                <div class="nav-container">
+                    <button class="nav-button audiobook" onclick="showInfo('Hörbuch-Funktion kommt bald!')">Hörbuch</button>
+                    <button class="nav-button video" onclick="showInfo('Video-Funktion kommt bald!')">Video</button>
+                    <button class="nav-button music" onclick="toggleMusic()">Musik</button>
+                    <button class="nav-button action" onclick="playQuackSound()">Action</button>
+                </div>
+            </td>
+        </tr>
+    </table>
+    
+    <div id="info-modal">
+        <p id="info-text"></p>
     </div>
-
-    <div id="main-buttons">
-        <button class="nav-button audiobook" onclick="handleButtonClick('audiobook')">Hörbuch</button>
-        <button class="nav-button video" onclick="handleButtonClick('video')">Video</button>
-        <button class="nav-button music" onclick="toggleMusic()">Musik</button>
-        <button class="nav-button sounds" onclick="playQuackSound()">Action</button>
-    </div>
-
-    <!-- Login Modal -->
-    <div id="loginModal" class="modal">
-        <button class="close-button" onclick="document.getElementById('loginModal').style.display = 'none'" title="Schließen">✕</button>
-        <h2>Eltern-Login</h2>
-        <form class="login-form" onsubmit="handleLogin(event)">
-            <div class="input-group">
-                <label for="parentName">Name Elternteil</label>
-                <input type="text" id="parentName" placeholder="Vor- und Nachname" required>
-            </div>
-            <div class="input-group">
-                <label for="email">E-Mail</label>
-                <input type="email" id="email" placeholder="ihre@email.de" required>
-            </div>
-            <div class="input-group">
-                <label for="childName">Name Kind</label>
-                <input type="text" id="childName" placeholder="Vorname" required>
-            </div>
-            <div class="input-group">
-                <label for="birthdate">Geburtstag Kind</label>
-                <div class="birthday-group">
-                    <select id="birthDay" required>
-                        <option value="">Tag</option>
-                    </select>
-                    <select id="birthMonth" required>
-                        <option value="">Monat</option>
-                        <option value="1">Januar</option>
-                        <option value="2">Februar</option>
-                        <option value="3">März</option>
-                        <option value="4">April</option>
-                        <option value="5">Mai</option>
-                        <option value="6">Juni</option>
-                        <option value="7">Juli</option>
-                        <option value="8">August</option>
-                        <option value="9">September</option>
-                        <option value="10">Oktober</option>
-                        <option value="11">November</option>
-                        <option value="12">Dezember</option>
-                    </select>
-                    <select id="birthYear" required>
-                        <option value="">Jahr</option>
-                    </select>
-                </div>
-            </div>
-            <div class="input-group">
-                <label for="password">Passwort</label>
-                <input type="password" id="password" placeholder="8 Zeichen, 1 Großbuchstabe, 2 Zahlen" required 
-                       pattern="^(?=.*[A-Z])(?=.*[0-9].*[0-9])[A-Za-z0-9]{8}$"
-                       oninput="validatePassword(this)">
-                <div class="password-requirements">
-                    Passwort muss enthalten:
-                    - 8 Zeichen
-                    - 1 Großbuchstabe
-                    - 2 Zahlen
-                </div>
-                <div class="password-error" id="passwordError">
-                    Passwort entspricht nicht den Anforderungen
-                </div>
-            </div>
-            <div class="email-confirmation" id="emailConfirmation">
-                Eine Bestätigungs-E-Mail wurde an Ihre Adresse gesendet.
-            </div>
-            <div class="email-error" id="emailError">
-                Bitte geben Sie eine gültige E-Mail-Adresse ein
-            </div>
-            <button type="submit">Registrieren</button>
-        </form>
-    </div>
-
-    <div class="lyrics-container"></div>
-
-    <!-- Hörbuch-Bibliothek -->
-    <div class="library-modal" id="audiobookModal">
-        <button class="close-button" onclick="closeModal('audiobookModal')">×</button>
-        <h2>Hörbuch-Bibliothek</h2>
-        <div class="library-grid">
-            <div class="library-item" onclick="handleAudiobook('kapitel1')" data-media-id="kapitel1">
-                <h3>1</h3>
-                <div class="download-status">Herunterladen</div>
-                <div class="download-progress"><div class="progress"></div></div>
-                <div class="download-dialog" style="display: none;">
-                    <h4>Kapitel herunterladen?</h4>
-                    <p>Möchtest du dieses Kapitel herunterladen?</p>
-                    <button onclick="event.stopPropagation(); startDownload('kapitel1', 'audiobook')">Ja</button>
-                    <button onclick="event.stopPropagation(); hideDownloadDialog('kapitel1')">Nein</button>
-                </div>
-                <div class="player-controls">
-                    <button onclick="event.stopPropagation(); togglePlay('kapitel1', 'audiobook')">Play</button>
-                    <div class="progress-bar">
-                        <div class="progress"></div>
-                    </div>
-                    <div class="time">0:00 / 0:00</div>
-                </div>
-            </div>
-            <div class="library-item" onclick="handleAudiobook('kapitel2')" data-media-id="kapitel2">
-                <h3>2</h3>
-                <div class="download-status">Herunterladen</div>
-                <div class="download-progress"><div class="progress"></div></div>
-                <div class="download-dialog" style="display: none;">
-                    <h4>Kapitel herunterladen?</h4>
-                    <p>Möchtest du dieses Kapitel herunterladen?</p>
-                    <button onclick="event.stopPropagation(); startDownload('kapitel2', 'audiobook')">Ja</button>
-                    <button onclick="event.stopPropagation(); hideDownloadDialog('kapitel2')">Nein</button>
-                </div>
-                <div class="player-controls">
-                    <button onclick="event.stopPropagation(); togglePlay('kapitel2', 'audiobook')">Play</button>
-                    <div class="progress-bar">
-                        <div class="progress"></div>
-                    </div>
-                    <div class="time">0:00 / 0:00</div>
-                </div>
-            </div>
-            <div class="library-item" onclick="handleAudiobook('kapitel3')" data-media-id="kapitel3">
-                <h3>3</h3>
-                <div class="download-status">Herunterladen</div>
-                <div class="download-progress"><div class="progress"></div></div>
-                <div class="download-dialog" style="display: none;">
-                    <h4>Kapitel herunterladen?</h4>
-                    <p>Möchtest du dieses Kapitel herunterladen?</p>
-                    <button onclick="event.stopPropagation(); startDownload('kapitel3', 'audiobook')">Ja</button>
-                    <button onclick="event.stopPropagation(); hideDownloadDialog('kapitel3')">Nein</button>
-                </div>
-                <div class="player-controls">
-                    <button onclick="event.stopPropagation(); togglePlay('kapitel3', 'audiobook')">Play</button>
-                    <div class="progress-bar">
-                        <div class="progress"></div>
-                    </div>
-                    <div class="time">0:00 / 0:00</div>
-                </div>
-            </div>
-            <div class="library-item" onclick="handleAudiobook('kapitel4')" data-media-id="kapitel4">
-                <h3>4</h3>
-                <div class="download-status">Herunterladen</div>
-                <div class="download-progress"><div class="progress"></div></div>
-                <div class="download-dialog" style="display: none;">
-                    <h4>Kapitel herunterladen?</h4>
-                    <p>Möchtest du dieses Kapitel herunterladen?</p>
-                    <button onclick="event.stopPropagation(); startDownload('kapitel4', 'audiobook')">Ja</button>
-                    <button onclick="event.stopPropagation(); hideDownloadDialog('kapitel4')">Nein</button>
-                </div>
-                <div class="player-controls">
-                    <button onclick="event.stopPropagation(); togglePlay('kapitel4', 'audiobook')">Play</button>
-                    <div class="progress-bar">
-                        <div class="progress"></div>
-                    </div>
-                    <div class="time">0:00 / 0:00</div>
-                </div>
-            </div>
-            <div class="library-item" onclick="handleAudiobook('kapitel5')" data-media-id="kapitel5">
-                <h3>5</h3>
-                <div class="download-status">Herunterladen</div>
-                <div class="download-progress"><div class="progress"></div></div>
-                <div class="download-dialog" style="display: none;">
-                    <h4>Kapitel herunterladen?</h4>
-                    <p>Möchtest du dieses Kapitel herunterladen?</p>
-                    <button onclick="event.stopPropagation(); startDownload('kapitel5', 'audiobook')">Ja</button>
-                    <button onclick="event.stopPropagation(); hideDownloadDialog('kapitel5')">Nein</button>
-                </div>
-                <div class="player-controls">
-                    <button onclick="event.stopPropagation(); togglePlay('kapitel5', 'audiobook')">Play</button>
-                    <div class="progress-bar">
-                        <div class="progress"></div>
-                    </div>
-                    <div class="time">0:00 / 0:00</div>
-                </div>
-            </div>
-            <div class="library-item" onclick="handleAudiobook('kapitel6')" data-media-id="kapitel6">
-                <h3>6</h3>
-                <div class="download-status">Herunterladen</div>
-                <div class="download-progress"><div class="progress"></div></div>
-                <div class="download-dialog" style="display: none;">
-                    <h4>Kapitel herunterladen?</h4>
-                    <p>Möchtest du dieses Kapitel herunterladen?</p>
-                    <button onclick="event.stopPropagation(); startDownload('kapitel6', 'audiobook')">Ja</button>
-                    <button onclick="event.stopPropagation(); hideDownloadDialog('kapitel6')">Nein</button>
-                </div>
-                <div class="player-controls">
-                    <button onclick="event.stopPropagation(); togglePlay('kapitel6', 'audiobook')">Play</button>
-                    <div class="progress-bar">
-                        <div class="progress"></div>
-                    </div>
-                    <div class="time">0:00 / 0:00</div>
-                </div>
-            </div>
-            <div class="library-item" onclick="handleAudiobook('kapitel7')" data-media-id="kapitel7">
-                <h3>7</h3>
-                <div class="download-status">Herunterladen</div>
-                <div class="download-progress"><div class="progress"></div></div>
-                <div class="download-dialog" style="display: none;">
-                    <h4>Kapitel herunterladen?</h4>
-                    <p>Möchtest du dieses Kapitel herunterladen?</p>
-                    <button onclick="event.stopPropagation(); startDownload('kapitel7', 'audiobook')">Ja</button>
-                    <button onclick="event.stopPropagation(); hideDownloadDialog('kapitel7')">Nein</button>
-                </div>
-                <div class="player-controls">
-                    <button onclick="event.stopPropagation(); togglePlay('kapitel7', 'audiobook')">Play</button>
-                    <div class="progress-bar">
-                        <div class="progress"></div>
-                    </div>
-                    <div class="time">0:00 / 0:00</div>
-                </div>
-            </div>
-            <div class="library-item" onclick="handleAudiobook('kapitel8')" data-media-id="kapitel8">
-                <h3>8</h3>
-                <div class="download-status">Herunterladen</div>
-                <div class="download-progress"><div class="progress"></div></div>
-                <div class="download-dialog" style="display: none;">
-                    <h4>Kapitel herunterladen?</h4>
-                    <p>Möchtest du dieses Kapitel herunterladen?</p>
-                    <button onclick="event.stopPropagation(); startDownload('kapitel8', 'audiobook')">Ja</button>
-                    <button onclick="event.stopPropagation(); hideDownloadDialog('kapitel8')">Nein</button>
-                </div>
-                <div class="player-controls">
-                    <button onclick="event.stopPropagation(); togglePlay('kapitel8', 'audiobook')">Play</button>
-                    <div class="progress-bar">
-                        <div class="progress"></div>
-                    </div>
-                    <div class="time">0:00 / 0:00</div>
-                </div>
-            </div>
-            <div class="library-item" onclick="handleAudiobook('kapitel9')" data-media-id="kapitel9">
-                <h3>9</h3>
-                <div class="download-status">Herunterladen</div>
-                <div class="download-progress"><div class="progress"></div></div>
-                <div class="download-dialog" style="display: none;">
-                    <h4>Kapitel herunterladen?</h4>
-                    <p>Möchtest du dieses Kapitel herunterladen?</p>
-                    <button onclick="event.stopPropagation(); startDownload('kapitel9', 'audiobook')">Ja</button>
-                    <button onclick="event.stopPropagation(); hideDownloadDialog('kapitel9')">Nein</button>
-                </div>
-                <div class="player-controls">
-                    <button onclick="event.stopPropagation(); togglePlay('kapitel9', 'audiobook')">Play</button>
-                    <div class="progress-bar">
-                        <div class="progress"></div>
-                    </div>
-                    <div class="time">0:00 / 0:00</div>
-                </div>
-            </div>
-            <div class="library-item" onclick="handleAudiobook('kapitel10')" data-media-id="kapitel10">
-                <h3>10</h3>
-                <div class="download-status">Herunterladen</div>
-                <div class="download-progress"><div class="progress"></div></div>
-                <div class="download-dialog" style="display: none;">
-                    <h4>Kapitel herunterladen?</h4>
-                    <p>Möchtest du dieses Kapitel herunterladen?</p>
-                    <button onclick="event.stopPropagation(); startDownload('kapitel10', 'audiobook')">Ja</button>
-                    <button onclick="event.stopPropagation(); hideDownloadDialog('kapitel10')">Nein</button>
-                </div>
-                <div class="player-controls">
-                    <button onclick="event.stopPropagation(); togglePlay('kapitel10', 'audiobook')">Play</button>
-                    <div class="progress-bar">
-                        <div class="progress"></div>
-                    </div>
-                    <div class="time">0:00 / 0:00</div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Video-Bibliothek -->
-    <div id="videoModal" class="library-modal">
-        <h2>Video-Bibliothek</h2>
-        <div class="library-grid">
-            <!-- Video Kapitel 1-10 -->
-            <div class="library-item" onclick="handleMediaClick('video', 1)">
-                <h3>1</h3>
-                <div class="player-controls" style="display: none;">
-                    <button class="play-button" onclick="event.stopPropagation(); togglePlay('video', 1)">Play</button>
-                    <div class="progress-bar">
-                        <div class="progress"></div>
-                    </div>
-                    <div class="time">0:00 / 0:00</div>
-                </div>
-                <div class="download-dialog">
-                    <p>Video herunterladen?</p>
-                    <button onclick="event.stopPropagation(); startDownload('video', 1)">Ja</button>
-                    <button onclick="event.stopPropagation(); hideDownloadDialog(this)">Nein</button>
-                </div>
-                <div class="download-progress" style="display: none;">
-                    <div class="progress-bar">
-                        <div class="progress"></div>
-                    </div>
-                    <span class="progress-text">0%</span>
-                </div>
-            </div>
-            <!-- Weitere Video-Kapitel 2-10 -->
-            <div class="library-item" onclick="handleMediaClick('video', 2)"><h3>2</h3>
-                <div class="player-controls" style="display: none;">
-                    <button class="play-button" onclick="event.stopPropagation(); togglePlay('video', 2)">Play</button>
-                    <div class="progress-bar">
-                        <div class="progress"></div>
-                    </div>
-                    <div class="time">0:00 / 0:00</div>
-                </div>
-                <div class="download-dialog">
-                    <p>Video herunterladen?</p>
-                    <button onclick="event.stopPropagation(); startDownload('video', 2)">Ja</button>
-                    <button onclick="event.stopPropagation(); hideDownloadDialog(this)">Nein</button>
-                </div>
-                <div class="download-progress" style="display: none;">
-                    <div class="progress-bar">
-                        <div class="progress"></div>
-                    </div>
-                    <span class="progress-text">0%</span>
-                </div>
-            </div>
-            <div class="library-item" onclick="handleMediaClick('video', 3)"><h3>3</h3>
-                <div class="player-controls" style="display: none;">
-                    <button class="play-button" onclick="event.stopPropagation(); togglePlay('video', 3)">Play</button>
-                    <div class="progress-bar">
-                        <div class="progress"></div>
-                    </div>
-                    <div class="time">0:00 / 0:00</div>
-                </div>
-                <div class="download-dialog">
-                    <p>Video herunterladen?</p>
-                    <button onclick="event.stopPropagation(); startDownload('video', 3)">Ja</button>
-                    <button onclick="event.stopPropagation(); hideDownloadDialog(this)">Nein</button>
-                </div>
-                <div class="download-progress" style="display: none;">
-                    <div class="progress-bar">
-                        <div class="progress"></div>
-                    </div>
-                    <span class="progress-text">0%</span>
-                </div>
-            </div>
-            <div class="library-item" onclick="handleMediaClick('video', 4)"><h3>4</h3>
-                <div class="player-controls" style="display: none;">
-                    <button class="play-button" onclick="event.stopPropagation(); togglePlay('video', 4)">Play</button>
-                    <div class="progress-bar">
-                        <div class="progress"></div>
-                    </div>
-                    <div class="time">0:00 / 0:00</div>
-                </div>
-                <div class="download-dialog">
-                    <p>Video herunterladen?</p>
-                    <button onclick="event.stopPropagation(); startDownload('video', 4)">Ja</button>
-                    <button onclick="event.stopPropagation(); hideDownloadDialog(this)">Nein</button>
-                </div>
-                <div class="download-progress" style="display: none;">
-                    <div class="progress-bar">
-                        <div class="progress"></div>
-                    </div>
-                    <span class="progress-text">0%</span>
-                </div>
-            </div>
-            <div class="library-item" onclick="handleMediaClick('video', 5)"><h3>5</h3>
-                <div class="player-controls" style="display: none;">
-                    <button class="play-button" onclick="event.stopPropagation(); togglePlay('video', 5)">Play</button>
-                    <div class="progress-bar">
-                        <div class="progress"></div>
-                    </div>
-                    <div class="time">0:00 / 0:00</div>
-                </div>
-                <div class="download-dialog">
-                    <p>Video herunterladen?</p>
-                    <button onclick="event.stopPropagation(); startDownload('video', 5)">Ja</button>
-                    <button onclick="event.stopPropagation(); hideDownloadDialog(this)">Nein</button>
-                </div>
-                <div class="download-progress" style="display: none;">
-                    <div class="progress-bar">
-                        <div class="progress"></div>
-                    </div>
-                    <span class="progress-text">0%</span>
-                </div>
-            </div>
-            <div class="library-item" onclick="handleMediaClick('video', 6)"><h3>6</h3>
-                <div class="player-controls" style="display: none;">
-                    <button class="play-button" onclick="event.stopPropagation(); togglePlay('video', 6)">Play</button>
-                    <div class="progress-bar">
-                        <div class="progress"></div>
-                    </div>
-                    <div class="time">0:00 / 0:00</div>
-                </div>
-                <div class="download-dialog">
-                    <p>Video herunterladen?</p>
-                    <button onclick="event.stopPropagation(); startDownload('video', 6)">Ja</button>
-                    <button onclick="event.stopPropagation(); hideDownloadDialog(this)">Nein</button>
-                </div>
-                <div class="download-progress" style="display: none;">
-                    <div class="progress-bar">
-                        <div class="progress"></div>
-                    </div>
-                    <span class="progress-text">0%</span>
-                </div>
-            </div>
-            <div class="library-item" onclick="handleMediaClick('video', 7)"><h3>7</h3>
-                <div class="player-controls" style="display: none;">
-                    <button class="play-button" onclick="event.stopPropagation(); togglePlay('video', 7)">Play</button>
-                    <div class="progress-bar">
-                        <div class="progress"></div>
-                    </div>
-                    <div class="time">0:00 / 0:00</div>
-                </div>
-                <div class="download-dialog">
-                    <p>Video herunterladen?</p>
-                    <button onclick="event.stopPropagation(); startDownload('video', 7)">Ja</button>
-                    <button onclick="event.stopPropagation(); hideDownloadDialog(this)">Nein</button>
-                </div>
-                <div class="download-progress" style="display: none;">
-                    <div class="progress-bar">
-                        <div class="progress"></div>
-                    </div>
-                    <span class="progress-text">0%</span>
-                </div>
-            </div>
-            <div class="library-item" onclick="handleMediaClick('video', 8)"><h3>8</h3>
-                <div class="player-controls" style="display: none;">
-                    <button class="play-button" onclick="event.stopPropagation(); togglePlay('video', 8)">Play</button>
-                    <div class="progress-bar">
-                        <div class="progress"></div>
-                    </div>
-                    <div class="time">0:00 / 0:00</div>
-                </div>
-                <div class="download-dialog">
-                    <p>Video herunterladen?</p>
-                    <button onclick="event.stopPropagation(); startDownload('video', 8)">Ja</button>
-                    <button onclick="event.stopPropagation(); hideDownloadDialog(this)">Nein</button>
-                </div>
-                <div class="download-progress" style="display: none;">
-                    <div class="progress-bar">
-                        <div class="progress"></div>
-                    </div>
-                    <span class="progress-text">0%</span>
-                </div>
-            </div>
-            <div class="library-item" onclick="handleMediaClick('video', 9)"><h3>9</h3>
-                <div class="player-controls" style="display: none;">
-                    <button class="play-button" onclick="event.stopPropagation(); togglePlay('video', 9)">Play</button>
-                    <div class="progress-bar">
-                        <div class="progress"></div>
-                    </div>
-                    <div class="time">0:00 / 0:00</div>
-                </div>
-                <div class="download-dialog">
-                    <p>Video herunterladen?</p>
-                    <button onclick="event.stopPropagation(); startDownload('video', 9)">Ja</button>
-                    <button onclick="event.stopPropagation(); hideDownloadDialog(this)">Nein</button>
-                </div>
-                <div class="download-progress" style="display: none;">
-                    <div class="progress-bar">
-                        <div class="progress"></div>
-                    </div>
-                    <span class="progress-text">0%</span>
-                </div>
-            </div>
-            <div class="library-item" onclick="handleMediaClick('video', 10)"><h3>10</h3>
-                <div class="player-controls" style="display: none;">
-                    <button class="play-button" onclick="event.stopPropagation(); togglePlay('video', 10)">Play</button>
-                    <div class="progress-bar">
-                        <div class="progress"></div>
-                    </div>
-                    <div class="time">0:00 / 0:00</div>
-                </div>
-                <div class="download-dialog">
-                    <p>Video herunterladen?</p>
-                    <button onclick="event.stopPropagation(); startDownload('video', 10)">Ja</button>
-                    <button onclick="event.stopPropagation(); hideDownloadDialog(this)">Nein</button>
-                </div>
-                <div class="download-progress" style="display: none;">
-                    <div class="progress-bar">
-                        <div class="progress"></div>
-                    </div>
-                    <span class="progress-text">0%</span>
-                </div>
-            </div>
-        </div>
-    </div>
-
+    
     <script>
-        // Audio-Variablen initialisieren
         let audioPlayer = null;
         let isPlaying = false;
         let actionSound = null;
-
-        // Button-Klick-Handler
-        function handleButtonClick(type) {
-            if (type === 'action') {
-                if (actionSound && !actionSound.paused) {
-                    actionSound.pause();
-                    actionSound.currentTime = 0;
-                } else {
-                    if (actionSound) {
-                        actionSound.currentTime = 0;
-                    } else {
-                        actionSound = new Audio('quack_sound.mp3');
-                    }
-                    actionSound.play().catch(error => {
-                        console.error('Fehler beim Abspielen:', error);
-                    });
-                }
-                return;
-            }
-
-            const modalMap = {
-                'audiobook': 'audiobookModal',
-                'video': 'videoModal'
-            };
-
-            if (modalMap[type]) {
-                const modal = document.getElementById(modalMap[type]);
-                if (modal.style.display === 'block') {
-                    modal.style.display = 'none';
-                    document.getElementById('modalBackground').style.display = 'none';
-                } else {
-                    // Schließe andere Modals
-                    Object.values(modalMap).forEach(id => {
-                        const otherModal = document.getElementById(id);
-                        if (otherModal && otherModal !== modal) {
-                            otherModal.style.display = 'none';
-                        }
-                    });
-                    modal.style.display = 'block';
-                    document.getElementById('modalBackground').style.display = 'block';
-                }
-            } else if (type === 'music') {
-                toggleMusic();
-            }
+        window.timeouts = [];
+        
+        // Verhindere Standardaktionen bei Touch-Events
+        document.addEventListener('touchmove', function(event) {
+            event.preventDefault();
+        }, { passive: false });
+        
+        function showInfo(message) {
+            const modal = document.getElementById('info-modal');
+            const text = document.getElementById('info-text');
+            text.textContent = message;
+            modal.style.display = 'block';
+            setTimeout(() => {
+                modal.style.display = 'none';
+            }, 2000);
         }
-
-        function handleMediaClick(type, chapter) {
-            const item = event.currentTarget;
-            if (!item.hasAttribute('data-downloaded')) {
-                const dialog = item.querySelector('.download-dialog');
-                if (dialog) dialog.style.display = 'block';
-            } else {
-                const controls = item.querySelector('.player-controls');
-                if (controls) controls.style.display = 'block';
-            }
-        }
-
+        
         function toggleMusic() {
             if (!audioPlayer) {
                 audioPlayer = new Audio('lars_vom_mars_song.wav');
@@ -1028,648 +184,102 @@
                 audioPlayer.pause();
                 audioPlayer.currentTime = 0;
                 isPlaying = false;
-                document.querySelector('.lyrics-container').textContent = '';
-                document.querySelector('.lyrics-container').classList.remove('visible');
-                if (window.timeouts) {
-                    window.timeouts.forEach(timeout => clearTimeout(timeout));
-                }
+                hideLyrics();
             } else {
                 audioPlayer.play().catch(error => {
                     console.error('Fehler beim Abspielen:', error);
+                    showInfo('Fehler beim Abspielen der Musik');
                 });
                 isPlaying = true;
-                window.timeouts = [];
-
-                const container = document.querySelector('.lyrics-container');
+                showLyrics();
+            }
+        }
+        
+        function displayBlock(lines, startTime) {
+            window.timeouts.push(setTimeout(() => {
+                const container = document.getElementById('lyrics-box');
+                if (!container) return;
+                
                 container.innerHTML = '';
-                container.classList.add('visible');
-
-                // Verse 1 (nach 10 Sekunden)
-                window.timeouts.push(setTimeout(() => {
-                    const lines = [
-                        "In stummen Nächten singt Lars, der Frosch allein.",
-                        "Er schwingt auf seinen Träumen, sehnt sich nach daheim,",
-                        "In ferner Stille, hallt leise sein Gesang,",
-                        "Ein Lied von Wüsten, die einst nach Heimat klang."
-                    ];
-                    
-                    container.innerHTML = '';
-                    lines.forEach((line, index) => {
+                
+                lines.forEach((line, index) => {
+                    window.timeouts.push(setTimeout(() => {
+                        if (!container) return;
                         const div = document.createElement('div');
                         div.textContent = line;
-                        div.className = 'lyrics-line';
-                        div.style.animationDelay = `${index * 4.0}s`;
                         container.appendChild(div);
-                    });
-                }, 10000));
-
-                // Chorus 1 (nach 36 Sekunden)
-                window.timeouts.push(setTimeout(() => {
-                    const lines = [
-                        "Lars vom Mars, Lars vom Mars,",
-                        "sein Herz so groß, sein Blick so klar.",
-                        "Er singt vom roten Staub der Ewigkeit,",
-                        "träumt von Heimat, doch die bleibt so weit."
-                    ];
-                    
-                    container.innerHTML = '';
-                    lines.forEach((line, index) => {
-                        const div = document.createElement('div');
-                        div.textContent = line;
-                        div.className = 'lyrics-line';
-                        div.style.animationDelay = `${index * 4.0}s`;
-                        container.appendChild(div);
-                    });
-                }, 36000));
-
-                // Verse 2 (nach 56 Sekunden)
-                window.timeouts.push(setTimeout(() => {
-                    const lines = [
-                        "Sein Lied fliegt durch die Stürme aus feurigem Sand,",
-                        "verloren in den Dünen, in einem fremden Land.",
-                        "Die Krater sind wie Narben, gezeichnet vom All,",
-                        "und Lars fragt den Himmel: Wann endet mein Fall?"
-                    ];
-                    
-                    container.innerHTML = '';
-                    lines.forEach((line, index) => {
-                        const div = document.createElement('div');
-                        div.textContent = line;
-                        div.className = 'lyrics-line';
-                        div.style.animationDelay = `${index * 4.0}s`;
-                        container.appendChild(div);
-                    });
-                }, 56000));
-
-                // Chorus 2 (nach 84 Sekunden)
-                window.timeouts.push(setTimeout(() => {
-                    const lines = [
-                        "Lars vom Mars, Lars vom Mars,",
-                        "sein Herz so groß, sein Blick so klar.",
-                        "Er singt vom roten Staub der Ewigkeit,",
-                        "träumt von Heimat, doch die bleibt so weit."
-                    ];
-                    
-                    container.innerHTML = '';
-                    lines.forEach((line, index) => {
-                        const div = document.createElement('div');
-                        div.textContent = line;
-                        div.className = 'lyrics-line';
-                        div.style.animationDelay = `${index * 4.0}s`;
-                        container.appendChild(div);
-                    });
-                }, 84000));
-
-                // Bridge (nach 102 Sekunden)
-                window.timeouts.push(setTimeout(() => {
-                    const lines = [
-                        "Vielleicht hört ihn der Wind, der vom Olymp weht,",
-                        "vielleicht singt er für Sterne, die niemand je versteht.",
-                        "Vielleicht trägt ihn der Traum durch die Unendlichkeit,",
-                        "bis jemand ruft: Lars, es ist soweit!"
-                    ];
-                    
-                    container.innerHTML = '';
-                    lines.forEach((line, index) => {
-                        const div = document.createElement('div');
-                        div.textContent = line;
-                        div.className = 'lyrics-line';
-                        div.style.animationDelay = `${index * 4.0}s`;
-                        container.appendChild(div);
-                    });
-                }, 102000));
-
-                // Chorus Outro (nach 132 Sekunden)
-                window.timeouts.push(setTimeout(() => {
-                    const lines = [
-                        "Lars vom Mars, Lars vom Mars,",
-                        "sein Herz so groß, sein Blick so klar.",
-                        "Er singt vom roten Staub der Ewigkeit,",
-                        "träumt von Heimat, doch die bleibt so weit."
-                    ];
-                    
-                    container.innerHTML = '';
-                    lines.forEach((line, index) => {
-                        const div = document.createElement('div');
-                        div.textContent = line;
-                        div.className = 'lyrics-line';
-                        div.style.animationDelay = `${index * 4.0}s`;
-                        container.appendChild(div);
-                    });
-                }, 132000));
-            }
-        }
-
-        function showModal(modalId) {
-            const modal = document.getElementById(modalId);
-            modal.style.display = 'block';
-            document.getElementById('modalBackground').style.display = 'block';
-        }
-
-        function hideModal(modalId) {
-            if (modalId === 'loginModal') {
-                if (confirm('Möchten Sie das Eingabefenster wirklich schließen?')) {
-                    document.getElementById(modalId).style.display = 'none';
-                }
-            } else {
-                document.getElementById(modalId).style.display = 'none';
-            }
-        }
-
-        // Download-System
-        const downloadedMedia = {
-            audiobooks: {},
-            videos: {}
-        };
-
-        // IndexedDB für Offline-Speicherung einrichten
-        let db;
-        const request = indexedDB.open('LarsVomMarsDB', 1);
-
-        request.onerror = (event) => {
-            console.error('Datenbank-Fehler:', event.target.error);
-        };
-
-        request.onupgradeneeded = (event) => {
-            db = event.target.result;
-            if (!db.objectStoreNames.contains('media')) {
-                db.createObjectStore('media', { keyPath: 'id' });
-            }
-        };
-
-        request.onsuccess = (event) => {
-            db = event.target.result;
-            loadOfflineMedia();
-        };
-
-        function loadOfflineMedia() {
-            const transaction = db.transaction(['media'], 'readonly');
-            const store = transaction.objectStore('media');
-            const request = store.getAll();
-
-            request.onsuccess = () => {
-                const media = request.result;
-                media.forEach(item => {
-                    if (item.type === 'audiobook') {
-                        downloadedMedia.audiobooks[item.id] = item;
-                    } else {
-                        downloadedMedia.videos[item.id] = item;
-                    }
-                    const mediaItem = document.querySelector(`[data-media-id="${item.id}"]`);
-                    if (mediaItem) {
-                        mediaItem.setAttribute('data-downloaded', 'true');
-                        const controls = mediaItem.querySelector('.player-controls');
-                        if (controls) {
-                            controls.style.display = 'block';
-                        }
-                    }
-                    updateMediaStatus(item.id, true);
+                    }, index * 4000));
                 });
-            };
+            }, startTime));
         }
-
-        function downloadMedia(mediaId, type) {
-            const statusElement = document.querySelector(`[data-media-id="${mediaId}"] .download-status`);
-            const progressBar = document.querySelector(`[data-media-id="${mediaId}"] .download-progress`);
+        
+        function showLyrics() {
+            const container = document.getElementById('lyrics-box');
+            if (!container) return;
             
-            if (!statusElement || !progressBar) return;
-
-            statusElement.textContent = 'Wird heruntergeladen...';
-            statusElement.classList.add('downloading');
-
-            // Lade die Lars_Hörbuch.mp4 als Test
-            fetch('Lars_Hörbuch.mp4')
-                .then(response => response.blob())
-                .then(blob => {
-                    // Simuliere Download-Progress
-                    let progress = 0;
-                    const interval = setInterval(() => {
-                        progress += 5;
-                        progressBar.style.width = `${progress}%`;
-
-                        if (progress >= 100) {
-                            clearInterval(interval);
-                            completeDownload(mediaId, type, blob);
-                        }
-                    }, 200);
-                })
-                .catch(error => {
-                    console.error('Download-Fehler:', error);
-                    statusElement.textContent = 'Fehler beim Download';
-                    statusElement.style.background = '#ff0000';
-                });
-        }
-
-        function completeDownload(mediaId, type, blob) {
-            const mediaData = {
-                id: mediaId,
-                type: type,
-                timestamp: Date.now()
-            };
-
-            // Speichere in IndexedDB
-            const transaction = db.transaction(['media'], 'readwrite');
-            const store = transaction.objectStore('media');
-            store.put(mediaData);
-
-            // Update UI
-            if (type === 'audiobook') {
-                downloadedMedia.audiobooks[mediaId] = mediaData;
-            } else {
-                downloadedMedia.videos[mediaId] = mediaData;
-            }
-
-            const item = document.querySelector(`[data-media-id="${mediaId}"]`);
-            if (item) {
-                item.setAttribute('data-downloaded', 'true');
-                // Verstecke Download-Status und Progress
-                const status = item.querySelector('.download-status');
-                const progress = item.querySelector('.download-progress');
-                if (status) status.style.display = 'none';
-                if (progress) progress.style.display = 'none';
-                
-                // Zeige Player Controls
-                const controls = item.querySelector('.player-controls');
-                if (controls) {
-                    controls.style.display = 'block';
-                }
-            }
-        }
-
-        // Modifiziertes Player-System
-        const mediaPlayers = {
-            audiobook: {},
-            video: {}
-        };
-
-        function togglePlay(mediaId, type) {
-            const player = mediaPlayers[type][mediaId];
-            const item = document.querySelector(`[data-media-id="${mediaId}"]`);
-            const button = item.querySelector('.player-controls button');
+            container.style.display = 'block';
             
-            if (!player) {
-                // Erstelle neuen Audio-Player
-                mediaPlayers[type][mediaId] = new Audio('Lars_Hörbuch.mp4');
-                const newPlayer = mediaPlayers[type][mediaId];
-                
-                // Event-Listener für Updates
-                newPlayer.addEventListener('timeupdate', () => updateProgress(mediaId, type));
-                newPlayer.addEventListener('ended', () => {
-                    button.textContent = 'Play';
-                    newPlayer.currentTime = 0;
-                });
-                
-                // Starte Wiedergabe
-                newPlayer.play();
-                button.textContent = 'Pause';
-            } else {
-                if (player.paused) {
-                    player.play();
-                    button.textContent = 'Pause';
-                } else {
-                    player.pause();
-                    button.textContent = 'Play';
-                }
-            }
+            const verse1 = [
+                "In stummen Nächten singt Lars, der Frosch allein,",
+                "Er schwingt auf seinen Träumen, sehnt sich nach daheim,",
+                "In ferner Stille, hallt leise sein Gesang,",
+                "Ein Lied von Wüsten, die einst nach Heimat klang."
+            ];
+            displayBlock(verse1, 10000);
+
+            const chorus1 = [
+                "Lars vom Mars, Lars vom Mars,",
+                "sein Herz so groß, sein Blick so klar.",
+                "Er singt vom roten Staub der Ewigkeit,",
+                "träumt von Heimat, doch die bleibt so weit."
+            ];
+            displayBlock(chorus1, 36000);
+
+            const verse2 = [
+                "Sein Lied fliegt durch die Stürme aus feurigem Sand,",
+                "verloren in den Dünen, in einem fremden Land.",
+                "Die Krater sind wie Narben, gezeichnet vom All,",
+                "und Lars fragt den Himmel: Wann endet mein Fall?"
+            ];
+            displayBlock(verse2, 56000);
+
+            displayBlock(chorus1, 84000);
+
+            const bridge = [
+                "Vielleicht hört ihn der Wind, der vom Olymp weht,",
+                "vielleicht singt er für Sterne, die niemand je versteht,",
+                "Vielleicht trägt ihn der Traum durch die Unendlichkeit,",
+                "bis jemand ruft: Lars, es ist soweit!"
+            ];
+            displayBlock(bridge, 102000);
+
+            displayBlock(chorus1, 132000);
         }
-
-        function updateProgress(mediaId, type) {
-            const player = mediaPlayers[type][mediaId];
-            const item = document.querySelector(`[data-media-id="${mediaId}"]`);
-            if (!player || !item) return;
-
-            const progressBar = item.querySelector('.progress-bar .progress');
-            const timeDisplay = item.querySelector('.time');
+        
+        function hideLyrics() {
+            const container = document.getElementById('lyrics-box');
+            if (!container) return;
             
-            if (progressBar && timeDisplay) {
-                const progress = (player.currentTime / player.duration) * 100;
-                progressBar.style.width = `${progress}%`;
-                
-                const currentTime = formatTime(player.currentTime);
-                const duration = formatTime(player.duration);
-                timeDisplay.textContent = `${currentTime} / ${duration}`;
+            container.style.display = 'none';
+            container.innerHTML = '';
+            window.timeouts.forEach(timeout => clearTimeout(timeout));
+            window.timeouts = [];
+        }
+        
+        function playQuackSound() {
+            if (!actionSound) {
+                actionSound = new Audio('quack_sound.mp3');
             }
-        }
-
-        function formatTime(seconds) {
-            if (!seconds || isNaN(seconds)) return '0:00';
-            const minutes = Math.floor(seconds / 60);
-            const remainingSeconds = Math.floor(seconds % 60);
-            return `${minutes}:${remainingSeconds.toString().padStart(2, '0')}`;
-        }
-
-        // Bibliotheks-Funktionen
-        function handleAudiobook(chapterId) {
-            const isDownloaded = downloadedMedia.audiobooks[chapterId];
-            if (!isDownloaded) {
-                showDownloadDialog(chapterId);
-            }
-            // Kein automatisches Abspielen mehr
-        }
-
-        function handleVideo(videoId) {
-            const isDownloaded = downloadedMedia.videos[videoId];
-            if (!isDownloaded) {
-                showDownloadDialog(videoId);
-            }
-            // Kein automatisches Abspielen mehr
-        }
-
-        function playMedia(mediaId, type) {
-            const mediaData = type === 'audiobook' ? 
-                downloadedMedia.audiobooks[mediaId] : 
-                downloadedMedia.videos[mediaId];
-
-            if (!mediaData) return;
-
-            const mediaUrl = mediaData.url || 'Lars_Hörbuch.mp4';
-            const controls = document.querySelector(`[data-media-id="${mediaId}"] .player-controls`);
-            controls.style.display = 'block';
-
-            if (type === 'audiobook') {
-                if (!audioPlayer) {
-                    audioPlayer = new Audio(mediaUrl);
-                } else {
-                    audioPlayer.src = mediaUrl;
-                }
-                
-                audioPlayer.play().catch(error => {
+            
+            if (actionSound.paused) {
+                actionSound.play().catch(error => {
                     console.error('Fehler beim Abspielen:', error);
+                    showInfo('Fehler beim Abspielen des Sounds');
                 });
             } else {
-                const videoModal = document.getElementById('videoModal');
-                const videoPlayer = document.createElement('video');
-                videoPlayer.src = mediaUrl;
-                videoPlayer.style.width = '100%';
-                videoPlayer.style.maxWidth = '800px';
-                videoPlayer.style.marginTop = '20px';
-                
-                const oldVideo = videoModal.querySelector('video');
-                if (oldVideo) {
-                    oldVideo.remove();
-                }
-                
-                videoModal.appendChild(videoPlayer);
-                videoPlayer.play().catch(error => {
-                    console.error('Fehler beim Abspielen:', error);
-                });
+                actionSound.pause();
+                actionSound.currentTime = 0;
             }
-        }
-
-        function showDownloadDialog(mediaId) {
-            const item = document.querySelector(`[data-media-id="${mediaId}"]`);
-            if (!item) return;
-            
-            const dialog = item.querySelector('.download-dialog');
-            if (dialog) {
-                dialog.style.display = 'block';
-            }
-        }
-
-        function hideDownloadDialog(mediaId) {
-            const item = document.querySelector(`[data-media-id="${mediaId}"]`);
-            if (!item) return;
-            
-            const dialog = item.querySelector('.download-dialog');
-            if (dialog) {
-                dialog.style.display = 'none';
-            }
-        }
-
-        function startDownload(mediaId, type) {
-            hideDownloadDialog(mediaId);
-            
-            const statusElement = document.querySelector(`[data-media-id="${mediaId}"] .download-status`);
-            const progressBar = document.querySelector(`[data-media-id="${mediaId}"] .download-progress`);
-            
-            if (!statusElement || !progressBar) return;
-
-            statusElement.textContent = 'Wird heruntergeladen...';
-            statusElement.classList.add('downloading');
-
-            // Erstelle einen Download-Link
-            const link = document.createElement('a');
-            link.href = 'Lars_Hörbuch.mp4';
-            link.download = `Lars_${mediaId}.mp4`;
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
-
-            // Simuliere Download-Progress
-            let progress = 0;
-            const interval = setInterval(() => {
-                progress += 10;
-                progressBar.style.width = `${progress}%`;
-
-                if (progress >= 100) {
-                    clearInterval(interval);
-                    completeDownload(mediaId, type);
-                }
-            }, 200);
-        }
-
-        // Login-System
-        function validateEmail(email) {
-            const pattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-            return pattern.test(email);
-        }
-
-        function validatePassword(input) {
-            const password = input.value;
-            const errorDiv = document.getElementById('passwordError');
-            const pattern = /^(?=.*[A-Z])(?=.*[0-9].*[0-9])[A-Za-z0-9]{8}$/;
-            
-            if (password && !pattern.test(password)) {
-                errorDiv.style.display = 'block';
-                input.setCustomValidity('Passwort entspricht nicht den Anforderungen');
-            } else {
-                errorDiv.style.display = 'none';
-                input.setCustomValidity('');
-            }
-        }
-
-        function handleLogin(event) {
-            event.preventDefault();
-            const parentName = document.getElementById('parentName').value;
-            const email = document.getElementById('email').value;
-            const childName = document.getElementById('childName').value;
-            const day = document.getElementById('birthDay').value;
-            const month = document.getElementById('birthMonth').value;
-            const year = document.getElementById('birthYear').value;
-            const password = document.getElementById('password').value;
-
-            // Validiere E-Mail
-            if (!validateEmail(email)) {
-                document.getElementById('emailError').style.display = 'block';
-                return;
-            }
-            document.getElementById('emailError').style.display = 'none';
-
-            // Validiere Passwort
-            const passwordPattern = /^(?=.*[A-Z])(?=.*[0-9].*[0-9])[A-Za-z0-9]{8}$/;
-            if (!passwordPattern.test(password)) {
-                return;
-            }
-
-            // Formatiere Geburtsdatum
-            const birthdate = `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`;
-
-            // Zeige Bestätigungs-Nachricht
-            document.getElementById('emailConfirmation').style.display = 'block';
-
-            // Speichere die Daten
-            localStorage.setItem('parentName', parentName);
-            localStorage.setItem('email', email);
-            localStorage.setItem('childName', childName);
-            localStorage.setItem('birthdate', birthdate);
-            localStorage.setItem('password', btoa(password));
-
-            // Schließe Login-Modal nach 3 Sekunden
-            setTimeout(() => {
-                hideModal('loginModal');
-                document.getElementById('modalBackground').style.display = 'none';
-            }, 3000);
-        }
-
-        // Geburtstags-Felder initialisieren
-        function initBirthdayFields() {
-            const daySelect = document.getElementById('birthDay');
-            const yearSelect = document.getElementById('birthYear');
-            
-            // Tage 1-31
-            for (let i = 1; i <= 31; i++) {
-                const option = document.createElement('option');
-                option.value = i;
-                option.textContent = i;
-                daySelect.appendChild(option);
-            }
-            
-            // Jahre (aktuelle Jahr - 15 bis aktuelles Jahr)
-            const currentYear = new Date().getFullYear();
-            for (let i = currentYear; i >= currentYear - 15; i--) {
-                const option = document.createElement('option');
-                option.value = i;
-                option.textContent = i;
-                yearSelect.appendChild(option);
-            }
-        }
-
-        // Beim Laden der Seite initialisieren
-        document.addEventListener('DOMContentLoaded', initBirthdayFields);
-
-        // Event-Listener für Modal-Schließen
-        function closeModal(modalId) {
-            document.getElementById(modalId).style.display = 'none';
-            document.getElementById('modalBackground').style.display = 'none';
-            
-            // Stoppe Medien beim Schließen
-            if (modalId === 'audiobookModal' && audioPlayer) {
-                stopPlay('audio');
-                document.getElementById('audioControls').style.display = 'none';
-            } else if (modalId === 'videoModal' && videoPlayer) {
-                stopPlay('video');
-                document.getElementById('videoControls').style.display = 'none';
-            }
-        }
-
-        // Event-Listener für Klick außerhalb der Modals
-        document.getElementById('modalBackground').onclick = function() {
-            closeModal('audiobookModal');
-            closeModal('videoModal');
-            closeModal('loginModal');
-        };
-
-        function handleVideoClick(chapter) {
-            const item = event.currentTarget;
-            if (!item.hasAttribute('data-downloaded')) {
-                const dialog = item.querySelector('.download-dialog');
-                if (dialog) dialog.style.display = 'block';
-            } else {
-                const controls = item.querySelector('.player-controls');
-                if (controls) controls.style.display = 'block';
-            }
-        }
-
-        function startDownload(type, chapter) {
-            event.stopPropagation();
-            const item = event.target.closest('.library-item');
-            const dialog = item.querySelector('.download-dialog');
-            const progress = item.querySelector('.download-progress');
-            
-            dialog.style.display = 'none';
-            progress.style.display = 'block';
-            
-            let downloaded = 0;
-            const interval = setInterval(() => {
-                downloaded += 10;
-                const progressBar = progress.querySelector('.progress');
-                const progressText = progress.querySelector('.progress-text');
-                progressBar.style.width = downloaded + '%';
-                progressText.textContent = downloaded + '%';
-                
-                if (downloaded >= 100) {
-                    clearInterval(interval);
-                    progress.style.display = 'none';
-                    item.setAttribute('data-downloaded', 'true');
-                    const controls = item.querySelector('.player-controls');
-                    if (controls) {
-                        controls.style.display = 'block';
-                    }
-                }
-            }, 200);
-        }
-
-        function hideDownloadDialog(button) {
-            event.stopPropagation();
-            const dialog = button.closest('.download-dialog');
-            if (dialog) dialog.style.display = 'none';
-        }
-
-        function togglePlay(type, chapter) {
-            event.stopPropagation();
-            const button = event.target;
-            const item = button.closest('.library-item');
-            const player = type === 'audio' ? audioPlayer : videoPlayer;
-            
-            if (!player || player.chapter !== chapter) {
-                if (player) {
-                    player.pause();
-                    player.currentTime = 0;
-                }
-                
-                const newPlayer = new Audio(type === 'audio' ? 'chapter_' + chapter + '.mp3' : 'video_' + chapter + '.mp4');
-                newPlayer.chapter = chapter;
-                
-                if (type === 'audio') {
-                    audioPlayer = newPlayer;
-                } else {
-                    videoPlayer = newPlayer;
-                }
-                
-                newPlayer.play();
-                button.textContent = 'Pause';
-            } else {
-                if (player.paused) {
-                    player.play();
-                    button.textContent = 'Pause';
-                } else {
-                    player.pause();
-                    button.textContent = 'Play';
-                }
-            }
-        }
-
-        // Service Worker Registration
-        if ('serviceWorker' in navigator) {
-            window.addEventListener('load', () => {
-                navigator.serviceWorker.register('./sw.js')
-                    .then(registration => {
-                        console.log('ServiceWorker registered:', registration);
-                    })
-                    .catch(error => {
-                        console.log('ServiceWorker registration failed:', error);
-                    });
-            });
         }
     </script>
 </body>
